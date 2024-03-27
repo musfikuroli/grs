@@ -1,0 +1,29 @@
+<CONNECTIONS>
+
+    <!--<CONNECTION ID="1" DRIVER_CLASS_NAME="com.mysql.jdbc.Driver" DATABASE_URL="jdbc:mysql://doptor.gov.bd:3306/oisf_rnd?useEncoding=true&amp;characterEncoding=UTF-8"-->
+    <!--USER_NAME = "root" PASSWORD = "Root.toor2"-->
+    <!--IS_DEFAULT = "TRUE"/>-->
+    <!--
+     <CONNECTION ID="1" DRIVER_CLASS_NAME="com.mysql.jdbc.Driver" DATABASE_URL="jdbc:mysql:///oisf_rnd_20181118?useEncoding=true&amp;characterEncoding=UTF-8"
+                 USER_NAME = "root" PASSWORD = "12345"
+                 IS_DEFAULT = "TRUE"/>-->
+
+
+    <!-- <CONNECTION ID="1" DRIVER_CLASS_NAME="com.mysql.jdbc.Driver" DATABASE_URL="jdbc:mysql://172.16.6.117:3306/oisf_rnd?useEncoding=true&amp;characterEncoding=UTF-8"-->
+    <!--             USER_NAME = "application" PASSWORD = "@997!cation"-->
+    <!--             IS_DEFAULT = "TRUE"/>-->
+
+    <CONNECTION ID="1" DRIVER_CLASS_NAME="com.mysql.jdbc.Driver"
+                DATABASE_URL="jdbc:mysql://db.grs.bd:3306/grs_master_oct_19?useEncoding=true&amp;characterEncoding=UTF-8"
+                USER_NAME="root" PASSWORD="1234"
+                IS_DEFAULT="FALSE"/>
+    <CONNECTION ID="2" DRIVER_CLASS_NAME="com.mysql.jdbc.Driver"
+                DATABASE_URL="jdbc:mysql://db.grs.bd:3306/grs_only_3?useEncoding=true&amp;characterEncoding=UTF-8"
+                USER_NAME="root" PASSWORD="root"
+                IS_DEFAULT="TRUE"/>
+    <CONNECTION ID="3" DRIVER_CLASS_NAME="com.mysql.jdbc.Driver"
+                DATABASE_URL="jdbc:mysql://db.grs.bd:3306/grs_l?useEncoding=true&amp;characterEncoding=UTF-8"
+                USER_NAME="root" PASSWORD="root"
+                IS_DEFAULT="FALSE"/>
+
+</CONNECTIONS>

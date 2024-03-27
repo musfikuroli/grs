@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:classappend="${!isMobileLogin ? 'page-content' : ''}" th:fragment="viewMyGrievances">
+    <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
+        <input type="hidden" name="isMobileLogin" th:value="${isMobileLogin}">
+        <div class="portlet-title">
+            <div class="caption hide-on-mobile">
+                <i class="icon-bubbles "></i>
+                <span class="modulename modulename-hide-on-mobile caption-subject bold uppercase" >আপনার দাখিলকৃত অভিযোগের তালিকা </span>
+                <span class="caption-helper">&nbsp;</span>
+            </div>
+            <div class="actions">
+                <a th:if="${isHoo}" href="/addOfficialGrievances.do" class="btn btn-circle" th:classappend="${!isMobileLogin ? 'btn-success' : 'btn-info'}"><i class="icon-plus "></i> <span class="tabname " th:text="#{grievance.official}"></span></a>
+                <a href="/addStaffGrievances.do" class="btn btn-circle" th:classappend="${!isMobileLogin ? 'btn-success' : 'btn-info'}"><i class="icon-plus "></i> <span class="tabname " th:text="#{grievance.staff}"></span></a>
+                <a th:if="${!isMobileLogin}" class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;" data-original-title="" title=""> </a>
+            </div>
+        </div>
+        <div th:classappend="${!isMobileLogin ? 'portlet-body' : ''}" >
+            <div class="full-height-content-body">
+                <table class="table table-hover table-striped table-bordered" id="tblListViewGrievance">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th th:text="#{track.num}"></th>
+                        <th th:text="#{grievances.subject.table.header}"></th>
+                        <th th:text="#{service.name.table.header}"></th>
+                        <th th:text="#{grievance.date.table.header}"></th>
+                        <th th:text="#{grievances.type.table.header}"></th>
+                        <th th:text="#{grievances.current.status.table.header}"></th>
+                        <th th:text="#{grievances.close.date.table.header}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-5 col-md-5">
+                        <div class="dataTables_info" id="tblListViewGrievance_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                    </div>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                            <div class="pagination-panel pull-right">
+                                <span th:text="#{page}"></span>
+                                <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                                <span th:text="#{of}"></span>
+                                <a href="javascript:;" class="btn btn-sm default prev disabled">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+                                <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPage" value="০" type="text">
+                                <a href="javascript:;" class="btn btn-sm default next disabled">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                                <span th:text="#{page.shown}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"> &nbsp;&nbsp; </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade bs-modal-lg" id="modalTrackStatus" tabindex="-1" role="basic" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" th:text="#{get.grievance.status}"><i class="icon-bubble"></i> </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="horizontal-form">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label" th:text="#{write.tracking.number}"></label>
+                                        <input id="trackingNumber" class="form-control" th:placeholder="#{write.track.num}" value="" type="text"/>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn green btn-outline" id="btnTrackComplaint"><i class="icon-magnifier"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{close}"></button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+
+<div th:fragment="viewMyGrievancesIncludeScript" th:remove="tag">
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+</div>
+
+<script type="text/javascript" th:fragment="viewMyGrievancesScript">
+    var currentPage = 1, maxPage = 1, searchSize = 10;
+    $("#header_citizen_bar a").addClass("active");
+
+    function previewFile(clickedLink, e) {
+        if (e) {
+            e.preventDefault();
+        }
+        var domainURL = "http://" + document.location.host;
+        if ($(clickedLink).attr("href").startsWith("http://")) {
+            domainURL = "";
+        }
+        if ($(clickedLink).hasClass("media-embed")) {
+            var isEmbed = false;
+            if($(clickedLink).attr("data-asset") == "true"){
+                isEmbed = true;
+            }
+            if(isEmbed){
+                $("#fileViewerModal .modal-body").html('<embed src="' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;"></embed>');
+            } else {
+                $("#fileViewerModal .modal-body").html('<iframe src="http://docs.google.com/gview?embedded=true&url=' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;" frameborder="0"></iframe>');
+            }
+            $("#fileViewerModal").modal("show");
+            return false;
+        } else if ($(clickedLink).hasClass("media-audio")) {
+            $("#fileViewerModal .modal-body").html('<audio style="width:100%;" controls><source src="' + $(clickedLink).attr("href") + '" type="audio/mpeg">Your browser does not support the audio element.</audio>');
+            $("#fileViewerModal").modal("show");
+            return false;
+        } else if ($(clickedLink).hasClass("media-video")) {
+            $("#fileViewerModal .modal-body").html('<video style="width:100%;height:480px;" controls><source src="' + $(clickedLink).attr("href") + '" type="video/mp4">Your browser does not support the video tag.</video>');
+            $("#fileViewerModal").modal("show");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    $(document).ready(function() {
+        loadComplaintsList(currentPage);
+        var isEnglish = languageCode == 'en';
+        var table1 = $('#tblListViewGrievance');
+        var emptyTxt = (isEnglish ? "Sorry. No grievances found." : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        var rowTitle = isEnglish ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": emptyTxt,
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "createdRow": function( row, data, dataIndex ) {
+                var currentRow = $(row);
+                currentRow.attr("data-toggle", "tooltip");
+                currentRow.attr("title", rowTitle);
+            },
+            columns: [{
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var additional = (currentPage-1);
+                    var returnValue;
+                    if (meta.row == 9){
+                        returnValue =  ("" + (additional+1) + "0").toBanglaNumber();
+                    } else {
+                        returnValue =  ("" + additional + (meta.row+1)).toBanglaNumber();
+                    }
+                    return (languageCode == 'en' ? returnValue.toEnglishNumber() : returnValue )
+                }
+            }, {
+                data: "trackingNumberBangla"
+            }, {
+                data: "subject"
+            }, {
+                data: "serviceNameBangla"
+            },{
+                data: "dateBangla",
+                render: function (data, type, row, meta) {
+                    console.log(data);
+                    var splittedParts = data.split(" ");
+                    return (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                }
+            }, {
+                data: "typeBangla"
+            },{
+                data: "statusBangla"
+            },{
+                data: "expectedDateOfClosingBangla",
+                render: function (data, type, row, meta) {
+                    var splittedParts = data.split(" ");
+                    return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                }
+            }
+            ],
+            "order": [
+                [1, "desc"]
+            ]
+        });
+
+        $('#tblListViewGrievance tbody').on('click', 'tr', function () {
+            var table = $('#tblListViewGrievance').DataTable();
+            var data = table.row(this).data();
+            if (data != undefined) {
+                if ( $(this).hasClass('active') ) {
+                    $(this).removeClass('active');
+                }
+                else {
+                    table.$('tr.selected').removeClass('active');
+                    $(this).addClass('active');
+                }
+                var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+                $.blockUI({
+                    message: '<h1>  ' + msg + '</h1>'
+                });
+                window.setTimeout(function() {
+                    window.location.href = "/viewGrievances.do?id=" + data.id;
+                }, 500);
+            }
+        });
+
+        $(".next").click(function(e) {
+            currentPage = currentPage + 1;
+            $(".prev").removeClass("disabled");
+            if (currentPage == maxPage) {
+                $(".next").addClass("disabled");
+            }
+            if (currentPage > maxPage) {
+                currentPage = maxPage;
+            }
+            loadComplaintsList(currentPage);
+        });
+
+        $(".prev").click(function(e) {
+            currentPage = currentPage - 1;
+            $(".next").removeClass("disabled");
+            if (currentPage == 1) {
+                $(".prev").addClass("disabled");
+            }
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+            loadComplaintsList(currentPage);
+        });
+
+        $("#currentPage").blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + $("#currentPage").val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPage) {
+                    currentPage = curValue;
+                    if (currentPage == 1) {
+                        $(".prev").addClass("disabled");
+                    } else {
+                        $(".prev").removeClass("disabled");
+                    }
+                    if (currentPage == maxPage) {
+                        $(".next").addClass("disabled");
+                    } else {
+                        $(".next").removeClass("disabled");
+                    }
+                    loadComplaintsList(currentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPage").val( languageCode == 'en' ? ("" + currentPage) : ("" + currentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPage").val(languageCode == 'en' ? ("" + currentPage) : ("" + currentPage).toBanglaNumber());
+            }
+        });
+
+        if (isGrsUser) {
+            $(".nav-item").hide();
+        }
+    });
+
+    function loadComplaintsList(page) {
+        blockUI();
+        var searchSize = $("[name='isMobileLogin']").val() == "true" ? 5 : 10 ;
+        itemPerPage = searchSize;
+        $("#currentPage").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        $.ajax({
+            url: "/api/grievance",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $("#tblListViewGrievance tbody tr").css("cursor","default");
+                    $(".pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#currentPage").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $(".prev, .next").addClass("disabled");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $(".pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#tblListViewGrievance_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#tblListViewGrievance').dataTable().fnClearTable();
+                    $('#tblListViewGrievance').dataTable().fnAddData(response.content);
+                    $('#tblListViewGrievance').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+            }
+        });
+    }
+</script>

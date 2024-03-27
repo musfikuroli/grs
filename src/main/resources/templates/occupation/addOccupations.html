@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="page-content" style="min-height: 1601px;" th:fragment="addOccupations">
+    <div class="form-body">
+        <form id="occupationCreateEditForm" class="ajax-submit-form" data-url="/api/occupation" th:object="${occupation}">
+            <input type="hidden" name="id" th:field="*{Id}" />
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{occupation} , #{bangla})}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="text" name="occupationBangla" class="form-control" th:field="*{occupationBangla}" th:placeholder="#{provide.x(#{occupation})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{occupation} , #{english})}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="text" name="occupationEnglish" class="form-control" th:field="*{occupationEnglish}" th:placeholder="#{provide.x(#{occupation})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <div class="mt-radio-inline" th:field="*{status}" th:attr="data-required-message=#{error.message.for.required}">
+                        <label class="control-label" th:text="#{status}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <input name="status" id="yes" type="radio" value="true" th:checked="*{status}"/>
+                        <label for="yes">
+                            <span th:remove="tag" th:text="#{yes}"></span>
+                        </label>
+                        <input name="status" id="no" type="radio" value="false" th:checked="*{status}==false ? true:false"/>
+                        <label for="no">
+                            <span th:remove="tag" th:text="#{no}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn blue" th:text="#{${occupation.getId() != null ? 'update' : 'save'}}"></button>
+            <button type="reset" class="btn green" th:text="#{reset}"></button>
+            <button type="button" class="btn default back-button" th:text="#{back}"></button>
+        </form>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="addOccupationsIncludeScript" th:remove="tag">
+    <script>
+        $("form.ajax-submit-form").on("submit", function (event) {
+            event.preventDefault();
+            $("#ajaxProcessingModal").modal("show");
+            var _this = $(this);
+            var url = _this.attr("data-url");
+            var type = "POST";
+            var id = _this.find("[name='Id']").val();
+            if(!isNaN(parseInt(id))) {
+                type = "PUT";
+                url += "/" + id;
+            }
+            var dataObject = {};
+            _this.serializeArray().forEach(function(item) {
+                dataObject[item.name] = item.value;
+            });
+            var data = JSON.stringify(dataObject);
+            $.ajax({
+                type : type,
+                url : url,
+                data : data,
+                dataType : "json",
+                contentType: "application/json",
+                success : function (data){
+                    $(_this).trigger("ajax-submit-success", [data]);
+                },
+                error: function (data){
+                    $(_this).trigger("ajax-submit-error", [data]);
+                }
+            }).done(function(data) {
+                $("#ajaxProcessingModal").modal("hide");
+            });
+        });
+        $("form.ajax-submit-form button.back-button").on("click", function() {
+            window.history.back();
+        });
+    </script>
+</div>
+
+<script th:fragment="addOccupationsScript">
+    var form = $("#occupationCreateEditForm");
+    form.validate({
+        rules: {
+            occupationBangla: {
+                required: true
+            },
+            occupationEnglish: {
+                required: true
+            },
+            status: {
+                required: true
+            }
+        },
+        messages: {
+            occupationBangla: {
+                required: form.find("[name='occupationBangla']").attr("data-required-message")
+            },
+            occupationEnglish: {
+                required: form.find("[name='occupationEnglish']").attr("data-required-message")
+            },
+            status: {
+                required: form.find("[name='status']").attr("data-required-message")
+            }
+        }
+    });
+
+    $("#occupationCreateEditForm").on("ajax-submit-success", function (event, data) {
+        if(data.success) {
+            toastr.success(data.message, null, {positionClass: 'toast-top-center'});
+            setTimeout(function() {
+                $(location).attr("href", "/viewOccupations.do");
+            }, 500);
+        } else {
+            toastr.error(data.message, null, {positionClass: 'toast-top-center'});
+        }
+    });
+</script>

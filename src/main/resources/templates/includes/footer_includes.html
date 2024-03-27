@@ -1,0 +1,552 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="footer" th:remove="tag">
+    <!--[if lt IE 9]>
+    <script src="/assets/global/plugins/respond.min.js"></script>
+    <script src="/assets/global/plugins/excanvas.min.js"></script>
+    <script src="/assets/global/plugins/ie8.fix.min.js"></script>
+    <![endif]-->
+
+    <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery.cookie.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/knockout-3.4.2.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/star-rating.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-summernote/summernote.min.js" type="text/javascript"></script>
+    <script>
+        String.prototype.toBanglaNumber = function () {
+            var engNum = this;
+            var bngNum = '';
+            var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            engNum.split('').forEach(function (digit) {
+                var index = parseInt(digit);
+                bngNum += isNaN(index) ? digit : bngDigits[index];
+            });
+            return bngNum;
+        };
+
+        String.prototype.toEnglishNumber = function () {
+            var bngNum = this;
+            var engNum = '';
+            var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            bngNum.split('').forEach(function (digit) {
+                var index = bngDigits.indexOf(digit);
+                engNum += index >= 0 ? index : digit;
+            });
+            return engNum;
+        };
+
+        function blockUI() {
+            var isEnglish = (languageCode == "en");
+            var msg = isEnglish ? "Loading... Just a moment please" : "লোড হচ্ছে... দয়া করে অপেক্ষা করুন" ;
+            $.blockUI({
+                message: '<h1>' + msg + '</h1>'
+            });
+        }
+
+        function unblockUI() {
+            $.unblockUI();
+        }
+    </script>
+    <script src="/assets/global/plugins/bootstrap-datepicker/js/moment-with-locales.js" type="text/javascript" charset="UTF-8"></script>
+    <script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker-1.6.4.js" type="text/javascript" charset="UTF-8"></script>
+    <!-- Bengali for datepicker -->
+    <!--<script src="/assets/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker-bn.js" type="text/javascript" charset="UTF-8"></script>-->
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <!-- Bengali for select2 -->
+    <script src="/assets/global/plugins/select2/js/i18n/bn.js" type="text/javascript"></script>
+    <script>
+        var languageCode = $.cookie("lang");
+        var jsLangCodeForLibs = 'bn';
+        if (languageCode == "en") {
+            jsLangCodeForLibs = 'en';
+        }
+
+        if (jsLangCodeForLibs == "bn") {
+            $.fn.datepicker.dates['bn'] = {
+                months : 'জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর'.split('_'),
+                monthsShort : 'জানু_ফেব_মার্চ_এপ্র_মে_জুন_জুল_আগ_সেপ্ট_অক্টো_নভে_ডিসে'.split('_'),
+                days : 'রবিবার_সোমবার_মঙ্গলবার_বুধবার_বৃহস্পতিবার_শুক্রবার_শনিবার'.split('_'),
+                daysShort : 'রবি_সোম_মঙ্গল_বুধ_বৃহস্পতি_শুক্র_শনি'.split('_'),
+                daysMin : 'রবি_সোম_মঙ্গ_বুধ_বৃহঃ_শুক্র_শনি'.split('_'),
+                longDateFormat : {
+                    LT : 'A h:mm সময়',
+                    LTS : 'A h:mm:ss সময়',
+                    L : 'DD/MM/YYYY',
+                    LL : 'D MMMM YYYY',
+                    LLL : 'D MMMM YYYY, A h:mm সময়',
+                    LLLL : 'dddd, D MMMM YYYY, A h:mm সময়'
+                },
+                calendar : {
+                    sameDay : '[আজ] LT',
+                    nextDay : '[আগামীকাল] LT',
+                    nextWeek : 'dddd, LT',
+                    lastDay : '[গতকাল] LT',
+                    lastWeek : '[গত] dddd, LT',
+                    sameElse : 'L'
+                },
+                relativeTime : {
+                    future : '%s পরে',
+                    past : '%s আগে',
+                    s : 'কয়েক সেকেন্ড',
+                    ss : '%d সেকেন্ড',
+                    m : 'এক মিনিট',
+                    mm : '%d মিনিট',
+                    h : 'এক ঘন্টা',
+                    hh : '%d ঘন্টা',
+                    d : 'এক দিন',
+                    dd : '%d দিন',
+                    M : 'এক মাস',
+                    MM : '%d মাস',
+                    y : 'এক বছর',
+                    yy : '%d বছর'
+                },
+                meridiemParse: /রাত|সকাল|দুপুর|বিকাল|রাত/,
+                meridiemHour : function (hour, meridiem) {
+                    if (hour === 12) {
+                        hour = 0;
+                    }
+                    if ((meridiem === 'রাত' && hour >= 4) ||
+                            (meridiem === 'দুপুর' && hour < 5) ||
+                            meridiem === 'বিকাল') {
+                        return hour + 12;
+                    } else {
+                        return hour;
+                    }
+                },
+                meridiem : function (hour, minute, isLower) {
+                    if (hour < 4) {
+                        return 'রাত';
+                    } else if (hour < 10) {
+                        return 'সকাল';
+                    } else if (hour < 17) {
+                        return 'দুপুর';
+                    } else if (hour < 20) {
+                        return 'বিকাল';
+                    } else {
+                        return 'রাত';
+                    }
+                },
+                week : {
+                    dow : 0, // Sunday is the first day of the week.
+                    doy : 6  // The week that contains Jan 1st is the first week of the year.
+                }
+            };
+            moment.locale("bn");
+        }
+
+        function setBangla() {
+            $.cookie("lang", "fr");
+            location.reload();
+        }
+        function setEnglish() {
+            $.cookie("lang", "en");
+            location.reload();
+        }
+        function enableMenu(){
+            var url = document.location.href;
+            if (url.includes("services.do")){
+                $("#serviceMenu").addClass("active");
+                $("#homeMenu, #suggestionMenu, #statusMenu").removeClass("active");
+            } else if (url.includes("suggestion.do")){
+                $("#suggestionMenu").addClass("active");
+                $("#homeMenu, #serviceMenu, #statusMenu").removeClass("active");
+            } else {
+                $("#homeMenu").addClass("active");
+                $("#serviceMenu, #suggestionMenu, #statusMenu").removeClass("active");
+            }
+        }
+
+        function ajaxPut(url, accept, send, postData, onSuccess) {
+            $.ajax({
+                type: "PUT",
+                url: url,
+                dataType: accept,
+                contentType: send,
+                data: postData,
+                success: onSuccess
+            });
+        }
+
+        $(document).ready(function() {
+            enableMenu();
+            $("#flowChartModal").on('shown.bs.modal', function (e) {
+                $("#flowChartModal img").each(function (key, val) {
+                    var selector = $(val);
+                    var source = selector.attr('data-src');
+                    selector.attr('src', source);
+                });
+            });
+            $("#grsGuidelineModal").on('shown.bs.modal', function (e) {
+                $("#grsGuidelineModal img").each(function (key, val) {
+                    var selector = $(val);
+                    var source = selector.attr('data-src');
+                    selector.attr('src', source);
+                });
+            });
+            $("#grsUserManualModal").on('shown.bs.modal', function (e) {
+                $("#grsUserManualModal img").each(function (key, val) {
+                    var selector = $(val);
+                    var source = selector.attr('data-src');
+                    selector.attr('src', source);
+                });
+            });
+            if (languageCode==null || languageCode=="fr"){
+                //console.log("case 1 ");
+                //$("#selectedLanguageLogoLink").attr("src","/assets/global/img/flags/bd.png");
+                $("#selectedLanguageName").text("English");
+                //$("#alternateLanguageLogoLink").attr("src","/assets/global/img/flags/bd.png");
+                //$("#alternateLanguageName").text("বাংলা");
+                $("a#selectedLanguageLink").attr('href', 'javascript:setEnglish()');
+
+            }
+            if (languageCode=="en"){
+                //console.log("case 2 ");
+                //$("#selectedLanguageLogoLink").attr("src","/assets/global/img/flags/bd.png");
+                $("#selectedLanguageName").text("বাংলা");
+                //$("#alternateLanguageLogoLink").attr("src","/assets/global/img/flags/bd.png");
+                //$("#alternateLanguageName").text("English");
+                $("a#selectedLanguageLink").attr('href', 'javascript:setBangla()');
+
+                // Change font size if language is English
+                //$(".page-banner").css("font-size", "19px");
+            }
+
+            /* Overriding conditional clicking on menu toggler for responsive only to all viewports */
+            /* $(".page-header .menu-toggler").on("click", function(event) { // Adding clicking on all viewports
+                var menu = $(".page-header .page-header-menu");
+                if (menu.is(":visible")) {
+                    menu.slideUp(300);
+                } else {
+                    menu.slideDown(300);
+                }
+
+                if ($('body').hasClass('page-header-top-fixed')) {
+                    App.scrollTop();
+                }
+            }); */
+            $(".page-header .menu-toggler").unbind("click"); // Removing already bound event handler for responsive only
+            $(".page-header .menu-toggler").on("click", function(e){
+                $(".page-header-menu").css("display", "block");
+                $(".menu-dropdown.classic-menu-dropdown > .dropdown-menu").css("display", "block");
+            });
+
+            $(".menu-dropdown.classic-menu-dropdown > .dropdown-menu").on("mouseleave", function(e){
+                if ($(".menu-dropdown.classic-menu-dropdown > .dropdown-menu").is(":visible")) {
+                    $(".page-header-menu").css("display", "none");
+                    $(".menu-dropdown.classic-menu-dropdown > .dropdown-menu").css("display", "none");
+                }
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        function showComplaintFeedbackModal() {
+            $("input[name='mobileNumber']").val("");
+            $("input[name='trackingNumber']").val("")
+            $("#txtaFeedback").summernote({
+                height: 100,
+                width: 500,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear', 'fontname']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['Insert', ['table', 'hr']],
+                    ['Misc', ['undo', 'redo']]
+                ]
+            });
+            $("#complaintFeedbackModal").modal('show');
+        }
+        
+        function showFlowchartModal() {
+            $("#flowChartModal").modal('show');
+        }
+
+        function hideComplaintFeedbackModal() {
+            $('#grievanceStatus').empty();
+            $("#complaintFeedbackModal").modal('hide');
+        }
+
+        function ratingViewModel() {
+            this.isRated = ko.observable(0);
+        }
+
+        function initRating(id) {
+            ko.applyBindings(new ratingViewModel());
+            $('#feedbackButton').on('click', function() {
+                $("#ajaxProcessingModal").modal('show');
+                var url = "/api/grievance/feedback";
+                var putObj = JSON.stringify({
+                    grievanceId: id,
+                    rating: $('#rating').val(),
+                    userComments: $('#txtaFeedback').summernote('code')
+                });
+                ajaxPut(url, "json", "application/json", putObj, function (data) {
+                    $("#ajaxProcessingModal").modal('hide');
+                    if(data.success) {
+                        swal({
+                                title: "আপনার প্রতিক্রিয়া!",
+                                text: data.message,
+                                type: "success"
+                            },
+                            function() {
+                                window.location.reload();
+                            }
+                        );
+                    }
+                    else {
+                        swal("স্থগিত", data.message, "error");
+                    }
+                });
+
+            });
+        }
+
+        function showComplaintStatusModal(){
+            $("input[name='mobileNumber']").val("");
+            $("input[name='trackingNumber']").val("")
+            $("#complaintStatusModal").modal('show');
+        }
+
+        function hideComplaintStatusModal(){
+            $('#grievanceStatus').empty();
+            $("#complaintStatusModal").modal('hide');
+        }
+
+        function getStatus(id, mobileNumberFieldName, trackingNumberFieldName){
+            var mobileNumber = $("input[name=" + mobileNumberFieldName + "]").val();
+            var trackingNumber = $("input[name=" + trackingNumberFieldName + "]").val();
+            var isEnglish = (languageCode == "en");
+            if(mobileNumber.startsWith("+88") || mobileNumber.startsWith("+৮৮")) {
+                mobileNumber = mobileNumber.substr(3);
+            }
+            if(mobileNumber.trim().length == 0) {
+                $('#' + id).html("<p class='error font-red bold'>" + (isEnglish ? "Please provide mobile number" : "অনুগ্রহ করে মোবাইল নম্বর প্রদান করুন") + "</p>");
+            } else if(trackingNumber.trim().length == 0) {
+                $('#' + id).html("<p class='error font-red bold'>" + (isEnglish ? "Please provide tracking number" : "অনুগ্রহ করে ট্র্যাকিং নম্বর প্রদান করুন") + "</p>");
+            } else if(mobileNumber.length < 11 || !(/^\d+$/.test(mobileNumber.toEnglishNumber())) || !(mobileNumber.startsWith("01") || mobileNumber.startsWith("০১"))) {
+                $('#' + id).html("<p class='error font-red bold'>" + (isEnglish ? "Please provide correct mobile number" : "অনুগ্রহ করে সঠিক মোবাইল নম্বর প্রদান করুন") + "</p>");
+            } else {
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/grievance/status',
+                    data: { phoneNumber: mobileNumber, trackingNumber: trackingNumber },
+                    /*beforeSend:function() {
+                        $("#grievanceStatus").removeClass('hidden');
+                        if (languageCode === "en") {
+                            $('#' + id).html('<span>Loading, Please Wait</span>');
+                        } else {
+                            $('#' + id).html('<span>দয়া করে অপেক্ষা করুন</span>');
+                        }
+                    },*/
+                    success:function(data) {
+                        if (id !== 'grievanceFeedback') {
+                            populateGrievanceStatus(data, id);
+                        } else{
+                            populateGrievanceStatus(data, id);
+                            if(data.statusEng === 'Closed' || data.statusEng === 'Rejected'){
+                                initRating(data.id);
+                                $("#feedback-div").show();
+                            } else {
+                                $("#feedback-div").hide();
+                            }
+                        }
+                    },
+                    error:function(){
+                        populateErrorToStatus(id);
+                    }
+                });
+            }
+        }
+
+        function populateErrorToStatus(id) {
+            if (languageCode == "en") {
+                $('#' + id).html('<p class="error font-red"><strong>Oops!</strong> Try that again in a few moments.</p>');
+            } else {
+                $('#' + id).html('<p class="error font-red"><strong>দুঃখিত</strong>, একটু পরে আবার চেষ্টা করুন।</p>');
+            }
+        }
+
+        function populateGrievanceStatus(data, id){
+            if (jQuery.isEmptyObject(data)){
+                if (languageCode == "en") {
+                    $('#' + id).html('<p class="error font-red"><strong>Sorry</strong>  Could not find the grievance.</p>');
+                } else {
+                    $('#' + id).html('<p class="error font-red"><strong>দুঃখিত</strong>, অভিযোগটি পাওয়া যায় নি</p>');
+                }
+            } else {
+                var str;
+                var item = document.createElement('tr');
+                var date = document.createElement('td');
+                var service = document.createElement('td');
+                var complaintStatus = document.createElement('td');
+                var closureDate = document.createElement('td');
+                var dateText = document.createElement('span');
+                var serviceText = document.createElement('span');
+                var complaintStatusText = document.createElement('span');
+                var closureDateText = document.createElement('span');
+                if (languageCode == "en") {
+                    dateText.innerHTML = data.submissionDateEng;
+                    serviceText.innerHTML = data.serviceNameEng;
+                    complaintStatusText.innerHTML = data.statusEng;
+                    closureDateText.innerHTML = data.closeDateEng;
+
+                    str = '<p>to appeal, please <a href="/login?a=0" class="blueLink">click here</a></p>';
+                } else {
+                    dateText.innerHTML = data.submissionDateBng;
+                    serviceText.innerHTML = data.serviceNameBng;
+                    complaintStatusText.innerHTML = data.statusBng;
+                    closureDateText.innerHTML = data.closeDateBng;
+
+                    str = '<p>আপিল করতে <a href="/login?a=0" class="blueLink">এখানে ক্লিক করুন </a></p>';
+                }
+                date.append(dateText);
+                service.append(serviceText);
+                complaintStatus.append(complaintStatusText);
+                closureDate.append(closureDateText);
+                item.append(date);
+                item.append(service);
+                item.append(complaintStatus);
+                item.append(closureDate);
+                var selector = '#' + id;
+                $( selector + "More").html(str);
+                $(selector).find("tr:gt(0)").remove();
+                $(selector + " tbody").append(item);
+                $(selector).show();
+            }
+        }
+
+        function previewGrsGuideline(clickedLink, e){
+            if (e) {
+                e.preventDefault();
+            }
+            $("#grsGuidelineModal").modal("show");
+        }
+
+        function previewGrsUserManual(clickedLink, e){
+            if (e) {
+                e.preventDefault();
+            }
+            $("#grsUserManualModal").modal("show");
+        }
+
+        function previewFile(clickedLink, e) {
+            if (e) {
+                e.preventDefault();
+            }
+            var domainURL = "http://" + document.location.host;
+            if ($(clickedLink).attr("href").startsWith("http://")) {
+                domainURL = "";
+            }
+
+            if ($(clickedLink).hasClass("media-embed")) {
+                var isEmbed = false;
+                if($(clickedLink).attr("data-asset") == "true"){
+                    isEmbed = true;
+                }
+                if(isEmbed){
+                    $("#fileViewerModal .modal-body").html('<embed src="' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;"></embed>');
+                } else {
+                    $("#fileViewerModal .modal-body").html('<iframe src="http://docs.google.com/gview?embedded=true&url=' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;" frameborder="0"></iframe>');
+                }
+                $("#fileViewerModal a").attr("href", domainURL + $(clickedLink).attr("href"));
+                $("#fileViewerModal").modal("show");
+                return false;
+            } else if ($(clickedLink).hasClass("media-audio")) {
+                $("#fileViewerModal .modal-body").html('<audio style="width:100%;" controls><source src="' + $(clickedLink).attr("href") + '" type="audio/mpeg">Your browser does not support the audio element.</audio>');
+                $("#fileViewerModal a").attr("href", domainURL + $(clickedLink).attr("href"));
+                $("#fileViewerModal").modal("show");
+                return false;
+            } else if ($(clickedLink).hasClass("media-video")) {
+                $("#fileViewerModal .modal-body").html('<video style="width:100%;height:480px;" controls><source src="' + $(clickedLink).attr("href") + '" type="video/mp4">Your browser does not support the video tag.</video>');
+                $("#fileViewerModal a").attr("href", domainURL + $(clickedLink).attr("href"));
+                $("#fileViewerModal").modal("show");
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function addPublicGrievanceButtonEventHandler() {
+            var authToken = $.cookie("Authorization");
+            $.cookie('prev_url', '/addPublicGrievances.do');
+            var uri = authToken != null ? "/addPublicGrievances.do" : "/register.do";
+            $(location).attr('href', uri);
+        }
+
+        function addPublicGrievanceWithoutLoginButtonEventHandler(flag) {
+            var authToken = $.cookie("Authorization");
+            //var uri = "/complainWithoutLogin.do?sn=" + flag;
+            var uri = "/complainWithoutLogin.do";
+            $.cookie('prev_url', uri);
+            $(location).attr('href', uri);
+        }
+
+        function addPublicGrievanceForOthersButtonEventHandler() {
+            var authToken = $.cookie("Authorization");
+            $.cookie('prev_url', '/complainForOthers.do');
+            var uri = "/complainForOthers.do";
+            $(location).attr('href', uri);
+        }
+
+        function addStaffGrievanceButtonEventHandler() {
+            var authToken = $.cookie("Authorization");
+            $.cookie('prev_url', '/addStaffGrievances.do');
+            var uri = authToken != null ? "/addStaffGrievances.do" : "/login.do?a=1";
+            $(location).attr('href', uri);
+        }
+
+        function seeMore(seeMoreLink, e) {
+            if(e) {
+                e.preventDefault();
+            }
+            $(seeMoreLink).siblings('.more-text').show();
+            $(seeMoreLink).hide();
+        }
+
+        function squeezeMore(squeezeMoreLink, e) {
+            if(e) {
+                e.preventDefault();
+            }
+            $(squeezeMoreLink).closest('.more-text').siblings(".show-text").show();
+            $(squeezeMoreLink).closest('.more-text').hide();
+        }
+
+        function featureComingSoon (){
+            if (languageCode == "en") {
+                swal({
+                    title: "Under construction",
+                    text: "Sorry, we are currently building this",
+                    type: "info",
+                    showCancelButton: false,
+                    confirmButtonClass: "btn-info",
+                    confirmButtonText: "OK",
+                    closeOnConfirm: true
+                });
+            } else {
+                swal({
+                    title: "নির্মাণাধীন",
+                    text: "দুঃখিত, এই ফীচারটি এখন নির্মাণাধীন",
+                    type: "info",
+                    showCancelButton: false,
+                    confirmButtonClass: "btn-info",
+                    confirmButtonText: "বন্ধ করুন",
+                    closeOnConfirm: true
+                });
+            }
+        }
+    </script>
+    <script src="/assets/layouts/layout3/scripts/layout.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-sweetalert/sweetalert.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/easy-autocomplete/jquery.easy-autocomplete.min.js" type="text/javascript"></script>
+</div>

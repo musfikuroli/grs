@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+
+<div th:fragment="citizenCharterSetupIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+</div>
+
+<div class="page-content" th:fragment="citizenCharterSetup">
+    <div class="form-inline" id="officeSelectionOptions">
+        <select class="form-control" id="officeLayers">
+            <option value='null' selected disabled th:text="#{select.x(#{office.type})}"></option>
+            <option value="1" th:text="#{option.ministry.division}"></option>
+            <option value="2" th:text="#{option.directorate}"></option>
+            <option value="3" th:text="#{option.other.office}"></option>
+            <option value="4" th:text="#{option.divisional.office}"></option>
+            <option value="7" th:text="#{option.regional.office}"></option>
+            <option value="5" th:text="#{option.district.office}"></option>
+            <option value="6" th:text="#{option.upazilla.office}"></option>
+        </select>
+        <select class="form-control" id="firstSelection" style="display: none;"></select>
+    </div>
+
+    <div id="generalInfo" style="margin-top: 10px; display: none;">
+        <input type="hidden" name="isOfficeAdmin" th:value="${isOfficeAdmin}"/>
+        <input type="hidden" name="superAdmin" th:value="${superAdmin}"/>
+        <div class="table-responsive">
+            <table class="table table-bordered office-info">
+                <tbody>
+                <tr>
+                    <td rowspan = "2" class="col-sm-2 text-center" style="vertical-align: middle;" th:text="#{vision}"></td>
+                    <td class="col-sm-1">
+                        <div class="text-center" th:text="#{bangla}"></div>
+                    </td>
+                    <td class="col-sm-8">
+                        <div class="current-value"></div>
+                        <textarea rows="3" name="visionBangla" class="form-control autosizeme"></textarea>
+                    </td>
+                    <td  class="col-sm-1 text-center">
+                        <a href="javascript:;" class="btn btn-info edit-button">
+                            <span th:text="#{edit}"></span>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-primary save-button">
+                            <span th:text="#{save}"></span>
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-sm-1">
+                        <div class="text-center" th:text="#{english}"></div>
+                    </td>
+                    <td class="col-sm-8">
+                        <div class="current-value"></div>
+                        <textarea rows="3" name="visionEnglish" class="form-control autosizeme"></textarea>
+                    </td>
+                    <td  class="col-sm-1 text-center">
+                        <a href="javascript:;" class="btn btn-info edit-button">
+                            <span th:text="#{edit}"></span>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-primary save-button">
+                            <span th:text="#{save}"></span>
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan = "2" class="col-sm-2 text-center" style="vertical-align: middle;" th:text="#{mission}"></td>
+                    <td class="col-sm-1">
+                        <div class="text-center" th:text="#{bangla}"></div>
+                    </td>
+                    <td class="col-sm-8">
+                        <div class="current-value"></div>
+                        <textarea rows="3" name="missionBangla" class="form-control autosizeme"></textarea>
+                    </td>
+                    <td  class="col-sm-1 text-center">
+                        <a href="javascript:;" class="btn btn-info edit-button">
+                            <span th:text="#{edit}"></span>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-primary save-button">
+                            <span th:text="#{save}"></span>
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-sm-1">
+                        <div class="text-center" th:text="#{english}"></div>
+                    </td>
+                    <td class="col-sm-8">
+                        <div class="current-value"></div>
+                        <textarea rows="3" name="missionEnglish" class="form-control autosizeme"></textarea>
+                    </td>
+                    <td  class="col-sm-1 text-center">
+                        <a href="javascript:;" class="btn btn-info edit-button">
+                            <span th:text="#{edit}"></span>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-primary save-button">
+                            <span th:text="#{save}"></span>
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan = "2" class="col-sm-2 text-center" style="vertical-align: middle;" th:text="#{expectation.from.you}"></td>
+                    <td class="col-sm-1">
+                        <div class="text-center" th:text="#{bangla}"></div>
+                    </td>
+                    <td class="col-sm-8">
+                        <div class="current-value exp-bng"></div>
+                        <textarea rows="5" name="expectationBangla" class="form-control autosizeme" placeholder="প্রতিটি প্রত্যাশা পৃথক পৃথক লাইনে লিখুন"></textarea>
+                    </td>
+                    <td  class="col-sm-1 text-center">
+                        <a href="javascript:;" class="btn btn-info edit-button">
+                            <span th:text="#{edit}"></span>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-primary save-button">
+                            <span th:text="#{save}"></span>
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-sm-1">
+                        <div class="text-center" th:text="#{english}"></div>
+                    </td>
+                    <td class="col-sm-8">
+                        <div class="current-value exp-eng"></div>
+                        <textarea rows="5" name="expectationEnglish" class="form-control autosizeme" placeholder="Enter each expectation in separate line"></textarea>
+                    </td>
+                    <td  class="col-sm-1 text-center">
+                        <a href="javascript:;" class="btn btn-info edit-button">
+                            <span th:text="#{edit}"></span>
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:;" class="btn btn-primary save-button">
+                            <span th:text="#{save}"></span>
+                            <i class="fa fa-save"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered citizens-charter-info">
+                <thead>
+                <tr>
+                    <th class="text-center" th:text="#{serial.no}"></th>
+                    <th class="text-center" th:text="#{x.y.bracket(#{service.name}, #{bangla})}"></th>
+                    <th class="text-center" th:text="#{x.y.bracket(#{service.name}, #{english})}"></th>
+                    <th class="text-center" th:text="#{service.type}"></th>
+                    <th class="text-center" th:text="#{status}"></th>
+                    <th class="text-center" th:text="#{details}"></th>
+                    <th class="text-center" th:text="#{edit}"></th>
+                    <th class="text-center" th:text="#{status.in.user.office}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>  </td>
+                    <td>
+                        <div th:value="${serviceNameBangla}" ></div>
+                        <button type="button" name="serviceNameBngButton" onclick="javascript:editServiceNameBng();">Edit</button>
+                    </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                    <td>  </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="add-service">
+            <a href="javascript:;" class="btn btn-block purple" style="display: inline-block;">
+                <i class="fa fa-plus"></i>&nbsp;
+                <span th:text="#{add.x(#{service})}"></span>
+            </a>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="addCitizenCharterOrigin" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg"></div>
+    </div>
+    <div class="modal fade" id="viewCitizenCharterOrigin" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title text-center">সেবার বিস্তারিত</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="service-details">
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{service.type}"></div>
+                            <div class="col-md-7 value service-type-value"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.name} , #{bangla})}"></div>
+                            <div class="col-md-7 value service-name-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.name} , #{english})}"></div>
+                            <div class="col-md-7 value service-name-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.procedure} , #{bangla})}"></div>
+                            <div class="col-md-7 value service-procedure-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.procedure} , #{english})}"></div>
+                            <div class="col-md-7 value service-procedure-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{bangla})}"></div>
+                            <div class="col-md-7 value document-location-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{english})}"></div>
+                            <div class="col-md-7 value document-location-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{bangla})}"></div>
+                            <div class="col-md-7 value payment-method-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{english})}"></div>
+                            <div class="col-md-7 value payment-method-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{service.time}">
+                            </div>
+                            <div class="col-md-7 value service-time-value"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{status}"></div>
+                            <div class="col-md-7 value status-value"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="serviceOriginUserOfficesModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <form class="service-origin-users">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title text-center">ব্যবহৃত দপ্তরসমূহের তালিকা</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="text-center" th:text="#{serial.no}"></th>
+                                <th class="text-center" th:text="#{office}"></th>
+                                <th class="text-center" th:text="#{status}"></th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn blue btn-outline" th:text="#{submit}"></button>
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{close}"></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="citizenCharterSetupIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+</div>
+
+<script th:inline="javascript" th:fragment="citizenCharterSetupScript">
+    /*<![CDATA[*/
+    const showAllOffices = /*[[${showAllOffices}]]*/ true;
+    /*]]>*/
+    /*<![CDATA[*/
+    const showChildOfficesOnly = /*[[${showChildOfficesOnly}]]*/ false;
+    /*]]>*/
+
+    function bindOfficeLayersChangeActions() {
+        $('#officeLayers').on("change", function () {
+            var layerLevel = $(this).val();
+            loadOfficeOriginsByLayerLevel(layerLevel);
+        });
+        $('#officeLayers').select2();
+    }
+
+    function sortObjectsByProperty(objectList, propName) {
+        return objectList.sort(function(a,b) {
+            return a[propName].trim().replace(" ", "") > b[propName].trim().replace(" ", "") ? 1 : -1;
+        });
+    }
+
+    function loadOfficeOriginsByLayerLevel(id) {
+        var isOfficeAdmin = ($("[name='isOfficeAdmin']").val() == "true");
+        var superAdmin = ($("[name='superAdmin']").val() == "true");
+        var urlPartForGrsEnabled = (showAllOffices==true) ? "?grsEnabled=false" : "";
+        if(showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices==true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        $.getJSON("/api/office-origin/" + id + urlPartForGrsEnabled, function (response) {
+            var isEnglish = (languageCode == "en");
+            var officeOriginSelection = $("#firstSelection");
+            officeOriginSelection.empty();
+            officeOriginSelection.append("<option value='null' selected disabled>" + (isEnglish ? "Please Select" : "বাছাই করুন") + "</option>");
+            var propName = isEnglish ? "officeNameEnglish" : "officeNameBangla";
+            sortObjectsByProperty(response, propName);
+            $.each(response, function (i, field) {
+                officeOriginSelection.append("<option value='" + field.id + "'>" + field[propName] + "</option>");
+            });
+            officeOriginSelection.off("change").on("change", function() {
+                var officeOriginId = $(this).val();
+                if(superAdmin || isOfficeAdmin) {
+                    manageMissionVision();
+                } else {
+                    toastr.error("দুঃখিত! আপনার সেবা প্রদান প্রতিশ্রুতি ব্যবস্থাপনার অনুমতি নেই", null, {positionClass: 'toast-top-center'});
+                }
+            });
+            officeOriginSelection.select2();
+            officeOriginSelection.show();
+            officeOriginSelection.select2("open");
+            if(!officeOriginSelection.is(":visible")) {
+                officeOriginSelection.show();
+            }
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function showItemsInTabularForm(itemsString, lang) {
+        if(!itemsString) {
+            return;
+        }
+        var list = itemsString.trim().replace(/[\r\n]+/g, '\n').split('\n');
+        var table = '<table class="table table-responsive table-bordered"><tbody>';
+        var tbody = "";
+        $.each(list, function (i, text) {
+            var serial = ("" + (i + 1));
+            if(lang != "en") {
+                serial = serial.toBanglaNumber();
+            }
+            tbody += '<tr><td class="text-center">' + serial + '</td><td>' + text + '</td></tr>';
+        });
+        table += tbody + '</tbody></table>';
+        return table;
+    }
+
+    function manageMissionVision() {
+        var fieldNames = ["visionBangla","visionEnglish","missionBangla","missionEnglish","expectationBangla","expectationEnglish"];
+        var layerLevel = $('#officeLayers').val();
+        var officeOriginId = $('#firstSelection').val();
+        var officeInfoTable = $("#generalInfo table.office-info");
+        var serviceTable = $("#generalInfo table.citizens-charter-info");
+        $("#ajaxProcessingModal").modal("show");
+        if(!$("#generalInfo").is(":visible")) {
+            $("#generalInfo").show();
+        }
+        $.ajax({
+            url: "/api/vision-mission/" + layerLevel + "/" + officeOriginId,
+            type: "GET",
+            contentType: "application/json",
+            success: function (response) {
+                var citizenCharterOrigin = response['citizensCharterOrigin'];
+                var serviceList = response['serviceOriginList'];
+                if(citizenCharterOrigin) {
+                    fieldNames.forEach(function (field) {
+                        var currentValue = citizenCharterOrigin[field];
+                        var currentValueDiv = officeInfoTable.find("[name='" + field + "']").closest("tr").find(".current-value");
+                        var formattedCurrentValue = "";
+                        if(currentValueDiv.hasClass("exp-eng")) {
+                            formattedCurrentValue = showItemsInTabularForm(currentValue, "en");
+                        } else if(currentValueDiv.hasClass("exp-bng")) {
+                            formattedCurrentValue = showItemsInTabularForm(currentValue, "bn");
+                        } else {
+                            formattedCurrentValue = currentValue;
+                        }
+                        currentValueDiv.attr("data-value", currentValue);
+                        currentValueDiv.html(formattedCurrentValue);
+                    });
+                } else {
+                    officeInfoTable.find(".current-value").removeAttr("data-value").empty();
+                }
+                var serviceTableBody = "";
+                if(serviceList && serviceList.length > 0) {
+                    $.each(serviceList, function (index, service) {
+                        serviceTableBody += "<tr class='" + (service.status ? "bold" : "greyishFont") + "'>" +
+                            "<td class='text-center'>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                            "<td>" + (service.serviceNameBangla ? service.serviceNameBangla : "") + "</td>" +
+                            "<td>" + (service.serviceNameEnglish ? service.serviceNameEnglish : "") + "</td>" +
+                            "<td class='text-center'>" + getServiceTypeText(service.serviceType) + "</td>" +
+                            "<td class='text-center'>" + getStatusLabel(service.status) + "</td>" +
+                            "<td class='text-center'><a class='fa fa-external-link btn btn-circle btn-xs btn-primary view-service'" + " data-details='" + JSON.stringify(service) + "'></a></td>" +
+                            "<td class='text-center'><a class='fa fa-edit btn btn-circle btn-xs btn-primary edit-service' data-id='" + service.id + "'></a></td>" +
+                            "<td class='text-center'><a class='fa fa-check-circle btn btn-circle btn-xs btn-primary service-users' data-id='" + service.id + "'></a></td>" +
+                            "</tr>";
+                    });
+                } else {
+                    serviceTableBody = "<tr><td colspan='8' class='text-center'>" + ((languageCode == "en") ? "No services found" : "কোনো সেবা পাওয়া যায়নি") + "</td></tr>";
+                }
+                serviceTable.find("tbody").html(serviceTableBody);
+            },
+            error: function (response) {
+                toastr.error("দুঃখিত! তথ্য দেখানো যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+            },
+            complete: function (response) {
+                officeInfoTable.find(".current-value").show();
+                officeInfoTable.find(".edit-button").show();
+                officeInfoTable.find("textarea").hide();
+                officeInfoTable.find(".save-button").hide();
+                $("#ajaxProcessingModal").modal("hide");
+            }
+        });
+    }
+
+    function createEditMissionVisionInfo() {
+        var officeInfoTable = $("#generalInfo table.office-info");
+        officeInfoTable.find("textarea").hide();
+        officeInfoTable.find(".save-button").hide();
+        officeInfoTable.find(".edit-button").on("click", function() {
+            var _this = $(this);
+            var row = _this.closest("tr");
+            officeInfoTable.find("textarea").hide();
+            officeInfoTable.find(".current-value").show();
+            officeInfoTable.find(".edit-button").show();
+            officeInfoTable.find(".save-button").hide();
+            var currentValue = row.find(".current-value").attr("data-value");
+            var textarea = row.find("textarea");
+            textarea.text(currentValue);
+            textarea.show();
+            row.find(".current-value").hide();
+            row.find(".edit-button").hide();
+            row.find(".save-button").show();
+        });
+        officeInfoTable.find(".save-button").on("click", function () {
+            var _this = $(this);
+            var row = _this.closest("tr");
+            var textarea = row.find("textarea");
+            var value = textarea.val().replace(/[\r\n]+/g, '\n').trim();
+            if(value.length > 0) {
+                var layerLevel = $('#officeLayers').val();
+                var officeOriginId = $('#firstSelection').val();
+                var attrName = textarea.attr("name");
+                var data = {
+                    key: attrName,
+                    value: value
+                };
+                row.find(".save-button").attr("disabled", "disabled");
+                $.ajax({
+                    url: "/api/setup/layer-level/" + layerLevel + "/office-origin/" + officeOriginId,
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        var newValue = response[attrName];
+                        var currentValueDiv = row.find(".current-value");
+                        var formattedCurrentValue = "";
+                        if(currentValueDiv.hasClass("exp-eng")) {
+                            formattedCurrentValue = showItemsInTabularForm(newValue, "en");
+                        } else if(currentValueDiv.hasClass("exp-bng")) {
+                            formattedCurrentValue = showItemsInTabularForm(newValue, "bn");
+                        } else {
+                            formattedCurrentValue = newValue;
+                        }
+                        currentValueDiv.attr("data-value", newValue);
+                        currentValueDiv.html(formattedCurrentValue);
+                        textarea.hide();
+                        row.find(".current-value").show();
+                        row.find(".save-button").hide();
+                        row.find(".edit-button").show();
+                    },
+                    error: function (response) {
+                        toastr.error("দুঃখিত! সংরক্ষণ করা যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+                    },
+                    complete: function (response) {
+                        row.find(".save-button").removeAttr("disabled");
+                    }
+                });
+            }
+        });
+    }
+
+    function viewServiceOrigin() {
+        $("#generalInfo table.citizens-charter-info").on("click", ".view-service", function () {
+            var _this = $(this);
+            var modal = $("#viewCitizenCharterOrigin");
+            var details = _this.attr("data-details");
+            var service = JSON.parse(details);
+            modal.find(".service-type-value").empty().html(getServiceTypeText(service.serviceType));
+            modal.find(".service-name-bng").empty().html(service.serviceNameBangla ? service.serviceNameBangla : "-");
+            modal.find(".service-name-eng").empty().html(service.serviceNameEnglish ? service.serviceNameEnglish : "-");
+            modal.find(".service-procedure-bng").empty().html(service.serviceProcedureBangla ? service.serviceProcedureBangla : "-");
+            modal.find(".service-procedure-eng").empty().html(service.serviceProcedureEnglish ? service.serviceProcedureEnglish : "-");
+            modal.find(".document-location-bng").empty().html(service.documentAndLocationBangla ? service.documentAndLocationBangla : "-");
+            modal.find(".document-location-eng").empty().html(service.documentAndLocationEnglish ? service.documentAndLocationEnglish : "-");
+            modal.find(".payment-method-bng").empty().html(service.paymentMethodBangla ? service.paymentMethodBangla : "-");
+            modal.find(".payment-method-eng").empty().html(service.paymentMethodEnglish ? service.paymentMethodEnglish : "-");
+            modal.find(".service-time-value").empty().html(getFormattedServiceTime(service.serviceTime));
+            modal.find(".status-value").empty().html(getStatusLabel(service.status));
+            modal.modal("show");
+        });
+    }
+
+    function showServiceOriginUserOffices() {
+        $("#generalInfo table.citizens-charter-info").on("click", ".service-users", function () {
+            var _this = $(this);
+            var id = _this.attr("data-id");
+            var modal = $("#serviceOriginUserOfficesModal");
+            $.getJSON("/api/office-origins/service-origins/" + id + "/user-offices", function (response) {
+                var list = response;
+                var tbody = "";
+                var isBangla = (languageCode != "en");
+                if(list.length > 0) {
+                    $.each(list, function (i, obj) {
+                        var serial = ("" + (i + 1));
+                        if(isBangla) {
+                            serial = serial.toBanglaNumber();
+                        }
+                        tbody += ('<tr>' +
+                            '<td class="text-center">' + serial + '</td>' +
+                            '<td>' + (isBangla ? obj.officeNameBangla : obj.officeNameEnglish) + '</td>' +
+                            '<td class="text-center"><input type="checkbox" data-id="' + obj.id + '" name="citizenCharter' + obj.id + '" ' + (obj.status ? 'checked="checked"' : '') +'>' + '</td></tr>');
+                    });
+                } else {
+                    tbody = "<tr><td class='text-center' colspan='3'>" + (isBangla ? "বর্তমানে কোনো দপ্তরে এই সেবাটি ব্যবহৃত হচ্ছেনা" : "No office currently using this service") + "</td></tr>"
+                }
+                modal.find(".modal-body tbody").empty().html(tbody);
+                modal.modal("show");
+            }).fail(function () {
+                toastr.error("দুঃখিত! দেখানো সম্ভব হচ্ছেনা", null, {positionClass: 'toast-top-center'});
+            });
+        });
+    }
+
+    function changeBulkStatusOfCitizenCharters() {
+        var form = $("form.service-origin-users");
+        form.on("submit", function (event) {
+            event.preventDefault();
+            var idList = [];
+            var inputs = form.find("[name^='citizenCharter']");
+            if(inputs.length > 0) {
+                inputs.each(function (elm) {
+                    var checkbox = $(this);
+                    var id = checkbox.attr("data-id");
+                    var status = checkbox.is(":checked");
+                    idList.push({id: id, status: status});
+                });
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/offices/services/disable",
+                    data: JSON.stringify(idList),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (reponse) {
+                        toastr.success("অবস্থা হালনাগাদ সফল হয়েছে", null, {positionClass: 'toast-top-center'});
+                    },
+                    error: function (response) {
+                        toastr.error("অবস্থা হালনাগাদ করা যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+                    }
+                });
+            }
+        });
+    }
+
+    function createServiceOrigin() {
+        $("#generalInfo .add-service").on("click", function () {
+            renderServiceOriginForm();
+        });
+    }
+
+    function editServiceOrigin() {
+        $("#generalInfo table.citizens-charter-info").on("click", ".edit-service", function () {
+            var _this = $(this);
+            var id = _this.attr("data-id");
+            renderServiceOriginForm(id);
+        });
+    }
+
+    function renderServiceOriginForm(id) {
+        $("#ajaxProcessingModal").modal("show");
+        var officeOriginId = $("#firstSelection").val();
+        var url = "/addCitizenCharterOrigin.do?officeOriginId=" + officeOriginId + "&id=" + (id ? id : 0);
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function(response) {
+                var form = $(response);
+                var modal = $("#addCitizenCharterOrigin");
+                bindOrganogramSelectionChangeOnUnitSelection(form);
+                bindFormSubmissionAction(form);
+                modal.find(".modal-dialog").empty().html(form);
+                modal.modal("show");
+                validateCreateEditForm(form);
+            },
+            error: function () {
+                toastr.error("দুঃখিত! ফরম দেখানো যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+            },
+            complete: function () {
+                $("#ajaxProcessingModal").modal("hide");
+            }
+        });
+    }
+
+    function bindFormSubmissionAction(form) {
+        form.off("submit").on("submit", function (event) {
+            event.preventDefault();
+            $.blockUI({
+                message: "<h1>" + "দয়া করে অপেক্ষা করুন" + "</h1>"
+            });
+            var _this = $(this);
+            var url = "/api/office-origins/service-origins";
+            var type = "POST";
+            var id = _this.find("[name='id']").val();
+            if(!isNaN(parseInt(id))) {
+                type = "PUT";
+                url += "/" + id;
+            }
+            var dataObject = {};
+            _this.serializeArray().forEach(function(item) {
+                dataObject[item.name] = item.value;
+            });
+            var data = JSON.stringify(dataObject);
+            $.ajax({
+                type : type,
+                url : url,
+                data : data,
+                dataType : "json",
+                contentType: "application/json",
+                success : function (response){
+                    if(response.success) {
+                        $("#firstSelection").trigger("change");
+                        $("#addCitizenCharterOrigin").modal("hide");
+                        toastr.success(response.message, null, {positionClass: 'toast-top-center'});
+                    } else {
+                        toastr.error(response.message, null, {positionClass: 'toast-top-center'});
+                    }
+                },
+                error: function (response){
+                    toastr.error(response.message, null, {positionClass: 'toast-top-center'});
+                },
+                complete: function(response) {
+                    $.unblockUI();
+                }
+            });
+        });
+    }
+
+    function bindOrganogramSelectionChangeOnUnitSelection(form) {
+        form.find("[name='officeOriginUnitId']").off("change").on("change", function () {
+            var _this = $(this);
+            var officeOriginUnitId = _this.val();
+            var isEnglish = (languageCode == "en");
+            var url = "/api/office-origin-units/" + officeOriginUnitId + "/office-origin-unit-organograms";
+            $.getJSON(url, function (response) {
+                var organogramList = response;
+                var officeOriginUnitOrganogramSelect = form.find("[name='officeOriginUnitOrganogramId']");
+                var opt = new Option(isEnglish ? "Select Designation" : "পদবি বাছাই করুন", "");
+                opt.setAttribute("style", "display: none;");
+                officeOriginUnitOrganogramSelect.empty().append(opt);
+                var fieldName = (isEnglish ? "nameEnglish" : "nameBangla");
+                $.each(response, function (i, item) {
+                    officeOriginUnitOrganogramSelect.append(new Option(item[fieldName], item.id));
+                });
+            });
+        });
+    }
+
+    function validateCreateEditForm(form) {
+        form.validate({
+            rules: {
+                serviceType: {
+                    required: true
+                },
+                officeOriginUnitId: {
+                    required: true
+                },
+                officeOriginUnitOrganogramId: {
+                    required: true
+                },
+                serviceNameBangla: {
+                    required: true,
+                    minlength: 3
+                },
+                serviceTime: {
+                    number: true
+                },
+                status: {
+                    required: true
+                }
+            },
+            messages: {
+                serviceType: {
+                    required: form.find("[name='serviceType']").attr("data-required-message")
+                },
+                officeOriginUnitId: {
+                    required: form.find("[name='officeOriginUnitId']").attr("data-required-message")
+                },
+                officeOriginUnitOrganogramId: {
+                    required: form.find("[name='officeOriginUnitOrganogramId']").attr("data-required-message")
+                },
+                serviceNameBangla: {
+                    required: form.find("[name='serviceNameBangla']").attr("data-required-message"),
+                    minlength: form.find("[name='serviceNameBangla']").attr("data-minlength-message")
+                },
+                serviceTime: {
+                    number: form.find("[name='serviceTime']").attr("data-number-message")
+                },
+                status: {
+                    required: form.find("[name='status']").attr("data-required-message")
+                }
+            }
+        });
+    }
+
+    function getStatusLabel(status) {
+        var cls = status ? "badge-success" : "badge-danger";
+        var text = status ? "সক্রিয়" : "নিস্ক্রিয়";
+        return "<span class='badge " + cls + " badge-roundless'>" + text + "</span>";
+    }
+
+    function getFormattedServiceTime(serviceTime) {
+        if(!serviceTime) {
+            return "-";
+        }
+        return (languageCode == "en") ? ("" + serviceTime + " " + (serviceTime > 1 ? "Days" : "Day")) : (("" + serviceTime).toBanglaNumber() + " দিন");
+    }
+
+    function getServiceTypeText(serviceType) {
+        var SERVICE_TYPE_BANGLA = {
+            "NAGORIK": "নাগরিক",
+            "DAPTORIK": "দাপ্তরিক",
+            "STAFF": "অভ্যন্তরীণ"
+        };
+        var SERVICE_TYPE_ENGLISH = {
+            "NAGORIK": "Citizen",
+            "DAPTORIK": "Official",
+            "STAFF": "Internal"
+        };
+        if(!serviceType) {
+            return "";
+        } else {
+            return (languageCode == "en") ? SERVICE_TYPE_ENGLISH[serviceType] : SERVICE_TYPE_BANGLA[serviceType];
+        }
+    }
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    $(document).ready(function() {
+        bindOfficeLayersChangeActions();
+        createEditMissionVisionInfo();
+        createServiceOrigin();
+        editServiceOrigin();
+        viewServiceOrigin();
+        showServiceOriginUserOffices();
+        changeBulkStatusOfCitizenCharters();
+    });
+</script>

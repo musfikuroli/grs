@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="horizontal-form" th:fragment="layeredOfficeSelectionGRO">
+    <div class="row">
+        <div class="col-md-11">
+            <div class="form-inline" id="officeSelectionId">
+                <th:block th:replace="officeSelection :: officeSelection"></th:block>
+                <span id="officeLayers-error" class="help-block hide">&nbsp;</span>
+            </div>
+            <input type="hidden" id="officeId" name="officeId" value="officeId" />
+        </div>
+        <div th:if="${!isMobileLogin}" class="col-md-1">
+            <div class="actions">
+                <a class="btn btn-default btn-circle btn-icon-only" id="printTable" th:title="#{print}">
+                    <i class="fa fa-print"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" id="printableArea">
+            <div id="groAoInformation" class="hide">
+                <h1 th:text="#{contact}"> </h1>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover found">
+                        <thead>
+                        <tr>
+                            <th class="text-center" th:text="#{serial.number}"></th>
+                            <th class="text-center" th:text="#{contact.when}"></th>
+                            <th class="text-center" th:text="#{contact.whom}"></th>
+                            <th class="text-center" th:text="#{contact.info}"></th>
+                            <th class="text-center" th:text="#{resolve.period}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td th:text="#{number.one}"></td>
+                            <td th:text="#{authority.negative}"></td>
+                            <td th:text="#{onik}"></td>
+                            <td class="gro-info" th:text="#{name.designation}"></td>
+                            <td th:text="#{sixty.workdays}"></td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{number.two}"></td>
+                            <td th:text="#{gro.negative}"></td>
+                            <td th:text="#{ao}"></td>
+                            <td class="ao-info" th:text="#{name.designation}"></td>
+                            <td th:text="#{thirty.workdays}"></td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{number.three}"></td>
+                            <td th:text="#{ao.negative}"></td>
+                            <td th:text="#{grievance.management.cell}"></td>
+                            <td>
+                                <span th:text="#{address}"></span>
+                                <br>
+                                <span th:text="#{web}"></span>
+                            </td>
+                            <td th:text="#{month.three}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover not-found">
+                        <tbody>
+                        <tr><td th:text="#{not.available.office}"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="popupContentsAjaxLoader" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/dashboard-loading.gif" alt="..." class="loading img-responsive center-block">
+                    <div class="text-center" th:text="#{loading.please.wait}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="layeredOfficeSelectionGROIncludeScript">
+    <script src="assets/global/scripts/printThis.js"></script>
+</div>
+
+<script th:fragment="layeredOfficeSelectionGROScript">
+
+        function CallAjax(url, onSuccess) {
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: onSuccess,
+            });
+        }
+
+        function printGROSelection() {
+            $("#printTable").on("click", function () {
+                if($("#groAoInformation").is(":visible")) {
+                    var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+                    mywindow.document.write('<html><head>');
+                    mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+                    mywindow.document.write('</head><body >');
+                    mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+                    mywindow.document.write($("#printableArea").clone().find('.remove-on-print').remove().end().html());
+                    mywindow.document.write('</body></html>');
+                    /*$('#printableArea').clone()
+                        .find("table tbody .remove-on-print")
+                        .remove()
+                        .end()
+                        .find(".table-header-title")
+                        .attr("colspan", "7")
+                        .end()
+                        .printThis({
+                            printDelay: 500,
+                            importStyle: true,
+                            formValues: false
+                        });*/
+                } else {
+                    toastr.error("No citizen charter available to be printed", null, {positionClass: 'toast-top-center'});
+                }
+            });
+        }
+
+
+        function clearAllSelection() {
+
+            $("#firstSelection").empty();
+            $("#secondSelection").empty();
+            $("#thirdSelection").empty();
+            $("#serviceSelection").empty();
+
+            $("#firstSelection").css("display","none");
+            $("#secondSelection").css("display","none");
+            $("#thirdSelection").css("display","none");
+            $("#serviceSelection").css("display","none");
+
+        }
+
+        function getServiceList(officeId){
+            var groAoFoundTable = $("#groAoInformation .found");
+            var groAoNotFoundTable = $("#groAoInformation .not-found");
+            $("#officeId").val(officeId);
+            $("#popupContentsAjaxLoader").modal("show");
+            $("#groAoInformation").removeClass("hide");
+            $.getJSON("/api/offices/" + officeId + "/gro-ao-records", function(response) {
+                var groInfo = aggregateUserDetails(response.groRecord);
+                var aoInfo = aggregateUserDetails(response.aoRecord);
+                groAoFoundTable.find(".gro-info").empty().html(groInfo);
+                groAoFoundTable.find(".ao-info").empty().html(aoInfo);
+            }).done(function(){
+                groAoFoundTable.show();
+                groAoNotFoundTable.hide();
+            }).fail(function(){
+                groAoFoundTable.hide();
+                groAoNotFoundTable.show();
+            }).always(function(){
+                $("#popupContentsAjaxLoader").modal("hide");
+            });
+        }
+
+        function aggregateUserDetails(userInfo) {
+            var isEnglish = (languageCode == "en");
+            if(!userInfo) {
+                return isEnglish ? "No responsible officer assigned" : "কোনো দায়িত্বপ্রাপ্ত কর্মকর্তা নিযুক্ত নেই";
+            }
+            var result = userInfo.name;
+            if(userInfo["phoneNumber"]) {
+                userInfo["phoneNumber"] = isEnglish ? userInfo["phoneNumber"] : userInfo["phoneNumber"].toBanglaNumber();
+            }
+            ["designation", "phoneNumber", "email"].forEach(function (field) {
+                if(userInfo[field]) {
+                    result += '<br>' + userInfo[field];
+                }
+            });
+            return result;
+        };
+
+        function getOfficeId() {
+            return $("#secondSelection").val();
+        }
+
+        function officeChangeEventHandler() {
+            var officeId = getOfficeId();
+            getServiceList(officeId);
+        }
+
+        $(document).ready(function() {
+            $("#officeLayers").select2({
+                width: '220px'
+            });
+            bindOfficeLayersChangeActions("");
+            $("#officeSelectionId").on('change', "#secondSelection", officeChangeEventHandler);
+            printGROSelection();
+        });
+    </script>

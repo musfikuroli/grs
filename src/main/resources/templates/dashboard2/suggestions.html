@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="suggestions" th:remove="tag">
+    <div id="suggestionBody" class="panel panel-default" style="background: white;">
+        <div class="panel-body">
+            <div class="font-lg font-purple text-center" th:text="#{suggestion.list}"></div>
+            <a class="btn btn-outline btn-success col-md-1 print-report pull-right remove-on-print" style="cursor: pointer; color: #ffffff;">
+                <i class="fa fa-print"></i>&nbsp;
+                <span th:text="#{print}"></span>
+            </a><br>
+            <div id="suggestionTable">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th th:text="#{serial}"> </th>
+                        <th th:text="#{date.of.suggestion}"> </th>
+                        <th th:text="#{office.name}"></th>
+                        <th th:text="#{service.name}"></th>
+                        <th th:text="#{suggestion.subject}"></th>
+                        <th th:text="#{suggestion.current.status}"></th>
+                        <th th:text="#{suggestion}"></th>
+                        <th th:text="#{effect.on.improvement}"></th>
+                    </tr>
+                    </thead>
+                    <tbody th:title="#{detailed.suggestion}" style="cursor:pointer" ></tbody>
+                </table>
+                <div class="row remove-on-print">
+                    <div class="col-sm-5 col-md-5">
+                        <div class="dataTables_info" id="suggestionTable_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                    </div>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                            <div class="pagination-panel pull-right">
+                                <span th:text="#{page}"></span>
+                                <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                                <span th:text="#{of}"></span>
+                                <a href="javascript:;" class="btn btn-sm default prev disabled" style="cursor: pointer;">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+                                <input name="suggestionCurrentPage" class="pagination-panel-input input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" value="০" type="text">
+                                <a href="javascript:;" class="btn btn-sm default next disabled" style="cursor: pointer;">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                                <span th:text="#{page.shown}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal bs-modal-lg" id="modalSuggestionDetails" tabindex="-1" role="basic" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center font-purple" th:text="#{detailed.suggestion}"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="suggestion-details table table-hover table-bordered">
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{date.of.suggestion}"></td>
+                            <td class="value date-of-suggestion"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{office.name}"></td>
+                            <td class="value office-name"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{service.name}"></td>
+                            <td class=" value service-name"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{suggestion.subject}"></td>
+                            <td class="value suggestion-subject"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{suggestion.current.status}"></td>
+                            <td class="value suggestion-current-status"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{suggestion}"></td>
+                            <td class="value suggestion"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{effect.on.improvement}"></td>
+                            <td class="value effect-on-improvement"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{suggestion.provider.name}"></td>
+                            <td class="value opinion-giver-name"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{phone}"></td>
+                            <td class="value opinion-giver-phone"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="name" th:text="#{email}"></td>
+                            <td class=" value opinion-giver-email"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn dark btn-outline" style="cursor: pointer;" data-dismiss="modal" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="suggestionsScript">
+
+    var suggestionCurrentPage = 1, suggestionMaxPage = 1;
+
+    function printSuggestion() {
+        $("#suggestionBody .print-report").on("click", function () {
+            var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+            mywindow.document.write('<html><head>');
+            mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+            mywindow.document.write($("#suggestionBody").clone().find('.remove-on-print').remove().end().html());
+            mywindow.document.write('</body></html>');
+            mywindow.print();
+            mywindow.close();
+            /*$("#suggestionBody").clone()
+                .css("padding-top", "50px")
+                .find(".remove-on-print")
+                .remove()
+                .end()
+                .printThis({
+                    importStyle: true,
+                    importCSS: true,
+                    formValues: false
+                });*/
+        });
+    }
+
+    function viewSuggestionDetails(data) {
+        blockUI();
+        $.getJSON("/api/suggestion/" + data.id, function(result) {
+            var modal = $("#modalSuggestionDetails");
+            modal.find(".date-of-suggestion").text(result.submissionDate ? result.submissionDate : "-");
+            modal.find(".office-name").text(result.officeName ? result.officeName : "-");
+            modal.find(".service-name").text(result.officeServiceName ? result.officeServiceName : "-");
+            modal.find(".suggestion-subject").text(result.typeOfSuggestionForImprovement ? result.typeOfSuggestionForImprovement : "-");
+            modal.find(".suggestion-current-status").text(result.description ? result.description : "-");
+            modal.find(".suggestion").text(result.suggestion ? result.suggestion : "-");
+            modal.find(".effect-on-improvement").text(result.effectTowardsSolution ? result.effectTowardsSolution : "-");
+            modal.find(".opinion-giver-name").text(result.name ? result.name : "-");
+            modal.find(".opinion-giver-phone").text(result.phone ? result.phone.toBanglaNumber() : "-");
+            modal.find(".opinion-giver-email").text(result.email ? result.email : "-");
+            modal.modal("show");
+        }).fail(function () {
+            toastr.error("দুঃখিত! পরামর্শের বিস্তারিত দেখানো সম্ভব হচ্ছেনা", null, {positionClass: 'toast-top-center'});
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function loadSuggestionsList(page) {
+        blockUI();
+        $("#suggestionTable [name='suggestionCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        $.ajax({
+            url: "/api/offices/" + $("[name='officeId']").val() + "/suggestions",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": itemPerPage
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $("#suggestionTable tbody tr").css("cursor","default");
+                    $("#suggestionTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#suggestionTable [name='sueggestionCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#suggestionTable").find(".prev, .next").addClass("disabled");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $("#suggestionTable .pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    grievanceMaxPage = totalPages;
+                    if (grievanceMaxPage == 1) {
+                        $("#suggestionTable .prev, .next").addClass("disabled");
+                    }
+                    if (suggestionCurrentPage == 1){
+                        $("#suggestionTable .prev").addClass("disabled");
+                    }
+                    if (grievanceMaxPage > 1 && grievanceMaxPage!=suggestionCurrentPage){
+                        $("#suggestionTable .next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#suggestionTable_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#suggestionTable table').dataTable().fnClearTable();
+                    $('#suggestionTable table').dataTable().fnAddData(response.content);
+                    $('#suggestionTable').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+            }
+        });
+    }
+
+    function initSuggestionsTable() {
+        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        var table1 = $('#suggestionTable table');
+        var emptyTxt = (languageCode == 'en' ? "Sorry. No appeals found" : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": "<div class='text-center'>" + emptyTxt + "</div>",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            columns: [{
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var serialNumber = (((suggestionCurrentPage - 1) * itemPerPage) + meta.row + 1);
+                    return "<div class='text-center'>" + ((languageCode == "en") ? serialNumber : ("" + serialNumber).toBanglaNumber()) + "</div>";
+                }
+            },{
+                data: "submissionDate"
+            }, {
+                data: "officeName"
+            }, {
+                data: "serviceName"
+            }, {
+                data: "subject"
+            }, {
+                data: "description"
+            }, {
+                data: "suggestion"
+            }, {
+                data: "possibleEffect"
+            }]
+        });
+
+        $("#suggestionTable .next").click(function(e) {
+            suggestionCurrentPage = suggestionCurrentPage + 1;
+            $("#suggestionTable .prev").removeClass("disabled");
+            if (suggestionCurrentPage == suggestionMaxPage) {
+                $("#suggestionTable .next").addClass("disabled");
+            }
+            if (suggestionCurrentPage > suggestionMaxPage) {
+                suggestionCurrentPage = suggestionMaxPage;
+            }
+            loadSuggestionsList(suggestionCurrentPage);
+        });
+
+        $("#suggestionTable .prev").click(function(e) {
+            suggestionCurrentPage = suggestionCurrentPage - 1;
+            $("#suggestionTable .next").removeClass("disabled");
+            if (suggestionCurrentPage == 1) {
+                $("#suggestionTable .prev").addClass("disabled");
+            }
+            if (suggestionCurrentPage < 1) {
+                suggestionCurrentPage = 1;
+            }
+            loadSuggestionsList(suggestionCurrentPage);
+        });
+
+        $('#suggestionTable tbody').on('click', 'tr', function () {
+            if($(this).find("td").hasClass("dataTables_empty")) {
+                return;
+            } else {
+                var table = $('#suggestionTable table').DataTable();
+                var data = table.row(this).data();
+                viewSuggestionDetails(data);
+            }
+        });
+
+        var paginationFieldDom = $("#suggestionTable [name='suggestionCurrentPage']");
+        paginationFieldDom.blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + paginationFieldDom.val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= suggestionMaxPage) {
+                    suggestionCurrentPage = curValue;
+                    if (suggestionCurrentPage == 1) {
+                        $("#suggestionTable .prev").addClass("disabled");
+                    } else {
+                        $("#suggestionTable .prev").removeClass("disabled");
+                    }
+                    if (suggestionCurrentPage == suggestionMaxPage) {
+                        $("#suggestionTable .next").addClass("disabled");
+                    } else {
+                        $("#suggestionTable .next").removeClass("disabled");
+                    }
+                    loadSuggestionsList(suggestionCurrentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    paginationFieldDom.val( languageCode == 'en' ? ("" + suggestionCurrentPage) : ("" + suggestionCurrentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                paginationFieldDom.val(languageCode == 'en' ? ("" + suggestionCurrentPage) : ("" + suggestionCurrentPage).toBanglaNumber());
+            }
+        });
+    }
+</script>

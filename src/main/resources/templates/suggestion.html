@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="includes/htmlhead :: htmlhead">...</head>
+
+<body class="page-container-bg-solid">
+<div class="page-wrapper">
+    <div th:replace="includes/header :: header(${menu})">...</div>
+    <div class="page-wrapper-row full-height">
+        <div class="page-wrapper-middle">
+            <!-- BEGIN CONTAINER -->
+            <div class="page-container">
+                <!-- BEGIN CONTENT -->
+                <div class="page-content-wrapper">
+                    <!-- BEGIN CONTENT BODY -->
+                    <!-- BEGIN PAGE HEAD-->
+                    <div class="page-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 a">
+                                    <div class="main-box-div">
+                                        <div class="title-div" th:title="#{suggestion}"></div>
+                                        <h1 th:text="#{suggestion.form.headline}" style="text-align: center;"></h1>
+                                        <form action="#" th:action="@{/suggestion}" id="suggestionForm" class="form horizontal-form" method="post" th:object = "${suggestionRequestDTO}">
+                                            <div class="form-body">
+                                                <div class="form-group">
+                                                    <label class="control-label" th:text="#{name}"></label>
+                                                    <input id="name" name="name" class="form-control" th:value="${name}" th:readonly="${name != null ? true : false}" th:placeholder="#{provide.name}" type="text" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group col-md-6">
+                                                        <label class="control-label" th:text="#{mobile.number}"></label>
+                                                        <input id="phone" name="phone" class="form-control" th:value="${phone}" th:readonly="${phone != null ? true : false}" th:placeholder="#{provide.mobile.number}" type="text" aria-invalid="true" aria-describedby="phoneNumber-error" th:attr="data-required-message=#{error.message.for.required}">
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label class="control-label" th:text="#{email}"></label>
+                                                        <input id="email" name="email" class="form-control" th:value="${email}" th:readonly="${email != null ? true : false}" th:placeholder="#{provide.email}" type="text" th:attr="data-email-message=#{error.message.for.email}">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label th:text="#{select.office}"></label>
+                                                    <span class="required" aria-required="true"> * </span>
+                                                    <div class="" id="officeSelectionId">
+                                                        <th:block th:include="officeSelection :: officeSelection"></th:block>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="officeId" name="officeId" value="officeId"/>
+                                                <div class="form-group">
+                                                    <label class="control-label" id="selectSheba" style="display: none;" th:text="#{service}"></label>
+                                                    <select id="serviceSelection" name="officeServiceId" class="form-control" style="display: none;" ></select>
+                                                </div>
+                                                <div class="form-group" id="otherServiceFormGroup" style="display: none;">
+                                                    <label class="control-label" th:text="#{other.service.details}"></label>
+                                                    <input class="form-control" id="otherService" name="otherService"  placeholder="" type="text">
+                                                </div>
+                                                <div class="form-group" >
+                                                    <label class = "control-label" th:text="#{subject.suggestion}"> </label>
+                                                    <select name="typeOfSuggestionForImprovement" id="typeOfMotamotOne" class="form-control" >
+                                                        <option value="SERVICE_SIMPLIFICATION" selected th:text="#{service.simplification}"></option>
+                                                        <option value="LAW_REFORMS" th:text="#{rule.rectification}"></option>
+                                                        <option value="NEW_IDEA" th:text="#{new.idea}"></option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class = "control-label" th:text="#{suggestion.current.status}"> </label>
+                                                    <textarea name="description" class="form-control" th:placeholder="#{provide.feedback}" type="text" rows="3"></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class = "control-label" th:text="#{problem.solution.suggestion}"> </label>
+                                                    <textarea name="suggestion" id="suggestion" class="form-control" th:placeholder="#{provide.suggestion}" type="text" rows="3"></textarea>
+                                                </div>
+                                                <div class="form-group" >
+                                                    <label class = "control-label" th:text="#{probable.effect}"> </label>
+                                                    <select name="effectTowardsSolution" id="effectTowardsSolution" class="form-control" >
+                                                        <option value="BETTER_SERVICE" selected th:text="#{probable.effect.three}"></option>
+                                                        <option value="LESS_TIME_EXPENSE"th:text="#{probable.effect.one}"></option>
+                                                        <option value="LESS_CORRUPTION" th:text="#{probable.effect.two}"></option>
+                                                        <option value="OTHER" th:text="#{probable.effect.four}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" value="addSuggestion" class="submit btn blue pull-right" th:text="#{add.suggestion}" onclick="javascript:postSuggestion()"></button>
+                                            </div>
+                                        </form>
+                                        <div class="hidden">
+                                            <div class="form-group" style="display: none;" id="sug_type">
+
+                                            </div>
+                                            <div class="form-group" style="display: none;" id="feed_type">
+                                                <div class="form-inline" >
+                                                    <select name="typeOfFeedback" id="typeOfMotamotTwo" class="form-control" >
+                                                        <option value="" selected style="display: none;" th:text="#{feedback.subject}" ></option>
+                                                        <option value="SERVICE_DELIVERY"><span th:remove="tag" th:text="#{service.delivery}"></span></option>
+                                                        <option value="CASE_CLEARANCE"><span th:remove="tag" th:text="#{case.clearance}"></span></option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group"></div>
+                                                <div class="form-group">
+                                                    <label class = "control-label" th:text="#{detailed.description}"> </label>
+                                                    <textarea name="description" class="form-control" th:placeholder="#{provide.feedback}" type="text"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END PAGE HEAD-->
+                    <!-- BEGIN PAGE CONTENT BODY -->
+
+                    <!-- END PAGE CONTENT BODY -->
+                    <!-- END CONTENT BODY -->
+                </div>
+                <!-- END CONTENT -->
+            </div>
+            <!-- END CONTAINER -->
+        </div>
+    </div>
+    <div th:replace="includes/footer :: footer">...</div>
+</div>
+
+<div th:replace="includes/footer_includes :: footer">...</div>
+<script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-validation/js/additional-methods.min.js" type="text/javascript"></script>
+<th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+<script>
+var form = $("#suggestionForm");
+form.validate({
+    rules: {
+        name: {
+            required: false
+        },
+        phone: {
+            required: false
+        },
+        email: {
+            required: false
+        }
+    },
+    messages: {
+        name: {
+            required: form.find("[name='name']").attr("data-required-message")
+        },
+        email: {
+            required: form.find("[name='email']").attr("data-required-message")
+        },
+        phone: {
+            required: form.find("[name='phone']").attr("data-required-message")
+        }
+    }
+});
+
+function ajaxPost(url, accept, send, postData, onSuccess) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: accept,
+        contentType: send,
+        data: postData,
+        success: onSuccess,
+        error: function() {
+            var title = languageCode == 'en' ? "Error!" : "দুঃখিত";
+            var text = languageCode == 'en' ? "An error has occured" : "সাময়িক গোলযোগ এর জন্য দুঃখিত";
+            swal(title, text, "error");
+        }
+    });
+}
+
+function CallAjax(url, onSuccess) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: onSuccess,
+    });
+}
+
+function getServiceList() {
+    var officeId = $('#secondSelection').val();
+    $("#officeId").val(officeId);
+    $.getJSON("/api/office/service/" + officeId, function(result) {
+        var serviceSelection = $("#serviceSelection");
+        if (serviceSelection.data('select2')) {
+            serviceSelection.select2('destroy');
+        }
+        serviceSelection.empty();
+        serviceSelection.append("<option style='display: none'>" + (languageCode == 'en' ? "--Select service--" : "--সেবা বাছাই করুন--") + "</option>");
+        var nameFieldSuffix = languageCode == 'en' ? 'English' : 'Bangla';
+        $.each(result.services, function(i, field) {
+            serviceSelection.append(new Option(field['serviceName' + nameFieldSuffix], field.id));
+        });
+        serviceSelection.append(new Option(languageCode == 'en' ? "Other" : "অন্যান্য" , 0));
+        $("#selectSheba").show();
+        serviceSelection.show();
+        serviceSelection.select2();
+    }).done(function() {
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function getSuggestion() {
+    var suggestion = {};
+    var array = $("#suggestionForm :input").serializeArray();
+    $.each(array, function() {
+        suggestion[this.name] = this.value || '';
+    });
+    suggestion["officeServiceName"] = $("#otherService").val();
+    return JSON.stringify(suggestion);
+}
+
+function getSelectedOfficeId() {
+    return $("#secondSelection").val();
+}
+
+function postSuggestion(data) {
+    var suggestion = getSuggestion();
+    var officeId = getSelectedOfficeId();
+    var officeServiceId = parseInt($("[name='officeServiceId']").val());
+    var isEnglish = (languageCode == "en");
+
+    validateSuggestionForm();
+
+    if (!officeId) {
+        var msg = isEnglish ? "Invalid office selection" : "দপ্তর নির্বাচন সঠিক নয়";
+        toastr.error(msg, null, {positionClass: 'toast-top-center'});
+        return;
+    }
+    if(officeServiceId != 0 && !officeServiceId) {
+        var msg = isEnglish ? "Invalid service selection" : "সেবা নির্বাচন সঠিক নয়";
+        toastr.error(msg, null, {positionClass: 'toast-top-center'});
+        return;
+    }
+    if(officeServiceId == 0 && !$("[name='otherService']").val().trim()) {
+        var msg = isEnglish ? "Provide name of other service" : "অন্যান্য সেবার নাম প্রদান করুন";
+        toastr.error(msg, null, {positionClass: 'toast-top-center'});
+        return;
+    }
+
+    ajaxPost("/suggestion", "json", "application/json; charset=utf-8", suggestion, showMsgForSuggestionSubmission);
+}
+
+function showMsgForSuggestionSubmission(data) {
+    if (data.success) {
+        var text = languageCode == 'en' ? "Suggestion has been submitted successfully" : "পরামর্শ সফল ভাবে দাখিল হয়েছে";
+        var title = languageCode == 'en' ? "Success!" : "সফল";
+        var confirmButtonText = languageCode == 'en' ? "Return to Homepage" : "হোমপেজ এ ফিরুন";
+        var cancelButtonText = languageCode == 'en' ? "Provide another suggestion" : "পুনরায় পরামর্শ প্রদান";
+        swal({
+            title: title,
+            text: text,
+            type: "success",
+            showCancelButton: true,
+            confirmButtonClass: "btn-success",
+            confirmButtonText: confirmButtonText,
+            closeOnConfirm: true,
+            cancelButtonText: cancelButtonText,
+            cancelButtonClass: "btn-info"
+        }, function (isConfirm){
+            if (isConfirm) {
+                window.location.replace("/");
+            } else {
+                window.location.replace("/suggestion.do");
+            }
+        });
+    } else {
+        var title = languageCode == 'en' ? "Error!" : "দুঃখিত";
+        swal(title, data.message, "error");
+    }
+}
+
+
+function showOtherServiceName() {
+    var serviceId = $("#serviceSelection").val();
+    if (serviceId == "0") {
+        $("#otherService").val("");
+        $("#otherServiceFormGroup").show();
+    } else {
+        $("#otherServiceFormGroup").hide();
+        $("#otherService").val($("#serviceSelection :selected").text());
+    }
+}
+
+function validateSuggestionForm() {
+    $('#suggestionForm').validate({
+        rules: {
+            email: {
+                email: true,
+                required: false
+            }
+        },
+        messages: {
+            email: {
+                required: $('#suggestionForm').find("[name='email']").attr("data-email-message")
+            }
+        }
+    });
+}
+
+$(document).ready(function() {
+    $("#typeOfMotamotOne").select2({minimumResultsForSearch: -1});
+    $("#effectTowardsSolution").select2({minimumResultsForSearch: -1});
+    bindOfficeLayersChangeActions("");
+    $("#officeSelectionId").on('change', "#secondSelection", getServiceList);
+    $("#serviceSelection").on('change', showOtherServiceName);
+});
+
+</script>
+</body>
+</html>

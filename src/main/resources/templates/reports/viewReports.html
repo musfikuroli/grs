@@ -1,0 +1,455 @@
+<!DOCTYPE html xmlns:th="http://www.thymeleaf.org" >
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="viewReportsIncludeStyle" th:remove="tag">
+</div>
+
+<div class="page-content" style="min-height: 1601px;" th:fragment="viewReports">
+    <div class="portlet light" id="monthlyReport">
+        <input type="hidden" name="officeId" th:value="${officeId}">
+        <input type="hidden" name="officeName" th:value="${officeName}">
+        <input type="hidden" name="isDrilledDown" th:value="${isDrilledDown}">
+        <div class="portlet-title remove-on-print">
+            <div class="row">
+                <label class="control-label col-md-4 font-lg">
+                    <span class="pull-right">অন্যান্য মাসের প্রতিবেদন দেখার জন্য বছর এবং মাস নির্বাচন করুন</span>
+                </label>
+                <div class="col-md-3">
+                    <div class='input-group date' id="reportForMonth">
+                        <input class="form-control" type="text" readonly>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <a class="btn btn-outline btn-info col-md-2 view-report">
+                    <i class="fa fa-area-chart"></i>&nbsp;
+                    <span>প্রতিবেদন দেখুন</span>
+                </a>
+                <a class="btn btn-outline btn-success col-md-1 print-report pull-right">
+                    <i class="fa fa-print"></i>&nbsp;
+                    <span th:text="#{print}"></span>
+                </a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <h4 class="row text-center">
+                <div class="font-lg bold" th:text="${officeName}"></div>
+                <div class="font-lg">অভিযোগ প্রতিকার-সংক্রান্ত মাসিক প্রতিবেদন</div>
+                <u class="month-name font-lg"></u>
+            </h4>
+            <div class="row">
+                <div class="panel-group accordion" id="accordionGroReports">
+                    <div class="panel panel-default margin-top-10">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled caption-subject text-center font-purple bold" data-parent="#accordionReports" data-toggle="collapse" href="#collapse_1_1">১. অভিযোগ প্রতিকার-সংক্রান্ত তথ্য</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in" id="collapse_1_1">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="grievanceReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th colspan="2" class="text-center" >বিবেচ্য মাসে প্রাপ্ত অভিযোগের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center" >পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center" >মোট অভিযোগ</th>
+                                            <th rowspan="2" class="text-center" >অন্য দপ্তরে প্রেরিত</th>
+                                            <th rowspan="2" class="text-center" >নিষ্পত্তিকৃত অভিযোগ</th>
+                                            <th rowspan="2" class="text-center" >চলমান অভিযোগ</th>
+                                            <th rowspan="2" class="text-center" >নির্ধারিত সময় অতিক্রান্ত অভিযোগ</th>
+                                            <th rowspan="2" class="text-center" >অভিযোগ নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center" >ওয়েবসাইটের মাধ্যমে</th>
+                                            <th class="text-center" >প্রচলিত পদ্ধতিতে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='9' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default margin-top-20">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled caption-subject text-center font-purple bold" data-parent="#accordionReports" data-toggle="collapse" href="#collapse_1_2">২. আপিল নিষ্পত্তি-সংক্রান্ত তথ্য</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in" id="collapse_1_2">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="appealReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-center">বিবেচ্য মাসে প্রাপ্ত আপিলের সংখ্যা</th>
+                                            <th class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th class="text-center">মোট আপিল</th>
+                                            <th class="text-center">নিষ্পত্তিকৃত আপিল</th>
+                                            <th class="text-center">চলমান আপিল</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত আপিল</th>
+                                            <th class="text-center">আপিল নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='7' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row remove-on-print">
+            <div class="subordinate-office-selection">
+                <label class="control-label col-md-4 font-lg">
+                    <span class="pull-right">আওতাধীন দপ্তরসমূহের প্রতিবেদন দেখতে দপ্তর বাছাই করুন</span>
+                </label>
+                <div class="col-md-3">
+                    <select name="subOfficeId" class="select2 form-control input-inline" data-width="300px"></select>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+                <a class="btn btn-outline btn-primary" id="viewSubOfficesReports">
+                    <i class="fa fa-external-link"></i>&nbsp;
+                    <span>নির্বাচিত দপ্তরের প্রতিবেদন দেখুন</span>
+                </a>
+                <a th:if="${isDrilledDown}" class="btn btn-outline btn-danger" onclick="window.history.go(-1)">
+                    <i class="fa fa-mail-reply-all"></i>&nbsp;
+                    <span>পূর্ববর্তী পেইজ</span>
+                </a>
+                <a th:if="${isDrilledDown}" class="btn btn-outline btn-success" href="/viewReports.do">
+                    <i class="fa fa-home"></i>&nbsp;
+                    <span>নিজস্ব দপ্তরের প্রতিবেদন</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span> &nbsp;&nbsp;লোড হচ্ছে... দয়া করে অপেক্ষা করুন  </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="viewReportsIncludeScript" th:remove="tag">
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+</div>
+<div th:fragment="viewReportsIncludeScript" th:remove="tag">
+    <script src="assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="assets/global/scripts/printThis.js" type="text/javascript"></script>
+</div>
+
+<script th:inline="javascript" th:fragment="viewReportsScript">
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    function initDatepicker() {
+        if (jsLangCodeForLibs == "bn") {
+            $.fn.datepicker.dates['bn'] = {
+                months : 'জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর'.split('_'),
+                monthsShort : 'জানু_ফেব_মার্চ_এপ্র_মে_জুন_জুল_আগ_সেপ্ট_অক্টো_নভে_ডিসে'.split('_'),
+                days : 'রবিবার_সোমবার_মঙ্গলবার_বুধবার_বৃহস্পতিবার_শুক্রবার_শনিবার'.split('_'),
+                daysShort : 'রবি_সোম_মঙ্গল_বুধ_বৃহস্পতি_শুক্র_শনি'.split('_'),
+                daysMin : 'রবি_সোম_মঙ্গ_বুধ_বৃহঃ_শুক্র_শনি'.split('_'),
+                longDateFormat : {
+                    LT : 'A h:mm সময়',
+                    LTS : 'A h:mm:ss সময়',
+                    L : 'DD/MM/YYYY',
+                    LL : 'D MMMM YYYY',
+                    LLL : 'D MMMM YYYY, A h:mm সময়',
+                    LLLL : 'dddd, D MMMM YYYY, A h:mm সময়'
+                },
+                calendar : {
+                    sameDay : '[আজ] LT',
+                    nextDay : '[আগামীকাল] LT',
+                    nextWeek : 'dddd, LT',
+                    lastDay : '[গতকাল] LT',
+                    lastWeek : '[গত] dddd, LT',
+                    sameElse : 'L'
+                },
+                relativeTime : {
+                    future : '%s পরে',
+                    past : '%s আগে',
+                    s : 'কয়েক সেকেন্ড',
+                    ss : '%d সেকেন্ড',
+                    m : 'এক মিনিট',
+                    mm : '%d মিনিট',
+                    h : 'এক ঘন্টা',
+                    hh : '%d ঘন্টা',
+                    d : 'এক দিন',
+                    dd : '%d দিন',
+                    M : 'এক মাস',
+                    MM : '%d মাস',
+                    y : 'এক বছর',
+                    yy : '%d বছর'
+                },
+                meridiemParse: /রাত|সকাল|দুপুর|বিকাল|রাত/,
+                meridiemHour : function (hour, meridiem) {
+                    if (hour === 12) {
+                        hour = 0;
+                    }
+                    if ((meridiem === 'রাত' && hour >= 4) ||
+                        (meridiem === 'দুপুর' && hour < 5) ||
+                        meridiem === 'বিকাল') {
+                        return hour + 12;
+                    } else {
+                        return hour;
+                    }
+                },
+                meridiem : function (hour, minute, isLower) {
+                    if (hour < 4) {
+                        return 'রাত';
+                    } else if (hour < 10) {
+                        return 'সকাল';
+                    } else if (hour < 17) {
+                        return 'দুপুর';
+                    } else if (hour < 20) {
+                        return 'বিকাল';
+                    } else {
+                        return 'রাত';
+                    }
+                },
+                week : {
+                    dow : 0, // Sunday is the first day of the week.
+                    doy : 6  // The week that contains Jan 1st is the first week of the year.
+                }
+            };
+            moment.locale("bn");
+        }
+
+        $('.input-group.date').datepicker({
+            format: "MM, yyyy",
+            startView: 2,
+            minViewMode: 1,
+            maxViewMode: 2,
+            autoclose: true,
+            startDate: new Date(2018, 10, 1),
+            endDate: "-0m",
+            language: jsLangCodeForLibs,
+            onSelect: function(dateText, instance) {
+                date = $.datepicker.parseDate(instance.settings.dateFormat, dateText, instance.settings);
+                date.setDay(1);
+                $(this).datepicker("setDate", date);
+            },
+            beforeShowDay: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getDate()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowYear: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowDecade: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowCentury: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            }
+        });
+    }
+
+    function sortObjectsByProperty(objectList, propName) {
+        return objectList.sort(function(a,b) {
+            return a[propName].trim().replace(" ", "") > b[propName].trim().replace(" ", "") ? 1 : -1;
+        });
+    }
+
+    function encodeOfficeIdOnDrillDown(param) {
+        var encodedPrefix = btoa("" + (Math.pow(10,10) * Math.random())).substr(0,20).split("").reverse().join("");
+        var encodedParams = btoa("" + param);
+        return encodedPrefix + encodedParams;
+    }
+
+    function loadSubordinateOffices() {
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/grs-enabled-child-offices", function (result) {
+            var officeSelection = $("[name='subOfficeId']");
+            if(result.length > 0) {
+                var isEnglish = (languageCode == "en"),
+                    defaultText = isEnglish ? "Please Select Subordinate Office" : "আওতাধীন দপ্তর বাছাই করুন",
+                    noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                    placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+                sortObjectsByProperty(result, "name");
+                officeSelection.empty();
+                officeSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+                $.each(result, function (i, field) {
+                    officeSelection.append("<option value='" + field.id + "'>" + field['name'] + "</option>");
+                });
+                officeSelection.on("change", function () {
+                    $("#viewSubOfficesReports").removeAttr("disabled");
+                });
+                officeSelection.select2();
+            } else {
+                officeSelection.closest(".subordinate-office-selection").remove();
+                $("#viewSubOfficesReports").remove();
+            }
+        });
+    }
+
+    function bindDrillDownToSubordinateOffices() {
+        $("#viewSubOfficesReports").on("click", function () {
+            var officeId = $("[name='subOfficeId']").val();
+            if(officeId) {
+                blockUI();
+                window.location.href = "/viewReports.do?params=" + encodeOfficeIdOnDrillDown(officeId);
+            } else {
+                toastr.error("দপ্তর নির্বাচন সঠিক নয়", null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    function loadReportData(date) {
+        var officeId = $("[name='officeId']").val();
+        var url = "/api/offices/" + officeId + "/reports/" + date.getFullYear() + "/" + (date.getMonth() + 1);
+        blockUI();
+        $.getJSON(url, function (response) {
+            var monthlyGrievanceReport = response.monthlyGrievanceReport;
+            var monthlyAppealReport = response.monthlyAppealReport;
+            if(monthlyGrievanceReport) {
+                var grievanceReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td></tr>";
+                grievanceReportBody += "<tr class='text-center bold'>" +
+                    "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["rate"]).toBanglaNumber() + "</td>" +
+                    "</tr>";
+                $("#grievanceReportTable tbody").empty().html(grievanceReportBody);
+            } else {
+                $("#grievanceReportTable tbody").empty().html("<tr><td colspan='9' class='text-center'>" + "দুঃখিত! কোনো তথ্য পাওয়া যায়নি" + "</td></tr>");
+            }
+            if(monthlyAppealReport) {
+                var appealReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td></tr>";
+                appealReportBody += "<tr class='text-center bold'>" +
+                    "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["rate"]).toBanglaNumber() + "</td>" +
+                    "</tr>";
+                $("#appealReportTable tbody").empty().html(appealReportBody);
+            } else {
+                $("#appealReportTable tbody").empty().html("<tr><td colspan='9' class='text-center'>" + "দুঃখিত! কোনো তথ্য পাওয়া যায়নি" + "</td></tr>");
+            }
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function bindViewMonthlyReportAction() {
+        var grievanceDateField = $("#reportForMonth");
+        grievanceDateField.datepicker().on("changeDate", function(event) {
+            var date = grievanceDateField.find("input").val();
+            $("#monthlyReport .month-name").text(date);
+        });
+        $("#monthlyReport .view-report").on("click", function () {
+            var date = $("#reportForMonth").datepicker("getDate");
+            if(!date) {
+                toastr.error("দয়া করে সঠিক মাস ও বছর নির্বাচন করুন", null, {positionClass: 'toast-top-center'});
+                return;
+            } else {
+                loadReportData(date);
+            }
+        });
+    }
+
+    function loadCurrentMonthReportData() {
+        var date = new Date();
+        var monthList = "জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর".split("_");
+        var monthName = monthList[date.getMonth()];
+        var yearName = ("" + date.getFullYear()).toBanglaNumber();
+        $("#monthlyReport .month-name").text(monthName + ", " + yearName);
+        loadReportData(date);
+    }
+
+    function printReportAction() {
+        $("#monthlyReport .print-report").on("click", function () {
+            $("#monthlyReport").clone()
+                .css("padding-top", "50px")
+                .find(".remove-on-print")
+                .remove()
+                .end()
+                .printThis({
+                    importStyle: true,
+                    importCSS: true,
+                    formValues: false
+                });
+        });
+    }
+
+    $(document).ready(function(){
+        initDatepicker();
+        bindViewMonthlyReportAction();
+        loadCurrentMonthReportData();
+        loadSubordinateOffices();
+        bindDrillDownToSubordinateOffices();
+        printReportAction();
+    });
+
+</script>
+
+</html>

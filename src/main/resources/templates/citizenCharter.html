@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="horizontal-form" th:fragment="citizenCharter">
+    <input type="hidden" name="isMobileLogin" th:value="${isMobileLogin}">
+    <input type="hidden" name="isGrsUser" th:value="${isGrsUser}">
+    <div class="row">
+        <div class="col-md-11">
+            <th:block th:replace="officeSelection :: officeSelection"></th:block>
+            <input type="hidden" id="officeId" name="officeId" value="officeId"/>
+        </div>
+        <div th:if="${!isMobileLogin}" class="col-md-1">
+            <div class="actions">
+                <a class="btn btn-default btn-circle btn-icon-only" id="printTable" th:title="#{print}">
+                    <i class="fa fa-print"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div th:if="${!isMobileLogin}" class="clearfix">&nbsp;</div>
+    <div th:class="${!isMobileLogin? 'row' : ''}">
+        <div th:class="${!isMobileLogin? 'col-md-12' : ''}" id="printableArea">
+            <div id="servicesList" style="display: none;">
+                <h1 class="text-center">
+                    <div th:text="#{index.footer.bangladesh.government}"></div>
+                    <div class="office-name"></div>
+                    <div class="office-url"></div>
+                    <div th:text="#{citizen.charter}"></div>
+                </h1>
+                <h1 th:text="#{x.dot.y(#{number.one}, #{vision.mission})}"></h1>
+                <h1>
+                    <span th:text="#{vision}"></span> :
+                    <span class="vision-text"></span>
+                </h1>
+                <h1>
+                    <span th:text="#{mission}"></span> :
+                    <span class="mission-text"></span>
+                </h1>
+                <br>
+                <h1 th:text="#{service.pledge}"></h1>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="citizenServicesTable"></table>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="officialServicesTable"></table>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="internalServicesTable"></table>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="controlledOfficesServiceTable"></table>
+                </div>
+
+                <h1 th:text="#{expectation.of.us}"></h1>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="serviceFooter">
+                        <thead>
+                        <tr>
+                            <th class="text-center" th:text="#{serial.number}"></th>
+                            <th class="text-center" th:text="#{to.do}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td th:text="#{number.one}"></td>
+                            <td th:text="#{form.submission}"></td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{number.two}"></td>
+                            <td th:text="#{payment}"></td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{number.three}"></td>
+                            <td th:text="#{attendance}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h1 th:text="#{grs.4}"></h1>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="responsiblePersonnelInfo">
+                        <thead>
+                        <tr>
+                            <th colspan="5" th:text="#{contact}"></th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" th:text="#{serial.number}"></th>
+                            <th class="text-center" th:text="#{contact.when}"></th>
+                            <th class="text-center" th:text="#{contact.whom}"></th>
+                            <th class="text-center" th:text="#{contact.info}"></th>
+                            <th class="text-center" th:text="#{resolve.period}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td th:text="#{number.one}"></td>
+                            <td th:text="#{authority.negative}"></td>
+                            <td th:text="#{onik}"></td>
+                            <td class="gro-info"></td>
+                            <td th:text="#{month.three}"></td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{number.two}"></td>
+                            <td th:text="#{gro.negative}"></td>
+                            <td th:text="#{ao}"></td>
+                            <td class="ao-info"></td>
+                            <td th:text="#{month.one}"></td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{number.three}"></td>
+                            <td th:text="#{ao.negative}"></td>
+                            <td th:text="#{grievance.management.cell}"></td>
+                            <td>
+                                <div th:text="#{grievance.center}"></div>
+                                <div th:text="#{address}"></div>
+                                <div th:text="#{web}"></div>
+                            </td>
+                            <td th:text="#{month.three}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-lg" id="modalComplaintTypeInCitizensCharter" tabindex="-1" role="basic" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title fontSize20">
+                        <span class="font-purple bold" th:text="#{choose.complaint.type}"></span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="horizontal-form">
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="portlet portlet-fit light bg-inverse">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <i class="fa fa-users"></i> <span th:text="#{citizen.complaint}"> </span>
+                                            </div>
+                                        </div>
+                                        <div class="portlet-body">
+                                            <span th:text="#{citizen.grievance}"> </span>
+                                        </div>
+                                        <div class="portlet-footer text-align-right">
+                                            <a href="javascript:addPublicGrievanceWithoutLoginButtonEventHandler()" class="btn btn-nagorik">
+                                                <span th:text="#{citizen.complaint}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="portlet portlet-fit light bg-inverse">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <i class="fa fa-user-secret"></i> <span th:text="#{anonymous.title}"> </span>
+                                            </div>
+                                        </div>
+                                        <div class="portlet-body">
+                                            <span th:text="#{anonymous.title.description}"></span>
+                                        </div>
+                                        <div class="portlet-footer text-align-right">
+                                            <a href="/anonymousAddGrievance.do" class="btn btn-daptorik">
+                                                <span th:text="#{anonymous.title}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="fontSize14 margin0 text-danger bold" th:text="#{notice.popup.complaints}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display: none;">
+        <div id="i18n-th-1" th:attr="data-message=#{serial.no}" ></div>
+        <div id="i18n-th-2" th:attr="data-message=#{service.name}" ></div>
+        <div id="i18n-th-3" th:attr="data-message=#{service.procedure}" ></div>
+        <div id="i18n-th-4" th:attr="data-message=#{document.and.location}" ></div>
+        <div id="i18n-th-5" th:attr="data-message=#{service.price.and.payment.method}" ></div>
+        <div id="i18n-th-6" th:attr="data-message=#{service.time}" ></div>
+        <div id="i18n-th-7" th:attr="data-message=#{x.y.bracket(#{responsible.officer}, #{designation.phone.and.email})}" ></div>
+        <div id="i18n-th-complain" th:attr="data-message=#{complain.against.service}" ></div>
+        <div id="i18n-table-title-1" th:attr="data-message=#{x.y(#{number.two.point.one}, #{x.service(#{citizen})})}" ></div>
+        <div id="i18n-table-title-2" th:attr="data-message=#{x.y(#{number.two.point.two}, #{x.service(#{official})})}" ></div>
+        <div id="i18n-table-title-3" th:attr="data-message=#{x.y(#{number.two.point.three}, #{x.service(#{internal})})}" ></div>
+        <div id="i18n-table-title-4" th:attr="data-message=#{x.y(#{number.two.point.four}, #{services.from.child.offices})}" ></div>
+        <div id="i18n-no-vision" th:attr="data-message=#{no.x.added(#{vision})}" ></div>
+        <div id="i18n-no-mission" th:attr="data-message=#{no.x.added(#{mission})}" ></div>
+        <div id="i18n-no-website" th:attr="data-message=#{no.x.added(#{website})}" ></div>
+        <div id="i18n-no-ao" th:attr="data-message=#{no.x.appointed(#{ao})}" ></div>
+        <div id="i18n-no-gro" th:attr="data-message=#{no.x.appointed(#{gro})}" ></div>
+    </div>
+</div>
+
+<div th:fragment="citizenCharterIncludeScript" th:remove="tag">
+    <link href="assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/plugins/easy-autocomplete/easy-autocomplete.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <script src="assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/select2/js/select2.min.js" type="text/javascript"></script>
+    <script src="assets/global/scripts/printThis.js"></script>
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+</div>
+
+<script th:fragment="citizenCharterScript">
+    var Base64 = {
+
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+        encode: function(input) {
+            var output = "";
+            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+            var i = 0;
+
+            input = Base64._utf8_encode(input);
+
+            while (i < input.length) {
+
+                chr1 = input.charCodeAt(i++);
+                chr2 = input.charCodeAt(i++);
+                chr3 = input.charCodeAt(i++);
+
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if (isNaN(chr3)) {
+                    enc4 = 64;
+                }
+
+                output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+            }
+
+            return output;
+        },
+
+        decode: function(input) {
+            var output = "";
+            var chr1, chr2, chr3;
+            var enc1, enc2, enc3, enc4;
+            var i = 0;
+
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+            while (i < input.length) {
+
+                enc1 = this._keyStr.indexOf(input.charAt(i++));
+                enc2 = this._keyStr.indexOf(input.charAt(i++));
+                enc3 = this._keyStr.indexOf(input.charAt(i++));
+                enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+                chr1 = (enc1 << 2) | (enc2 >> 4);
+                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                chr3 = ((enc3 & 3) << 6) | enc4;
+
+                output = output + String.fromCharCode(chr1);
+
+                if (enc3 != 64) {
+                    output = output + String.fromCharCode(chr2);
+                }
+                if (enc4 != 64) {
+                    output = output + String.fromCharCode(chr3);
+                }
+
+            }
+
+            output = Base64._utf8_decode(output);
+
+            return output;
+
+        },
+
+        _utf8_encode: function(string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
+
+            for (var n = 0; n < string.length; n++) {
+
+                var c = string.charCodeAt(n);
+
+                if (c < 128) {
+                    utftext += String.fromCharCode(c);
+                }
+                else if ((c > 127) && (c < 2048)) {
+                    utftext += String.fromCharCode((c >> 6) | 192);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
+                else {
+                    utftext += String.fromCharCode((c >> 12) | 224);
+                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
+
+            }
+
+            return utftext;
+        },
+
+        _utf8_decode: function(utftext) {
+            var string = "";
+            var i = 0;
+            var c = c1 = c2 = 0;
+
+            while (i < utftext.length) {
+
+                c = utftext.charCodeAt(i);
+
+                if (c < 128) {
+                    string += String.fromCharCode(c);
+                    i++;
+                }
+                else if ((c > 191) && (c < 224)) {
+                    c2 = utftext.charCodeAt(i + 1);
+                    string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                    i += 2;
+                }
+                else {
+                    c2 = utftext.charCodeAt(i + 1);
+                    c3 = utftext.charCodeAt(i + 2);
+                    string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                    i += 3;
+                }
+
+            }
+
+            return string;
+        }
+
+    };
+
+    function aggregateUserDetails(userInfo) {
+        var result = userInfo.name;
+        result += userInfo["designation"] ? ("<br>" + userInfo["designation"]) : "";
+        result += userInfo["phoneNumber"] ? ("<br>" + (userInfo["phoneNumber"]).toBanglaNumber()) : "";
+        result += userInfo["email"] ? ("<br>" + userInfo["email"]) : "";
+        if (userInfo.officeUnitWithDesignations != null){
+            if (userInfo.officeUnitWithDesignations[0] != null){
+                result += '<br>' + userInfo.officeUnitWithDesignations[0].officeUnitNameBangla;
+            }
+        }
+        return result;
+    }
+
+    function loadGROandAOInformation(response) {
+        var groInfo = response["officeGRO"];
+        var aoInfo = response["officeAO"];
+        var groDetails = groInfo ? aggregateUserDetails(groInfo) : $("#i18n-no-gro").attr("data-message");
+        var aoDetails = aoInfo ? aggregateUserDetails(aoInfo) : $("#i18n-no-ao").attr("data-message");
+        $("#responsiblePersonnelInfo .gro-info").empty().append(groDetails);
+        $("#responsiblePersonnelInfo .ao-info").empty().append(aoDetails);
+    }
+
+    function setOfficeInformation(data) {
+        var panel = $("#servicesList");
+        var attrPrefix = (languageCode == 'en' ? 'English' : 'Bangla');
+        var visionMission = data["visionMission"];
+        var urlDom = data["websiteUrl"] ? ("<a style='color: #3b86ff!important; cursor: pointer!important;' href='" + (data["websiteUrl"].startsWith("http") ? data["websiteUrl"] : ("http://" + data["websiteUrl"])) + "' target='_blank'>" + data["websiteUrl"] + "</a>") : $("#i18n-no-website").attr("data-message");
+        panel.find(".office-name").text(data["officeName" + attrPrefix]);
+        panel.find(".office-url").html(urlDom);
+        if(visionMission) {
+            var vision = visionMission["vision" + attrPrefix];
+            var mission = visionMission["mission" + attrPrefix];
+            var expectations = visionMission["expectation" + attrPrefix];
+            var expectationList = expectations && expectations.length > 0 ? expectations.trim().split("\n") : [];
+            panel.find(".vision-text").text(vision ? vision : $("#i18n-no-vision").attr("data-message"));
+            panel.find(".mission-text").text(mission ? mission : $("#i18n-no-mission").attr("data-message"));
+            if(expectationList.length > 0) {
+                var expectationsBody = "";
+                expectationList.forEach(function (expectation, index) {
+                    var serial = ("" + (index + 1));
+                    serial = (languageCode == "en") ? serial : serial.toBanglaNumber();
+                    expectationsBody += "<tr>" +
+                        "<td>" + serial + ".</td>" +
+                        "<td>" + expectation + "</td>" +
+                        "</tr>";
+                });
+                $("#serviceFooter tbody").empty().html(expectationsBody);
+            } else {
+                var noExpectationContents = (languageCode == "en") ? "No Expectations Mentioned" : "কোনো প্রত্যাশা উল্লেখ করা নেই";
+                $("#serviceFooter tbody").empty().html("<tr><td colspan='2'>" + noExpectationContents + "</td></tr>");
+            }
+        } else {
+            panel.find(".vision-text").text($("#i18n-no-vision").attr("data-message"));
+            panel.find(".mission-text").text($("#i18n-no-mission").attr("data-message"));
+        }
+    }
+
+    function loadCitizenCharters(officeId) {
+        $("#ajaxProcessingModal").modal("show");
+        var officeLayer = $("#officeLayers").val();
+        var officeOriginId = $("#firstSelection option:selected").attr("originid");
+        var isMobileLogin = ($("[name='isMobileLogin']").val() == "true");
+        if (officeOriginId == null) {
+            officeOriginId = 0;
+        }
+        $.getJSON("/api/office/" + officeId + "/offices-citizen-charters/details"+"?layerLevel="+ officeLayer + "&officeOriginId=" + officeOriginId, function (response) {
+            setOfficeInformation(response);
+            loadGROandAOInformation(response);
+            ["citizenServices", "officialServices", "internalServices"].forEach(function (field, index) {
+                var data = response[field];
+                var table = $("#" + field + "Table");
+                var hasTableContents = data.length > 0;
+                table.empty();
+                table.append('<thead>');
+                table.append('<tr><th class="table-header-title" colspan="8">' + $("#i18n-table-title-" + (index + 1)).attr("data-message") + '</th></tr>');
+                if (hasTableContents) {
+                    var headerNameRow = '<tr>';
+                    var headerCountRow = '<tr>';
+                    var bngNumbers = ['', '১', '২', '৩', '৪', '৫', '৬', '৭'];
+                    for(var num = 1; num <= 7; num++) {
+                        headerNameRow += '<th class="text-center">' + $("#i18n-th-" + num).attr("data-message") + '</th>';
+                        headerCountRow += '<th class="text-center">(' + (languageCode == 'en' ? num : ('' + num).toBanglaNumber()) + ')</th>';
+                    }
+                    if(!isMobileLogin && index==0) {
+                        headerNameRow += '<th class="text-center remove-on-print">' + $("#i18n-th-complain").attr("data-message") + '</th>';
+                        headerCountRow += '<th class="text-center remove-on-print"></th>';
+                    }
+                    table.append(headerNameRow + '</tr>');
+                    table.append(headerCountRow + '</tr>');
+                }
+                table.append('</thead>');
+                table.append('<tbody>');
+                if (hasTableContents) {
+                    var attrSuffix = languageCode == 'en'? "English" : "Bangla";
+                    var showIfNotNUll = function (value) {
+                        return value != null ? value : '';
+                    };
+                    var officeId = $('#officeId').val();
+                    $.each(data, function (index, serviceInfo) {
+                        var serialNo = languageCode == 'en' ? (index + 1) : ('' + (index + 1)).toBanglaNumber();
+                        var serviceTime = serviceInfo.serviceTime;
+                        var officeName = "";
+                        var serviceName = "";
+                        var parameters = JSON.stringify({
+                            officeCitizenCharterId: serviceInfo.id,
+                            serviceId: serviceInfo.serviceId,
+                            officeId: officeId,
+                            serviceName: serviceName,
+                            officeName: officeName
+                        });
+                        var encodedParameters = Base64.encode(parameters);
+                        if(serviceTime) {
+                            serviceTime = languageCode == 'en' ? (('' + serviceTime) + " Workday" + (serviceTime > 1 ? "s" : "")) : (('' + serviceTime).toBanglaNumber() + " দিন");
+                        }
+
+                        var currentRow = '<tr>' +
+                            '<td>' + serialNo + '.</td>' +
+                            '<td>' + showIfNotNUll(serviceInfo["serviceName" + attrSuffix]) + '</td>' +
+                            '<td>' + showIfNotNUll(serviceInfo["serviceProcedure" + attrSuffix]) + '</td>' +
+                            '<td>' + showIfNotNUll(serviceInfo["documentAndLocation" + attrSuffix]) + '</td>' +
+                            '<td>' + showIfNotNUll(serviceInfo["paymentMethod" + attrSuffix]) + '</td>' +
+                            '<td>' + showIfNotNUll(serviceTime) + '</td>' +
+                            '<td id="responsiblePerson' + serviceInfo.id + '"></td>';
+                        if(!isMobileLogin && serviceInfo['serviceType'] == "NAGORIK") {
+                            var redirectUrl = $("[name='isGrsUser']").val() == "true" ? 'addPublicGrievances.do' : 'anonymousAddGrievance.do';
+                            currentRow += '<td class="remove-on-print">' + "<a class='complain-against-service' href='javascript:;'>" + "<img src='/assets/layouts/layout3/img/add_grievance_normal.png' style='width: 40px;'>" + "</a>" + '</td>';
+                        }
+                        currentRow += '</tr>';
+                        var rowObj = $(currentRow);
+                        if(!isMobileLogin && serviceInfo['serviceType'] == "NAGORIK") {
+                            rowObj.find(".complain-against-service").on("mouseenter", function () {
+                                $(this).find("img").attr("src", "/assets/layouts/layout3/img/add_grievance_hovered.png")
+                            });
+                            rowObj.find(".complain-against-service").on("mouseleave", function () {
+                                $(this).find("img").attr("src", "/assets/layouts/layout3/img/add_grievance_normal.png")
+                            });
+                            rowObj.find(".complain-against-service").on("click", function () {
+                                // $("#modalComplaintTypeInCitizensCharter").modal("show");
+                                addPublicGrievanceWithoutLoginButtonEventHandler();
+                            });
+                        }
+                        table.append(rowObj);
+                        var appendTo = $("#responsiblePerson" + serviceInfo.id);
+                        $.each(serviceInfo.responsible, function (assigneeIndex, assigneeInfo) {
+                            var assigneeDetails = aggregateUserDetails(assigneeInfo);
+                            assigneeDetails = (assigneeIndex > 0 ? '<br><br>' : '') + assigneeDetails;
+                            appendTo.append(assigneeDetails);
+                        });
+                    });
+                } else {
+                    table.append('<tr><td>' + (languageCode == 'en' ? 'Sorry! No service found' : 'দুঃখিত, কোন সেবা পাওয়া যায়নি') + '</td></tr>');
+                }
+                table.append('</tbody>');
+            });
+        }).always(function () {
+            $("#ajaxProcessingModal").modal("hide");
+        });
+    }
+
+    function loadChildOfficesServices(officeId) {
+        var table = $('#controlledOfficesServiceTable');
+        table.empty();
+        table.append('<thead>' +
+            '<tr><th>' + $("#i18n-table-title-4").attr("data-message") + '</th></tr>' +
+            '</thead><tbody>' +
+            '<tr><td>' + (languageCode == 'en' ? 'Citizen Charters of offices/departments/institutes under this office will go here' : 'আওতাধীন অধিদপ্তর/সংস্থা/অন্যান্য প্রতিষ্ঠানসমূহের সিটিজেন্‌স চার্টার লিঙ্ক আকারে যুক্ত করতে হবে') + '</td></tr>' +
+            '</tbody>');
+    }
+
+    function showCitizenCharters(officeId) {
+        $("#officeId").val(officeId);
+        loadCitizenCharters(officeId);
+        loadChildOfficesServices(officeId);
+        $("#serviceFooter, #responsiblePersonnelInfo, #servicesList").show();
+    }
+
+    function viewCitizenCharterAction() {
+        $("#viewCitizenCharter").attr("disabled", "disabled");
+        $("#officeSelectionOptions").on("change", "#secondSelection", function() {
+             if (isOfficeSelectionValid('')) {
+                var officeId = getSelectedOfficeId('');
+                showCitizenCharters(officeId);
+             }
+        });
+    }
+
+    function printCitizenCharter() {
+        $("#printTable").on("click", function () {
+            if($("#servicesList").is(":visible")) {
+                var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+                mywindow.document.write('<html><head>');
+                mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+                mywindow.document.write('</head><body >');
+                mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+                mywindow.document.write($("#printableArea").clone().find('.remove-on-print').remove().end().html());
+                mywindow.document.write('</body></html>');
+
+                mywindow.print();
+                mywindow.close();
+                /*$('#printableArea').clone()
+                    .find("table tbody .remove-on-print")
+                    .remove()
+                    .end()
+                    .find(".table-header-title")
+                    .attr("colspan", "7")
+                    .end()
+                    .printThis({
+                        printDelay: 500,
+                        importStyle: true,
+                        formValues: false
+                    });*/
+            } else {
+                toastr.error("No citizen charter available to be printed", null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('#officeLayers').select2({
+            width: '220px'
+        });
+        bindOfficeLayersChangeActions("");
+        viewCitizenCharterAction();
+        printCitizenCharter();
+    });
+</script>

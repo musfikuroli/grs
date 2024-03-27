@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN CONTENT BODY -->
+
+<div class="page-content" style="min-height: 1601px;" th:fragment="editCitizenCharter" >
+    <div class="form-body">
+        <form id="serviceSelectFor">
+            <!--<div class="form-group">
+                <label>মন্ত্রণালয়</label>
+                <select id="ministryDropDown" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>পর্যায়</label>
+                <select id="layerDropDown" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>দপ্তর</label>
+                <select id="officeDropDown" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>সেবা</label>
+                <select id="serviceDropDown" class="form-control"></select>
+            </div>-->
+            <div class="form-inline">
+                <select id="officeLayers" class="form-control" >
+                    <option value="" selected style="display: none;" th:text="#{choose.office.type}"></option>
+                    <option value="1" th:text="#{ministry-bivag}"></option>
+                    <option value="2" th:text="#{department}"></option>
+                    <option value="4" th:text="#{division}"></option>
+                    <option value="5" th:text="#{district}"></option>
+                    <option value="6" th:text="#{upazila}"></option>
+                    <option value="7" th:text="#{other}"></option>
+                </select>
+            </div>
+            <div class="form-inline" id="selectionPanel" >
+                <select id="firstSelection" class="form-control" style="display: none;" ></select>
+                <select id="secondSelection" class="form-control" style="display: none;" ></select>
+                <select id="thirdSelection" class="form-control" style="display: none;" ></select>
+                <select id="serviceSelection" class="form-control" style="display: none;"></select>
+            </div>
+            <input type="hidden" id="officeId" name="officeId" value="officeId" />
+
+            <div class="form-group">
+                <label th:text="#{officer}"></label>
+                <select id="employeeDropDown" class="form-control" multiple=""></select>
+            </div>
+
+
+            <div class="form-group">
+                <label class="control-label" th:text="#{service.name}"></label>
+                <input id="nameText" class="form-control" th:placeholder="#{choose.service.render.type}" type="text">
+            </div>
+            <div class="form-group">
+                <label class="control-label" th:text="#{service.render.type}"></label>
+                <textarea id="procedureText" class="form-control" rows="3" th:placeholder="#{choose.service.render.type}"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="control-label" th:text="#{paper.place}"></label>
+                <textarea id="documentsText" class="form-control" rows="3" th:placeholder="#{provide.paper.place}"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="control-label" th:text="#{service.price.and.payment.method}"></label>
+                <input id="paymentText" class="form-control" th:placeholder="#{provide.service.value}" type="text">
+            </div>
+            <div class="form-group">
+                <label class="control-label" th:text="#{service.time}"></label>
+                <input id="deadlineText" class="form-control" th:placeholder="#{provide.time.for.service}" type="text">
+            </div>
+
+            <button type="submit" class="btn green" th:text="#{submit}"></button>
+            <button type="cancel" class="btn default" th:text="#{cancel}"></button>
+        </form>
+    </div>
+</div>
+
+<script th:fragment="editCitizenCharterScript">
+function CallAjax(url, onSuccess) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: onSuccess,
+    });
+}
+
+function getFirstLayers(id) {
+             $.getJSON("/api/officelayers/"+id, function(result) {
+                    $("#firstSelection").empty();
+                    var opt = new Option("--অফিস বাছাই করুন--", "");
+                    opt.setAttribute("style", "display: none;");
+                    $("#firstSelection").append(opt);
+                    $.each(result, function(i, field){
+                        $("#firstSelection").append(new Option(field.nameBangla, field.id));
+                    });
+                    $("#firstSelection").css("display","block");
+            })
+            .done(function() {
+
+            })
+            .fail(function() {
+
+            }).always(function() {
+
+            });
+        }
+
+        function getZilas() {
+            $.getJSON("/api/geo/districts", function(result) {
+                    $("#firstSelection").empty();
+                    var opt = new Option("--জেলা বাছাই করুন--", "");
+                    opt.setAttribute("style", "display: none;");
+                    $("#firstSelection").append(opt);
+                    $.each(result, function(i, field){
+                        $("#firstSelection").append(new Option(field.nameBangla, field.id));
+                    });
+                    $("#firstSelection").css("display","block");
+            })
+            .done(function() {
+
+            })
+            .fail(function() {
+
+            }).always(function() {
+
+            });
+        }
+
+        function onGetUpazilaZilaSelectionChange() {
+             $.getJSON("/api/geo/upazilas/"+$("#firstSelection").val(), function(result) {
+                    $("#secondSelection").empty();
+                    $("#thirdSelection").empty();
+
+                    $("#secondSelection").css("display","none");
+                    $("#thirdSelection").css("display","none");
+
+                    var opt = new Option("--উপজেলা বাছাই করুন--", "");
+                    opt.setAttribute("style", "display: none;");
+                    $("#secondSelection").append(opt);
+                    $.each(result, function(i, field){
+                        $("#secondSelection").append(new Option(field.nameBangla, field.id));
+                    });
+                    $("#secondSelection").css("display","block");
+            })
+            .done(function() {
+
+            })
+            .fail(function() {
+
+            }).always(function() {
+
+            });
+        }
+
+        function GetOfficesByZila() {
+             $.getJSON("/api/officelayers/"+$('#officeLayers').val()+"/"+$("#firstSelection").val(), function(result) {
+                    $("#secondSelection").empty();
+                    var opt = new Option("--অফিস বাছাই করুন--", "");
+                    opt.setAttribute("style", "display: none;");
+                    $("#secondSelection").append(opt);
+                    $.each(result, function(i, field){
+                        $("#secondSelection").append(new Option(field.nameBangla, field.id));
+                    });
+                    $("#secondSelection").css("display","block");
+            })
+            .done(function() {
+
+            })
+            .fail(function() {
+
+            }).always(function() {
+
+            });
+        }
+
+        function GetOfficesByUpazila() {
+             $.getJSON("/api/officelayers/"+$('#officeLayers').val()+"/"+$("#firstSelection").val()+"/"+$("#secondSelection").val(), function(result) {
+                    $("#thirdSelection").empty();
+                    var opt = new Option("--অফিস বাছাই করুন--", "");
+                    opt.setAttribute("style", "display: none;");
+                    $("#thirdSelection").append(opt);
+                    $.each(result, function(i, field){
+                        $("#thirdSelection").append(new Option(field.nameBangla, field.id));
+                    });
+                    $("#thirdSelection").css("display","block");
+            })
+            .done(function() {
+
+            })
+            .fail(function() {
+
+            }).always(function() {
+
+            });
+        }
+
+        function getDivisions() {
+            $.getJSON("/api/geo/division", function(result) {
+                $("#firstSelection").empty();
+                var opt = new Option("--বিভাগ বাছাই করুন--", "");
+                opt.setAttribute("style", "display: none;");
+                $("#firstSelection").append(opt);
+                $.each(result, function(i, field){
+                    $("#firstSelection").append(new Option(field.nameBangla, field.id));
+                });
+                $("#firstSelection").css("display","block");
+            }).done(function(){})
+              .fail(function(){})
+              .always(function(){});
+        }
+
+        function GetOfficesByDivision() {
+             $.getJSON("/api/officelayers/division/"+$("#officeLayers").val()+"/"+$("#firstSelection").val(), function(result) {
+                    $("#secondSelection").empty();
+                    var opt = new Option("--অফিস বাছাই করুন--", "");
+                    opt.setAttribute("style", "display: none;");
+                    $("#secondSelection").append(opt);
+                    $.each(result, function(i, field){
+                        $("#secondSelection").append(new Option(field.nameBangla, field.id));
+                    });
+                    $("#secondSelection").css("display","block");
+            }).done(function(){}).fail(function(){}).always(function(){});
+        }
+
+        function clearAllSelection() {
+
+            $("#firstSelection").empty();
+            $("#secondSelection").empty();
+            $("#thirdSelection").empty();
+            $("#serviceSelection").empty();
+
+            $("#firstSelection").css("display","none");
+            $("#secondSelection").css("display","none");
+            $("#thirdSelection").css("display","none");
+            $("#serviceSelection").css("display","none");
+
+        }
+
+        function getServiceList(officeId){
+            $("#officeId").val(officeId);
+            console.log(officeId);
+            $.getJSON("/api/office/service/"+officeId, function(result) {
+
+                $("#serviceSelection").empty();
+                localStorage.setItem('services',JSON.stringify(result));
+                var opt = new Option("--সেবা বাছাই করুন--", "");
+                opt.setAttribute("style", "display: none;");
+                $("#serviceSelection").append(opt);
+                var nameFieldSuffix = languageCode == 'en' ? 'English' : 'Bangla';
+                $.each(result.services, function(i, field){
+                    console.log(field.name);
+                    $("#serviceSelection").append(new Option(field['serviceName' + nameFieldSuffix], field.id));
+                });
+                $("#serviceSelection").css("display","block");
+            })
+            .done(function(){
+            })
+            .fail(function(){
+            })
+            .always(function(){
+            });
+        }
+
+        function populateEmployeeDropDown(data) {
+            $('#employeeDropDown').html('');
+            $select = $('#employeeDropDown');
+            $select.html('');
+            $select.append('<tbody>');
+            $select.append('<option value="" disabled selected hidden>***Select Employee***</option>');
+            $.each(data.objects, function(key, val) {
+                $select.append('<option value="' + val.id + '">' + val.name + '</option>');
+            })
+            $select.append('</tbody>');
+        }
+
+        function populateServiceTable(data) {
+            $select = $('#serviceDropDown');
+            $select.html('');
+            $select.append('<option value="" disabled selected hidden>***Select Service***</option>');
+            var i = 0;
+            $select.append('<tbody>');
+            $.each(data.services, function(key, val) {
+                $select.append('<option value="' + val.id + '">' + val.name + '</option>');
+            })
+            $select.append('</tbody>');
+            localStorage.setItem('services',JSON.stringify(data));
+            $('#serviceDropDown').trigger('change');
+        }
+        function officeDropDownEventHandler(officeId){
+            getServiceList(officeId);
+            console.log(officeId);
+
+            var url = '/api/office/employee/' + officeId;
+            CallAjax(url, populateEmployeeDropDown);
+        }
+
+        function serviceDropDownEventHandler() {
+            var services = JSON.parse(localStorage.getItem('services'));
+            var selectedId = $('#serviceSelection').find('option:selected').val();
+
+            $.each(services.services, function(key, val) {
+               if (val.id===selectedId) {
+                    $('#nameText').val(val.name);
+                    $('#procedureText').val(val.procedure);
+                    $('#documentsText').val(val.documentsAndLocation);
+                    $('#paymentText').val(val.payment);
+                    $('#deadlineText').val(val.deadlineDays);
+                }
+            })
+        }
+
+        $(document).ready(function() {
+
+                $('#officeLayers').on("change",function() {
+                     clearAllSelection();
+                     switch(this.value) {
+                        case "":
+                            break;
+
+                        case "1":
+                            getFirstLayers("1");
+                            $("#firstSelection").off("change");
+                            $("#firstSelection").on("change", function(){
+                                var officeId = $("#firstSelection").val();
+                                officeDropDownEventHandler(officeId)
+                            });
+
+                            break;
+
+                        case "2":
+                            getFirstLayers("2");
+                            $("#firstSelection").off("change");
+                            $("#firstSelection").on("change", function(){
+                                var officeId = $("#firstSelection").val();
+                                getServiceList(officeId)
+                            });
+                            break;
+
+                        case "3":
+                            getDivisions("3");
+                            $("#firstSelection").off("change");
+                            $("#secondSelection").off("change");
+                            $("#firstSelection").on("change", GetOfficesByDivision);
+                            $("#secondSelection").off("change");
+                            $("#secondSelection").on("change", function(){
+                                var officeId = $("#secondSelection").val();
+                                getServiceList(officeId)
+                            });
+                            break;
+
+                        case "4":
+                            getZilas();
+                            $("#firstSelection").off("change");
+                            $("#secondSelection").off("change");
+                            $("#firstSelection").on("change", GetOfficesByZila);
+                            $("#secondSelection").off("change");
+                            $("#secondSelection").on("change", function(){
+                                var officeId = $("#secondSelection").val();
+                                getServiceList(officeId)
+                            });
+                            break;
+
+                        case "5":
+                            getZilas();
+                            $("#firstSelection").off("change");
+                            $("#firstSelection").on("change", onGetUpazilaZilaSelectionChange);
+                            $("#secondSelection").off("change");
+                            $("#secondSelection").on("change", GetOfficesByUpazila);
+                            $("#thirdSelection").off("change");
+                            $("#thirdSelection").on("change", function(){
+                                var officeId = $("#thirdSelection").val();
+                                getServiceList(officeId)
+                            });
+                            break;
+
+                        case "6":
+                            getFirstLayers("6");
+                            $("#firstSelection").off("change");
+                            $("#firstSelection").on("change", function(){
+                                var officeId = $("#firstSelection").val();
+                                getServiceList(officeId)
+                            });
+                            break;
+                     }
+                     $("#serviceSelection").on("change", serviceDropDownEventHandler);
+                });
+        });
+
+
+</script>

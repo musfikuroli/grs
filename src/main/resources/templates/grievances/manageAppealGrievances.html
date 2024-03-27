@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="manageAppealGrievancesIncludeStyle" th:remove="tag">
+    <link href="assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+</div>
+
+<div th:class="${!isMobileLogin ? 'page-content' : ''}" th:fragment="manageAppealGrievances">
+    <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
+        <input type="hidden" name="isMobileLogin" th:value="${isMobileLogin}">
+        <div th:if="${!isMobileLogin}" class="portlet-title">
+            <div class="caption">
+                <i class="icon-bubbles "></i>
+                <span class="modulename caption-subject bold uppercase" th:text="#{manage.x(#{appeal})}"></span>
+                <span class="caption-helper">&nbsp;</span>
+            </div>
+            <div class="actions">
+                <a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;" data-original-title="" title=""> </a>
+            </div>
+        </div>
+        <div th:class="${!isMobileLogin ? 'portlet-body' : ''}">
+            <div class="tabbable-line">
+                <ul class="nav nav-tabs">
+                    <li th:if="${isMobileLogin}"><a href="javascript:;"></a></li>
+                    <li class="active">
+                        <a href="#inbox" id="navInbox" data-toggle="tab"><i class="icon-arrow-down"></i><span class="tabname tabname-hide-on-mobile"> আগত <span id="inbox_unseen_count" style="color: #6f042c;">(0)</span></span></a>
+                    </li>
+                    <li>
+                        <a href="#sent" id="navSent" data-toggle="tab"><i class="icon-arrow-right"></i><span class="tabname tabname-hide-on-mobile"> প্রেরিত </span></a>
+                    </li>
+                    <li>
+                        <a href="#closed" id="navClosed" data-toggle="tab"><i class="icon-check"></i><span class="tabname tabname-hide-on-mobile"> নিষ্পত্তিকৃত</span></a>
+                    </li>
+                    <li th:if="${isGro}">
+                        <a href="#expired" id="navExpired" data-toggle="tab"><i class="icon-speedometer"></i><span class="tabname tabname-hide-on-mobile"> সময় অতিক্রান্ত</span></a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="inbox">
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped table-bordered" id="tblListViewInbox">
+                                    <thead>
+                                        <tr role="row" class="filter hide">
+                                        <td>
+                                            <input type="text" class="form-control form-filter input-sm" name="case_number" placeholder="কেস নম্বর প্রদান করুন">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                        </td>
+                                        <td>
+                                            <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
+                                                <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
+                                                <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                                <span class="input-group-btn">
+                                                        <button class="btn btn-sm default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select name="complaint_type" class="form-control form-filter input-sm">
+                                                <option value="">নির্বাচন করুন</option>
+                                                <option value="DAKTORIK">দাপ্তরিক</option>
+                                                <option value="NAGORIK">নাগরিক</option>
+                                                <option value="STAFF">কর্মকর্তা/কর্মচারী</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                        </td>
+                                        <td>
+                                            <select name="current_status" class="form-control form-filter input-sm">
+                                                <option value="">নির্বাচন করুন</option>
+                                                <option value="NEW">নতুন</option>
+                                                <option value="FORWARDED_OUT">অন্য দপ্তর থেকে আগত</option>
+                                                <option value="FORWARDED_IN">আওতাধীন দপ্তর থেকে আগত</option>
+                                                <option value="ACCEPTED">গৃহীত</option>
+                                                <option value="INVESTIGATION">তদন্ত চলমান</option>
+                                                <option value="INV_NOTICE_FILE">প্রমান এর জন্য নোটিশ</option>
+                                                <option value="INV_HEARING">শুনানি</option>
+                                                <option value="INV_REPORT">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                                <option value="APPEAL_STATEMENT_ASKED">আপিলকৃত</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="margin-bottom-5">
+                                                <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                                    <i class="fa fa-search"></i> খুঁজুন
+                                                </button>
+                                            </div>
+                                            <button class="btn btn-sm btn-default filter-cancel">
+                                                <i class="fa fa-times"></i> বাতিল
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                        <tr role="row" class="heading">
+                                        <th> কেস নম্বর</th>
+                                        <th> ট্র্যাকিং নম্বর</th>
+                                        <th> অভিযোগের বিষয়</th>
+                                        <th> অভিযোগের তারিখ</th>
+                                        <th> অভিযোগের ধরন</th>
+                                        <th> সংশ্লিষ্ট সেবা</th>
+                                        <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                        <th> অভিযোগের অবস্থা</th>
+                                        <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                                <div class="row">
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewInbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
+                                </div>
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewInbox_paginate">
+                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="inbox">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageInbox" value="০" type="text">
+                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="inbox">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="sent">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-bordered " id="tblListViewOutbox">
+                                <thead>
+                                <tr role="row" class="filter hide">
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="case_number" placeholder="কেস নম্বর প্রদান করুন">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                    </td>
+                                    <td>
+                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                            <span class="input-group-btn">
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
+                                        </div>
+                                        <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <span class="input-group-btn">
+                                                        <button class="btn btn-sm default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select name="complaint_type" class="form-control form-filter input-sm">
+                                            <option value="">নির্বাচন করুন</option>
+                                            <option value="DAKTORIK">দাপ্তরিক</option>
+                                            <option value="NAGORIK">নাগরিক</option>
+                                            <option value="STAFF">কর্মকর্তা/কর্মচারী</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                    </td>
+                                    <td>
+                                        <select name="current_status" class="form-control form-filter input-sm">
+                                            <option value="">নির্বাচন করুন</option>
+                                            <option value="new">নতুন</option>
+                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="opinion_received">মতামতপ্রাপ্ত</option>
+                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
+                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
+                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="appealed">আপিলকৃত</option>
+                                            <option value="closed">নিষ্পত্তিকৃত</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="margin-bottom-5">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                                <i class="fa fa-search"></i> খুঁজুন
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-sm btn-default filter-cancel">
+                                            <i class="fa fa-times"></i> বাতিল
+                                        </button>
+                                    </td>
+
+                                </tr>
+                                <tr role="row" class="heading">
+                                    <th> কেস নম্বর</th>
+                                    <th> ট্র্যাকিং নম্বর</th>
+                                    <th> অভিযোগের বিষয়</th>
+                                    <th> অভিযোগের তারিখ</th>
+                                    <th> অভিযোগের ধরন</th>
+                                    <th> সংশ্লিষ্ট সেবা</th>
+                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th> অভিযোগের অবস্থা</th>
+                                    <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <div class="row">
+                            <div class="col-sm-5 col-md-5">
+                                <div class="dataTables_info" id="tblListViewOutbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                </div>
+                            </div>
+                            <div class="col-md-7 col-sm-7">
+                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewOutbox_paginate">
+                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="outbox">
+                                            <i class="fa fa-angle-left"></i>
+                                        </a>
+                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageOutbox" value="০" type="text">
+                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="outbox">
+                                            <i class="fa fa-angle-right"></i>
+                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="closed">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-bordered " id="tblListViewClosed">
+                                <thead>
+                                <tr role="row" class="filter hide">
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="case_number" placeholder="কেস নম্বর প্রদান করুন">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                    </td>
+                                    <td>
+                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                            <span class="input-group-btn">
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
+                                        </div>
+                                        <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <span class="input-group-btn">
+                                                        <button class="btn btn-sm default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select name="complaint_type" class="form-control form-filter input-sm">
+                                            <option value="">নির্বাচন করুন</option>
+                                            <option value="DAKTORIK">দাপ্তরিক</option>
+                                            <option value="NAGORIK">নাগরিক</option>
+                                            <option value="STAFF">কর্মকর্তা/কর্মচারী</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                    </td>
+                                    <td>
+                                        <select name="current_status" class="form-control form-filter input-sm">
+                                            <option value="">নির্বাচন করুন</option>
+                                            <option value="new">নতুন</option>
+                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="opinion_received">মতামতপ্রাপ্ত</option>
+                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
+                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
+                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="appealed">আপিলকৃত</option>
+                                            <option value="closed">নিষ্পত্তিকৃত</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="margin-bottom-5">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                                <i class="fa fa-search"></i> খুঁজুন
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-sm btn-default filter-cancel">
+                                            <i class="fa fa-times"></i> বাতিল
+                                        </button>
+                                    </td>
+
+                                </tr>
+                                <tr role="row" class="heading">
+                                    <th> কেস নম্বর</th>
+                                    <th> ট্র্যাকিং নম্বর</th>
+                                    <th> অভিযোগের বিষয়</th>
+                                    <th> অভিযোগের তারিখ</th>
+                                    <th> অভিযোগের ধরন</th>
+                                    <th> সংশ্লিষ্ট সেবা</th>
+                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th> অভিযোগের অবস্থা</th>
+                                    <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <div class="row">
+                            <div class="col-sm-5 col-md-5">
+                                <div class="dataTables_info" id="tblListViewClosed_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                </div>
+                            </div>
+                            <div class="col-md-7 col-sm-7">
+                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewClosed_paginate">
+                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="closed">
+                                            <i class="fa fa-angle-left"></i>
+                                        </a>
+                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageClosed" value="০" type="text">
+                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="closed">
+                                            <i class="fa fa-angle-right"></i>
+                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" th:if="${isGro}" id="expired">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped table-bordered " id="tblListViewExpired">
+                                <thead>
+                                <tr role="row" class="filter hide">
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="case_number" placeholder="কেস নম্বর প্রদান করুন">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                    </td>
+                                    <td>
+                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                            <span class="input-group-btn">
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
+                                        </div>
+                                        <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <span class="input-group-btn">
+                                                        <button class="btn btn-sm default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select name="complaint_type" class="form-control form-filter input-sm">
+                                            <option value="">নির্বাচন করুন</option>
+                                            <option value="DAKTORIK">দাপ্তরিক</option>
+                                            <option value="NAGORIK">নাগরিক</option>
+                                            <option value="STAFF">কর্মকর্তা/কর্মচারী</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                    </td>
+                                    <td>
+                                        <select name="current_status" class="form-control form-filter input-sm">
+                                            <option value="">নির্বাচন করুন</option>
+                                            <option value="new">নতুন</option>
+                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="opinion_received">মতামতপ্রাপ্ত</option>
+                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
+                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
+                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="appealed">আপিলকৃত</option>
+                                            <option value="closed">নিষ্পত্তিকৃত</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div class="margin-bottom-5">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                                <i class="fa fa-search"></i> খুঁজুন
+                                            </button>
+                                        </div>
+                                        <button class="btn btn-sm btn-default filter-cancel">
+                                            <i class="fa fa-times"></i> বাতিল
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr role="row" class="heading">
+                                    <th> কেস নম্বর</th>
+                                    <th> ট্র্যাকিং নম্বর</th>
+                                    <th> অভিযোগের বিষয়</th>
+                                    <th> অভিযোগের তারিখ</th>
+                                    <th> অভিযোগের ধরন</th>
+                                    <th> সংশ্লিষ্ট সেবা</th>
+                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th> অভিযোগের অবস্থা</th>
+                                    <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <div class="row">
+                            <div class="col-sm-5 col-md-5">
+                                <div class="dataTables_info" id="tblListViewExpired_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                </div>
+                            </div>
+                            <div class="col-md-7 col-sm-7">
+                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewExpired_paginate">
+                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="expired">
+                                            <i class="fa fa-angle-left"></i>
+                                        </a>
+                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageExpired" value="০" type="text">
+                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="expired">
+                                            <i class="fa fa-angle-right"></i>
+                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span> &nbsp;&nbsp;লোড হচ্ছে... দয়া করে অপেক্ষা করুন  </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="manageAppealGrievancesIncludeScript" th:remove="tag">
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js" type="text/javascript"></script>
+</div>
+
+<script th:fragment="manageAppealGrievancesScript">
+    $("#header_inbox_bar a").addClass("active");
+    var currentPageInbox = 1;
+    var currentPageOutbox = 1;
+    var currentPageClosed = 1;
+    var currentPageExpired = 1;
+    var maxPageInbox = 1;
+    var maxPageSent = 1;
+    var maxPageClosed = 1;
+    var maxPageExpired = 1;
+
+    var hasAlert = false, alertTitle = "", alertBody = "";
+
+    var searchSize = 10;
+    var currentView = "inbox";
+
+    $(document).ready(function() {
+        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        loadUnceenCount();
+        $('.date-picker').datepicker({
+            rtl: App.isRTL(),
+            autoclose: true
+        });
+
+        var alertInfo = JSON.parse(sessionStorage.getItem("alertInfo"));
+
+        if (alertInfo != null) {
+            hasAlert = true;
+            alertTitle = "";
+            alertBody = alertInfo.message;
+            sessionStorage.removeItem("alertInfo");
+        }
+
+        showNotification();
+
+        loadComplaintsList(currentPageInbox);
+
+        var listViewArray = ['Inbox', 'Outbox', 'Closed', 'Expired'];
+        $.each(listViewArray, function(index, value){
+            $('#tblListView' + value).dataTable({
+                "language": {
+                    "aria": {
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    },
+                    "emptyTable": "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                    "infoEmpty": "No records found",
+                    "infoFiltered": "(filtered1 from _MAX_ total records)",
+                    "lengthMenu": "Show _MENU_",
+                    "search": "ফিল্টার:",
+                    "zeroRecords": "No matching records found",
+                    "paginate": {
+                        "previous": "Prev",
+                        "next": "Next",
+                        "last": "Last",
+                        "first": "First"
+                    }
+                },
+                "bPaginate": false,
+                "bFilter": false,
+                "bInfo": false,
+                "bAutoWidth": true,
+                "columnDefs": [{
+                        'orderable': false,
+                        'targets': [2,3,5,6,7,8]
+                    },
+                    {
+                        "searchable": false,
+                        "targets": [0, 1]
+                    }
+                ],
+                "createdRow": function( row, data, dataIndex ) {
+                    var currentRow = $(row);
+                    currentRow.attr("data-toggle", "tooltip");
+                    currentRow.attr("title", rowTitle);
+                },
+                columns: [
+                    {
+                        data: "caseNumberBangla"
+                    },
+                    {
+                        data: "trackingNumberBangla"
+                    },
+                    {
+                        data: "subject"
+                    },
+                    {
+                        data: "dateBangla",
+                        render: function (data, type, row, meta) {
+                            var splittedParts = data.split(" ");
+                            return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                        }
+                    },
+                    {
+                        data: "typeBangla"
+                    },
+                    {
+                        data: "serviceNameBangla"
+                    },
+                    {
+                        data: "serviceOfficerPostBangla"
+                    },
+                    {
+                        data: "statusBangla"
+                    },
+                    {
+                        data: "expectedDateOfClosingBangla",
+                        render: function (data, type, row, meta) {
+                            var splittedParts = data.split(" ");
+                            return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                        }
+                    }
+                ],
+                "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    var bgColorStyle = "bg-white";
+                    if (aData.isExpired) {
+                        $(nRow).addClass(bgColorStyle + ' font text-danger ');
+                    } else if (aData.isSeen == false) {
+                        $(nRow).addClass(bgColorStyle + ' font-lg bold');
+                    } else {
+                        $(nRow).addClass(bgColorStyle + ' greyishFont ');
+                    }
+                },
+                "order": []
+            });
+            $('#tblListView' + value + ' tbody').on('click', 'tr', function () {
+                var table = $('#tblListView' + value).DataTable();
+                var data = table.row(this).data();
+                if (data != undefined) {
+                    if ( $(this).hasClass('active') ) {
+                        $(this).removeClass('active');
+                    }
+                    else {
+                        table.$('tr.selected').removeClass('active');
+                        $(this).addClass('active');
+                    }
+                    var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+                    $.blockUI({
+                        message: '<h1>  ' + msg + '</h1>'
+                    });
+                    window.setTimeout(function() {
+                        window.location.href = "/viewAppealGrievances.do?id=" + data.id;
+                    }, 500);
+                }
+            });
+        });
+
+        $(".next").click(function(e) {
+            var currentPageForNext;
+            var searchCriteriaNo;
+            if (currentView == "inbox") {
+                currentPageInbox = currentPageInbox + 1;
+                if (currentPageInbox == maxPageInbox) {
+                    $(this).addClass("disabled");
+                }
+                if (currentPageInbox > maxPageInbox) {
+                    currentPageInbox = maxPageInbox;
+                }
+                searchCriteriaNo = 0;
+                currentPageForNext = currentPageInbox;
+            } else if (currentView == "outbox") {
+                currentPageOutbox = currentPageOutbox + 1;
+                if (currentPageOutbox == maxPageOutbox) {
+                    $(this).addClass("disabled");
+                }
+                if (currentPageOutbox > maxPageOutbox) {
+                    currentPageOutbox = maxPageOutbox;
+                }
+                searchCriteriaNo = 1;
+                currentPageForNext = currentPageOutbox;
+            } else if (currentView == "closed") {
+                currentPageClosed = currentPageClosed + 1;
+                if (currentPageClosed == maxPageClosed) {
+                    $(this).addClass("disabled");
+                }
+                if (currentPageClosed > maxPageClosed) {
+                    currentPageClosed = maxPageClosed;
+                }
+                searchCriteriaNo = 2;
+                currentPageForNext = currentPageClosed;
+            }
+            var searchUrlString = getSearchURL();
+            if (searchUrlString.localeCompare("types&values") != 0) {
+                searchComplaintsList(currentPageForNext);
+            } else {
+                loadComplaintsList(currentPageForNext);
+            }
+            $(this).parent().find(".prev").removeClass("disabled");
+        });
+
+        $(".prev").click(function(e) {
+            var currentPageForPrev;
+            var searchFieldNo;
+            if (currentView == "inbox") {
+                currentPageInbox = currentPageInbox - 1;
+
+                if (currentPageInbox == 1) {
+                    $(this).addClass("disabled");
+                }
+                if (currentPageInbox < 1) {
+                    currentPageInbox = 1;
+                }
+                currentPageForPrev = currentPageInbox;
+                searchFieldNo = 0;
+            } else if (currentView == "outbox") {
+                currentPageOutbox = currentPageOutbox - 1;
+                if (currentPageOutbox == 1) {
+                    $(this).addClass("disabled");
+                }
+                if (currentPageOutbox < 1) {
+                    currentPageOutbox = 1;
+                }
+                currentPageForPrev = currentPageOutbox;
+                searchFieldNo = 1;
+            } else if (currentView == "closed") {
+                currentPageClosed = currentPageClosed - 1;
+                if (currentPageClosed == 1) {
+                    $(this).addClass("disabled");
+                }
+                if (currentPageClosed < 1) {
+                    currentPageClosed = 1;
+                }
+                currentPageForPrev = currentPageClosed;
+                searchFieldNo = 2;
+            }
+            var searchUrlString = getSearchURL();
+            if (searchUrlString.localeCompare("types&values") != 0) {
+                searchComplaintsList(currentPageForPrev);
+            } else {
+                loadComplaintsList(currentPageForPrev);
+            }
+            $(this).parent().find(".next").removeClass("disabled");
+        });
+
+        $("#currentPageInbox").blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + $("#currentPageInbox").val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPageInbox) {
+                    currentPageInbox = curValue;
+                    if (currentPageInbox == 1) {
+                        $(this).parent().find(".prev").addClass("disabled");
+                    } else {
+                        $(this).parent().find(".prev").removeClass("disabled");
+                    }
+                    if (currentPageInbox == maxPageInbox) {
+                        $(this).parent().find(".next").addClass("disabled");
+                    } else {
+                        $(this).parent().find(".next").removeClass("disabled");
+                    }
+                    loadComplaintsList(currentPageInbox);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPageInbox").val(("" + currentPageInbox).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPageInbox").val(("" + currentPageInbox).toBanglaNumber());
+            }
+        });
+
+        $("#currentPageOutbox").blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + $("#currentPageOutbox").val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPageOutbox) {
+                    currentPageOutbox = curValue;
+                    if (currentPageOutbox == 1) {
+                        $(this).parent().find(".prev").addClass("disabled");
+                    } else {
+                        $(this).parent().find(".prev").removeClass("disabled");
+                    }
+                    if (currentPageOutbox == maxPageOutbox) {
+                        $(this).parent().find(".next").addClass("disabled");
+                    } else {
+                        $(this).parent().find(".next").removeClass("disabled");
+                    }
+                    loadComplaintsList(currentPageOutbox);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPageOutbox").val(("" + currentPageOutbox).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPageOutbox").val(("" + currentPageOutbox).toBanglaNumber());
+            }
+        });
+
+        $("#currentPageClosed").blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + $("#currentPageClosed").val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPageClosed) {
+                    currentPageClosed = curValue;
+                    if (currentPageClosed == 1) {
+                        $(this).parent().find(".prev").addClass("disabled");
+                    } else {
+                        $(this).parent().find(".prev").removeClass("disabled");
+                    }
+                    if (currentPageClosed == maxPageClosed) {
+                        $(this).parent().find(".next").addClass("disabled");
+                    } else {
+                        $(this).parent().find(".next").removeClass("disabled");
+                    }
+                    loadComplaintsList(currentPageClosed);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
+            }
+        });
+
+        $("#navInbox").click(function(e) {
+            currentView = "inbox";
+            loadComplaintsList(currentPageInbox);
+        });
+
+        $("#navSent").click(function(e) {
+            currentView = "outbox";
+            loadComplaintsList(currentPageOutbox);
+        });
+
+        $("#navClosed").click(function(e) {
+            currentView = "closed";
+            loadComplaintsList(currentPageClosed);
+        });
+
+
+        $("#navExpired").click(function(e) {
+            currentView = "expired";
+            loadComplaintsList(currentPageExpired);
+        });
+
+    });
+
+    function loadUnceenCount() {
+
+        $.ajax({
+            url: "/api/total/count/appeal",
+            type: "get",
+            data: "application/json",
+            dataType: "json",
+            success: function (response) {
+                $("#inbox_unseen_count").html("(" + (response.inboxCount + "").toBanglaNumber() + ")");
+            }
+        });
+    }
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    String.prototype.toEnglishNumber = function () {
+        var bngNum = this;
+        var engNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        bngNum.split('').forEach(function (digit) {
+            var index = bngDigits.indexOf(digit);
+            engNum += index >= 0 ? index : digit;
+        });
+        return engNum;
+    };
+
+    function loadComplaintsList(page) {
+
+        var searchSizeLocal = $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
+        $("#ajaxProcessingModal").modal("show");
+        var pageNo = 0;
+
+        if (currentView == "inbox") {
+            $("#currentPageInbox").val(("" + (currentPageInbox)).toBanglaNumber());
+            pageNo = currentPageInbox;
+        } else if (currentView == "outbox") {
+            $("#currentPageOutbox").val(("" + (currentPageOutbox)).toBanglaNumber());
+            pageNo = currentPageOutbox;
+        } else if (currentView == "closed") {
+            $("#currentPageClosed").val(("" + (currentPageClosed)).toBanglaNumber());
+            pageNo = currentPageClosed;
+        } else if (currentView == "expired") {
+            $("#currentPageExpired").val(("" + (currentPageExpired)).toBanglaNumber());
+            pageNo = currentPageExpired;
+        }
+
+        $.ajax({
+            url: "/api/grievance/appeal/" + currentView,
+            type: "get",
+            data: {
+                "page": (pageNo - 1),
+                "size": searchSizeLocal
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    if (currentView == "inbox") {
+                        $("#tblListViewInbox_paginate .pagination-panel-total").html("0".toBanglaNumber());
+                        $("#tblListViewInbox_paginate .pagination-panel-input").val("0".toBanglaNumber());
+                        $("#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next").addClass("disabled");
+                    } else if (currentView == "outbox") {
+                        $("#tblListViewOutbox_paginate .pagination-panel-total").html("0".toBanglaNumber());
+                        $("#tblListViewOutbox_paginate .pagination-panel-input").val("0".toBanglaNumber());
+                        $("#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next").addClass("disabled");
+                    } else if (currentView == "closed") {
+                        $("#tblListViewClosed_paginate .pagination-panel-total").html("0".toBanglaNumber());
+                        $("#tblListViewClosed_paginate .pagination-panel-input").val("0".toBanglaNumber());
+                        $("#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next").addClass("disabled");
+                    }  else if (currentView == "expired") {
+                        $("#tblListViewExpired_paginate .pagination-panel-total").html("0".toBanglaNumber());
+                        $("#tblListViewExpired_paginate .pagination-panel-input").val("0".toBanglaNumber());
+                        $("#tblListViewExpired_paginate .prev, #tblListViewExpired_paginate .next").addClass("disabled");
+                    }
+                    $("#ajaxProcessingModal").modal("hide");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    if (currentView == "inbox") {
+                        $("#tblListViewInbox_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
+                        maxPageInbox = totalPages;
+                        if (maxPageInbox == 1) {
+                            $("#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageInbox == 1) {
+                            $("#tblListViewInbox_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageInbox > 1 && maxPageInbox != currentPageInbox) {
+                            $("#tblListViewInbox_paginate .next").removeClass("disabled");
+                        }
+
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewInbox_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewInbox').dataTable().fnClearTable();
+                        $('#tblListViewInbox').dataTable().fnAddData(response.content);
+                        $('#tblListViewInbox').find("[data-toggle='tooltip']").tooltip();
+
+                    } else if (currentView == "outbox") {
+                        $("#tblListViewOutbox_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
+                        maxPageOutbox = totalPages;
+                        if (maxPageOutbox == 1) {
+                            $("#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageOutbox == 1) {
+                            $("#tblListViewOutbox_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageOutbox > 1 && maxPageOutbox != currentPageOutbox) {
+                            $("#tblListViewOutbox_paginate .next").removeClass("disabled");
+                        }
+
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewOutbox_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewOutbox').dataTable().fnClearTable();
+                        $('#tblListViewOutbox').dataTable().fnAddData(response.content);
+                        $('#tblListViewOutbox').find("[data-toggle='tooltip']").tooltip();
+
+                    } else if (currentView == "closed") {
+                        $("#tblListViewClosed_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
+                        maxPageClosed = totalPages;
+                        if (maxPageClosed == 1) {
+                            $("#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageClosed == 1) {
+                            $("#tblListViewClosed_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageClosed > 1 && maxPageClosed != currentPageClosed) {
+                            $("#tblListViewClosed_paginate .next").removeClass("disabled");
+                        }
+
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewClosed_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewClosed').dataTable().fnClearTable();
+                        $('#tblListViewClosed').dataTable().fnAddData(response.content);
+                        $('#tblListViewClosed').find("[data-toggle='tooltip']").tooltip();
+
+                    }  else if (currentView == "expired") {
+                        $("#tblListViewExpired_paginate .pagination-panel-total").html(totalPages);
+                        maxPageExpired = totalPages;
+                        if (maxPageExpired == 1) {
+                            $("#tblListViewExpired_paginate .prev, #tblListViewExpired_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageExpired == 1) {
+                            $("#tblListViewExpired_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageExpired > 1 && maxPageExpired != currentPageExpired) {
+                            $("#tblListViewExpired_paginate .next").removeClass("disabled");
+                        }
+
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewExpired_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewExpired').dataTable().fnClearTable();
+                        $('#tblListViewExpired').dataTable().fnAddData(response.content);
+                        $('#tblListViewExpired').find("[data-toggle='tooltip']").tooltip();
+
+                    }
+                    $("#ajaxProcessingModal").modal("hide");
+                }
+            }
+        });
+    }
+
+    function searchComplaintsList() {
+
+        var searchSizeLocal = $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
+        $("#ajaxProcessingModal").modal("show");
+        var pageNo = 0;
+        var SearchFieldNo;
+        if (currentView == "inbox") {
+            $("#currentPageInbox").val(("" + currentPageInbox).toBanglaNumber());
+            pageNo = currentPageInbox;
+            SearchFieldNo = 0;
+        } else if (currentView == "outbox") {
+            $("#currentPageOutbox").val(currentPageOutbox);
+            pageNo = currentPageOutbox;
+            SearchFieldNo = 1;
+        } else if (currentView == "closed") {
+            $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
+            pageNo = currentPageClosed;
+            SearchFieldNo = 2;
+        } else if (currentView == "expired") {
+            $("#currentPageExpired").val(currentPageExpired);
+            pageNo = currentPageExpired;
+            SearchFieldNo = 3;
+        }
+
+        $.ajax({
+            url: "/api/grievance/appeal/" + currentView + "/search?" + getSearchURL(),
+            type: "get",
+            data: {
+                "page": (pageNo - 1),
+                "size": searchSizeLocal
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    if (currentView == "inbox") {
+                        $("#tblListViewInbox tbody tr").css("cursor","default");
+                        $("#tblListViewInbox_paginate .pagination-panel-total").html(0);
+                        $("#tblListViewInbox_paginate .pagination-panel-input").val(0);
+                        $("#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next").addClass("disabled");
+                    } else if (currentView == "outbox") {
+                        $("#tblListViewOutbox tbody tr").css("cursor","default");
+                        $("#tblListViewOutbox_paginate .pagination-panel-total").html(0);
+                        $("#tblListViewOutbox_paginate .pagination-panel-input").val(0);
+                        $("#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next").addClass("disabled");
+                    } else if (currentView == "closed") {
+                        $("#tblListViewClosed tbody tr").css("cursor","default");
+                        $("#tblListViewClosed_paginate .pagination-panel-total").html(0);
+                        $("#tblListViewClosed_paginate .pagination-panel-input").val(0);
+                        $("#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next").addClass("disabled");
+                    } else if (currentView == "expired") {
+                        $("#tblListViewExpired tbody tr").css("cursor","default");
+                        $("#tblListViewExpired_paginate .pagination-panel-total").html(0);
+                        $("#tblListViewExpired_paginate .pagination-panel-input").val(0);
+                        $("#tblListViewExpired_paginate .prev, #tblListViewExpired_paginate .next").addClass("disabled");
+                    }
+                    $("#ajaxProcessingModal").modal("hide");
+
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+                    if (currentView == "inbox") {
+                        $("#tblListViewInbox_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
+                        maxPageInbox = totalPages;
+                        if (maxPageInbox == 1) {
+                            $("#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageInbox == 1) {
+                            $("#tblListViewInbox_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageInbox > 1 && maxPageInbox != currentPageInbox) {
+                            $("#tblListViewInbox_paginate .next").removeClass("disabled");
+                        }
+                        $("#tblListViewInbox_info").html(("" + totalElements).toBanglaNumber() + " এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে");
+                        $('#tblListViewInbox').dataTable().fnClearTable();
+                        $('#tblListViewInbox').dataTable().fnAddData(response.content);
+                    } else if (currentView == "outbox") {
+                        $("#tblListViewOutbox_paginate .pagination-panel-total").html(totalPages);
+                        maxPageOutbox = totalPages;
+                        if (maxPageOutbox == 1) {
+                            $("#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageOutbox == 1) {
+                            $("#tblListViewOutbox_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageOutbox > 1 && maxPageOutbox != currentPageOutbox) {
+                            $("#tblListViewOutbox_paginate .next").removeClass("disabled");
+                        }
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewOutbox_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewOutbox').dataTable().fnClearTable();
+                        $('#tblListViewOutbox').dataTable().fnAddData(response.content);
+                    } else if (currentView == "closed") {
+                        $("#tblListViewClosed_paginate .pagination-panel-total").html(totalPages);
+                        maxPageClosed = totalPages;
+                        if (maxPageClosed == 1) {
+                            $("#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageClosed == 1) {
+                            $("#tblListViewClosed_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageClosed > 1 && maxPageClosed != currentPageClosed) {
+                            $("#tblListViewClosed_paginate .next").removeClass("disabled");
+                        }
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewClosed_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewClosed').dataTable().fnClearTable();
+                        $('#tblListViewClosed').dataTable().fnAddData(response.content);
+                    } else if (currentView == "expired") {
+                        $("#tblListViewExpired_paginate .pagination-panel-total").html(totalPages);
+                        maxPageExpired = totalPages;
+                        if (maxPageExpired == 1) {
+                            $("#tblListViewExpired_paginate .prev, #tblListViewExpired_paginate .next").addClass("disabled");
+                        }
+                        if (currentPageExpired == 1) {
+                            $("#tblListViewExpired_paginate .prev").addClass("disabled");
+                        }
+                        if (maxPageExpired > 1 && maxPageExpired != currentPageExpired) {
+                            $("#tblListViewExpired_paginate .next").removeClass("disabled");
+                        }
+                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                        $("#tblListViewExpired_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                        $('#tblListViewExpired').dataTable().fnClearTable();
+                        $('#tblListViewExpired').dataTable().fnAddData(response.content);
+                    }
+                    $("#ajaxProcessingModal").modal("hide");
+                }
+            }
+        });
+    }
+
+    function getSearchURL() {
+        var array = ["caseNumber", "trackingNumber", "createdAtStart", "createdAtEnd", "serviceName", "designationName", "subject", "closeDateStart", "closeDateEnd", "serviceType", "status"];
+        var types = "types=";
+        var values = "values=";
+        var count = 0;
+        var SearchFieldNo;
+        if (currentView == "inbox") {
+            SearchFieldNo = 0;
+        } else if (currentView == "outbox") {
+            SearchFieldNo = 1;
+        } else if (currentView == "closed") {
+            SearchFieldNo = 2;
+        }
+        $($("tr.filter")[SearchFieldNo]).find("input").each(function(index) {
+            var value = $(this).val();
+            if (value != "") {
+                types = types + array[index] + ',';
+                values = values + value + ',';
+            }
+            count += 1;
+        })
+        $($("tr.filter")[0]).find("select").each(function(index) {
+            var value = $(this).val();
+            if (value != "") {
+                types = types + array[count] + ',';
+                values = values + encodeURIComponent(value) + ',';
+            }
+            count += 1;
+        })
+        types = types.substring(0, types.length - 1);
+        values = values.substring(0, values.length - 1);
+        var str = types + "&" + values;
+        return str;
+    }
+
+    function showNotification() {
+        if (hasAlert) {
+            $(".tab-content").prepend('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button><strong>' + alertTitle + '</strong> ' + alertBody + '</div>');
+        }
+    }
+</script>

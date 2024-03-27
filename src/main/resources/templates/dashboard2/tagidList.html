@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="tagidList" th:remove="tag">
+    <div class="panel-body" style="background: white;">
+        <div class="font-lg font-purple text-center">সকল আপিলকৃত অভিযোগসমূহের তালিকা</div>
+        <div id="tagidListTable">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr role="row" class="heading">
+                    <th rowspan="1"  class="text-center vertical-middle" style="vertical-align:  middle;"><span class="title" th:text="#{serial}"></span></th>
+                    <th rowspan="1"  class="text-center vertical-middle" style="vertical-align:  middle;"><span class="title" th:text="#{tracking.num}"></span></th>
+                    <th rowspan="1" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.view.table.subject}"></span></th>
+                    <th rowspan="1"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.view.table.date}"></span></th>
+                    <th rowspan="1"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{office.name}"></span></th>
+                    <th rowspan="1"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{tagid.date}"></span></th>
+                    <th rowspan="1"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{grievances.current.status.table.header}"></span></th>
+
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-5 col-md-5">
+                    <div class="dataTables_info" id="tagidListTable_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                </div>
+                <div class="col-md-7 col-sm-7">
+                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                        <div class="pagination-panel pull-right">
+                            <span th:text="#{page}"></span>
+                            <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                            <span th:text="#{of}"></span>
+                            <a href="javascript:;" class="btn btn-sm default prev disabled" style="cursor: pointer;">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <input class="pagination-panel-input input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" name="tagidListCurrentPage" value="০" type="text">
+                            <a href="javascript:;" class="btn btn-sm default next disabled" style="cursor: pointer;">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                            <span th:text="#{page.shown}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="tagidListScript">
+
+    var tagidListCurrentPage = 1, tagidListMaxPage = 1;
+
+    function getResolveTypeText(status) {
+        var text = "-";
+        switch(status) {
+            case "CLOSED_ACCUSATION_INCORRECT":
+                text = "অভিযোগের সত্যতা পাওয়া যায়নি";
+                break;
+            case "CLOSED_ACCUSATION_PROVED":
+                text = "অভিযোগের সত্যতা প্রমানিত";
+
+                break;
+            case "CLOSED_INSTRUCTION_EXECUTED":
+                text = "নিষ্পত্তি, সেবা প্রদানের নির্দেশনা প্রতিপালিত";
+                break;
+            case "CLOSED_ANSWER_OK":
+                text = "নিষ্পত্তি, উত্তর সন্তোষজনক";
+                break;
+            case "CLOSED_SERVICE_GIVEN":
+                text = "নিষ্পত্তি, সেবা প্রদান করা হয়েছে";
+                break;
+            case "CLOSED_OTHERS":
+                text = "নিষ্পত্তি (অন্যান্য)";
+                break;
+            case "REJECTED":
+                text = "নিষ্পত্তি (নথিজাত)";
+                break;
+            case "FORWARDED_OUT":
+                text = "অন্য দপ্তরে প্রেরিত";
+                break;
+            case "FORWARDED_IN":
+                text = "আওতাধীন দপ্তরে প্রেরিত";
+                break;
+            case "FORWARDED_TO_AO":
+                text = "আপিল কর্মকর্তার নিকট প্রেরিত";
+                break;
+            default:
+                text = "এখনো নিষ্পত্তি হয়নি";
+                break;
+        }
+        return text;
+    }
+
+    function loadTagidList(page) {
+        blockUI();
+        $("#tagidListTable [name='tagidListCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        $.ajax({
+            url: "/api/dashboard/tagid/list",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": itemPerPage
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $("#tagidListTable tbody tr").css("cursor","default");
+                    $("#tagidListTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#tagidListTable [name='tagidListCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#tagidListTable").find(".prev, .next").addClass("disabled");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $("#tagidListTable .pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    tagidListMaxPage = totalPages;
+                    if (tagidListMaxPage == 1) {
+                        $("#tagidListTable .prev, .next").addClass("disabled");
+                    }
+                    if (tagidListCurrentPage == 1){
+                        $("#tagidListTable .prev").addClass("disabled");
+                    }
+                    if (tagidListMaxPage > 1 && tagidListMaxPage!=tagidListCurrentPage){
+                        $("#tagidListTable .next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#tagidListTable_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#tagidListTable table').dataTable().fnClearTable();
+                    $('#tagidListTable table').dataTable().fnAddData(response.content);
+                    $('#tagidListTable').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+            }
+        });
+    }
+
+    function initTagidListTable() {
+        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        var table1 = $('#tagidListTable table');
+        var emptyTxt = (languageCode == 'en' ? "Sorry! No record found." : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": "<div class='text-center'>" + emptyTxt + "</div>",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "createdRow": function( row, data, dataIndex ) {
+                var currentRow = $(row);
+                currentRow.attr("data-toggle", "tooltip");
+                currentRow.attr("title", rowTitle);
+            },
+            columns: [{
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var serialNumber = (((tagidListCurrentPage - 1) * itemPerPage) + meta.row + 1);
+                    return "<div class='text-center'>" + ((languageCode == "en") ? serialNumber : ("" + serialNumber).toBanglaNumber()) + "</div>";
+                }
+            }, {
+                data: "trackingNumber",
+                render: function (data, type, row, meta) {
+                    return (languageCode == 'en' ? data.toEnglishNumber() : data.toBanglaNumber());
+                }
+            }, {
+                data: "subject",
+                render: function (data, type, row, meta) {
+                    return "<a href='viewGrievances.do?id=" + row.id + "' class='clickable-link tooltips' data-toggle='tooltip' title='" + "অভিযোগের বিস্তারিত দেখুন" + "'>" +  data + "</a>";
+                }
+            },{
+                data: "grievanceSubmissionDate",
+                render: function (data, type, row, meta) {
+                    var splittedParts = data.split(" ");
+                    return (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] );
+                }
+            }, {
+                data: "officeName",
+                render: function (data, type, row, meta) {
+                    return   data;
+                }
+            }, {
+                data: "dateOfNudge",
+                render: function (data, type, row, meta) {
+                    if(data) {
+                        var splittedParts = data.split(" ");
+                        return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] );
+                    } else {
+                        return "<div class='text-center bold'>-</div>";
+                    }
+                }
+            }, {
+                data: "currentStatus",
+                render: function (data, type, row, meta) {
+                    return  data;
+                }
+            }]
+        });
+
+
+
+        $("#tagidListTable .next").click(function(e) {
+            tagidListCurrentPage = tagidListCurrentPage + 1;
+            $("#tagidListTable .prev").removeClass("disabled");
+            if (tagidListCurrentPage == tagidListMaxPage) {
+                $("#tagidListTable .next").addClass("disabled");
+            }
+            if (tagidListCurrentPage > tagidListMaxPage) {
+                tagidListCurrentPage = tagidListMaxPage;
+            }
+            loadtagidList(tagidListCurrentPage);
+        });
+
+        $("#tagidListTable .prev").click(function(e) {
+            tagidListCurrentPage = tagidListCurrentPage - 1;
+            $("#tagidListTable .next").removeClass("disabled");
+            if (tagidListCurrentPage == 1) {
+                $("#tagidListTable .prev").addClass("disabled");
+            }
+            if (tagidListCurrentPage < 1) {
+                tagidListCurrentPage = 1;
+            }
+            loadtagidList(tagidListCurrentPage);
+        });
+
+        var paginationFieldDom = $("#tagidListTable [name='tagidListCurrentPage']");
+        paginationFieldDom.blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + paginationFieldDom.val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= tagidListMaxPage) {
+                    tagidListCurrentPage = curValue;
+                    if (tagidListCurrentPage == 1) {
+                        $("#tagidListTable .prev").addClass("disabled");
+                    } else {
+                        $("#tagidListTable .prev").removeClass("disabled");
+                    }
+                    if (tagidListCurrentPage == tagidListMaxPage) {
+                        $("#tagidListTable .next").addClass("disabled");
+                    } else {
+                        $("#tagidListTable .next").removeClass("disabled");
+                    }
+                    loadtagidList(tagidListCurrentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    paginationFieldDom.val( languageCode == 'en' ? ("" + tagidListCurrentPage) : ("" + tagidListCurrentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                paginationFieldDom.val(languageCode == 'en' ? ("" + tagidListCurrentPage) : ("" + tagidListCurrentPage).toBanglaNumber());
+            }
+        });
+    }
+</script>

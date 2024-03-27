@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="includes/admin_htmlhead :: htmlhead"></div>
+    <div th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'IncludeStyle'}"></div>
+</head>
+
+<body class="drawer drawer--left">
+<header role="banner">
+    <input type="hidden" name="showDrawerMenu" th:value="${showDrawerMenu}">
+    <button type="button" class="drawer-toggle drawer-hamburger">
+        <span class="sr-only"></span>
+        <span class="drawer-hamburger-icon"></span>
+    </button>
+    <nav class="drawer-nav" role="navigation">
+        <div class="user-profile-section" style="">
+            <div class="profile-usertitle">
+                <div class="profile-usertitle-name" th:text="${name}"></div>
+                <div class="profile-usertitle-job"></div>
+                <div class="profile-usertitle-office"></div>
+            </div>
+            <div class="profile profile-userroles">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title text-center">
+                            <span th:text="#{other.roles}"></span>
+                            <span class="extra-roles-count"></span>
+                        </h3>
+                    </div>
+                    <ul class="list-group other-roles">
+                        <li class="list-group-item font-purple"></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="profile-usermenu">
+            <div class="profile-action-title" th:text="#{actions}"></div>
+            <ul class="nav profile-action-items">
+                <li th:if="${grsUser==false && superAdmin==false}">
+                    <a th:href="@{viewGrievances.do}">
+                        <i class="fa fa-commenting"></i>
+                        <span th:text="#{manage.x(#{grievance})}"></span>
+                    </a>
+                </li>
+                <li th:if="${grsUser==false && superAdmin==false  && isAppealOfficer==true}">
+                    <a th:href="@{viewAppealGrievances.do}">
+                        <i class="fa fa-gavel"></i>
+                        <span th:text="#{manage.x(#{appeal})}"></span>
+                    </a>
+                </li>
+                <li th:if="${grsUser==false && (isGro || isHoo)}">
+                    <a th:href="@{dashboardMobile.do}">
+                        <i class="fa fa-line-chart"></i>
+                        <span th:text="#{dashboard}"></span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{addStaffGrievances.do}">
+                        <i class="fa fa-street-view"></i>
+                        <span th:text="#{staff.complaint}"></span>
+                    </a>
+                </li>
+                <li th:if="${isHoo}">
+                    <a th:href="@{addOfficialGrievances.do}">
+                        <i class="fa fa-institution"></i>
+                        <span th:text="#{official.complaint}"></span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{viewMyGrievances.do}">
+                        <i class="fa fa-tasks"></i>
+                        <span th:text="#{your.grievances.menu.text}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<main role="main">
+    <div class="page-content-white page-sidebar-closed">
+        <div class="page-wrapper">
+            <div th:replace="includes/admin_header :: header(${name})"></div>
+            <div class="clearfix"></div>
+            <div class="page-container">
+                <div th:replace="includes/admin_leftmenu :: leftMenu(${adminMenus},${lang})"></div>
+                <div th:class="${!isMobileLogin ? 'page-content-wrapper' : ''}">
+                    <div th:if="${fragmentPath!=null}">
+                        <div class="page-content" th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:replace="includes/admin_footer :: footer">...</div>
+    </div>
+    <div th:replace="includes/admin_footer_includes :: footer">...</div>
+    <div th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'IncludeScript'}"></div>
+    <script th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'Script'}"></script>
+    <!--<script th:if="${fragmentName=='viewGrievancesDetails'}" th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'TimelineScript'}">-->
+    <script src="https://idp.mygov.bd/js/widget.js?v=1.0.2"></script>
+    <script type="text/javascript">
+
+        jQuery(document).ready(function($) {
+
+            /*<![CDATA[*/
+
+            var token = /*[[${token}]]*/ '';
+
+            /*]]>*/
+            var tokenValue = "'" + document.getElementById('token').value + "'";
+            $('#sso-widget').ssoWidget({'token': tokenValue});
+
+        });
+
+    </script>
+    </div>
+</main>
+</body>
+
+</html>

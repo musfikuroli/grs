@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-content" th:fragment="viewRatingsAndFeedback">
+    <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="glyphicon glyphicon-dashboard"></i>
+                <span class="caption-subject bold uppercase" th:text="#{${#strings.equals(type, 'appeal') ? 'current.month.rating.and.feedback.of.appeal' : 'current.month.rating.and.feedback.of.grievance'}}"></span>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <input type="hidden" name="officeId" th:value="${officeId}">
+            <input type="hidden" name="type" th:value="${type}">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="ratingAndFeedbackTable">
+                    <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th class="text-center" th:text="#{casenumber}"></th>
+                        <th class="text-center" th:text="#{track.num}"></th>
+                        <th class="text-center" th:text="#{subject}"></th>
+                        <th class="text-center" th:text="#{service.name.table.header}"></th>
+                        <th class="text-center" th:text="#{type}"></th>
+                        <th class="text-center" th:text="#{rating.out.of.five}"></th>
+                        <th class="text-center" th:text="#{feedback}"></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"> &nbsp;&nbsp; </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:fragment="viewRatingsAndFeedbackScript">
+    $(document).ready(function () {
+        var officeId = $("[name='officeId']").val();
+        var type = $("[name='type']").val();
+        var isAppeal = (type == "appeal");
+        var complaintType = isAppeal ? "appeal" : "grievance";
+        var isEnglish = (languageCode == "en");
+        $("#ajaxProcessingModal").modal("show");
+        $.getJSON("/api/offices/" + officeId + "/complaints/" + complaintType + "/rated-in-current-month", function(response) {
+            var grievanceList = response;
+            var attrSuffix = isEnglish ? "English" : "Bangla";
+            var tbody = "";
+            if(grievanceList.length > 0) {
+                _.each(grievanceList, function(grievance, index) {
+                    var serial = index + 1;
+                    var caseNumber = grievance["caseNumber" + attrSuffix];
+                    var trackingNumber = grievance["trackingNumber" + attrSuffix];
+                    var ratingFieldName = isAppeal ? "appealRating" : "rating";
+                    var feedbackFieldName = isAppeal ? "appealFeedbackComments" : "feedbackComments";
+                    var rating = (grievance[ratingFieldName] ? (isEnglish ? grievance[ratingFieldName] : ("" + grievance[ratingFieldName]).toBanglaNumber()) : (isEnglish ? "0" : "০"));
+                    tbody += "<tr>" +
+                        "<td class='text-center'>" + (isEnglish ? serial : ("" + serial).toBanglaNumber()) + "</td>" +
+                        "<td class='text-center'>" + (caseNumber ? (isEnglish ? caseNumber : caseNumber.toBanglaNumber()) : "-") + "</td>" +
+                        "<td class='text-center'>" + (trackingNumber ? (isEnglish ? trackingNumber : trackingNumber.toBanglaNumber()) : "-") + "</td>" +
+                        "<td><a href='viewGrievances.do?id=" + grievance.id + "' target='_blank' class='tooltips' data-toggle='tooltip' title='" + (isEnglish ? "View grievance details" : "অভিযোগের বিস্তারিত দেখুন") + "'>" +  grievance.subject + "</a></td>" +
+                        "<td>" + grievance["serviceName" + attrSuffix] + "</td>" +
+                        "<td class='text-center'>" + grievance["type" + attrSuffix] + "</td>" +
+                        "<td class='text-center'>" + rating + "</td>" +
+                        "<td>" + (grievance[feedbackFieldName] ? grievance[feedbackFieldName] : "-") + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                var message = isEnglish ? "Sorry! no data found" : "দূঃখিত! কোনো তথ্য পাওয়া যায়নি";
+                tbody = "<tr><td class='text-center' colspan='6'>" + message + "</td></tr>";
+            }
+            var tbodyDOM = $("#ratingAndFeedbackTable tbody");
+            tbodyDOM.html(tbody);
+            tbodyDOM.find("[data-toggle='tooltip']").tooltip();
+        }).always(function () {
+            $("#ajaxProcessingModal").modal("hide");
+        });
+    });
+</script>

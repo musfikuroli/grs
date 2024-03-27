@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="grievanceRegister" th:remove="tag">
+    <div id="registerTablePrintBody" class="panel-body" style="background: white;">
+        <div class="font-lg font-purple text-center" th:text="#{register.view.title}"></div>
+
+        <div id="registerTable">
+            <a class="btn btn-outline btn-success col-md-1 print-report pull-right remove-on-print" style="cursor: pointer; color: #ffffff;">
+                <i class="fa fa-print"></i>&nbsp;
+                <span th:text="#{print}"></span>
+            </a>
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr role="row" class="heading">
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align:  middle;"><span class="title" th:text="#{serial}"></span></th>
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align:  middle;"><span class="title" th:text="#{tracking.num}"></span></th>
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.view.table.date}"></span></th>
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.name}"></span>,<br><span class="title" th:text="#{register.mobile.email}"></span></th>
+                    <th class="text-center"><span class="title" th:text="#{grievance.medium}"></span></th>
+                    <th class="text-center"><span class="title" th:text="#{register.type}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.service}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.view.table.subject}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.closed.date}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{resolve.type}"></span></th>
+                </tr>
+                <tr role="row" class="heading">
+                    <th class="text-center"><span class="title" th:text="#{grievance.medium.names}"></span></th>
+                    <th class="text-center"><span class="title" th:text="#{sheba.classification}"></span></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="row remove-on-print">
+                <div class="col-sm-5 col-md-5">
+                    <div class="dataTables_info" id="registerTable_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                </div>
+                <div class="col-md-7 col-sm-7">
+                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                        <div class="pagination-panel pull-right">
+                            <span th:text="#{page}"></span>
+                            <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                            <span th:text="#{of}"></span>
+                            <a href="javascript:;" class="btn btn-sm default prev disabled" style="cursor: pointer;">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <input class="pagination-panel-input input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" name="grievanceCurrentPage" value="০" type="text">
+                            <a href="javascript:;" class="btn btn-sm default next disabled" style="cursor: pointer;">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                            <span th:text="#{page.shown}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="grievanceRegisterScript">
+
+    var grievanceCurrentPage = 1, grievanceMaxPage = 1;
+
+    function getResolveTypeText(status) {
+        var text = "-";
+        switch(status) {
+            case "CLOSED_ACCUSATION_INCORRECT":
+                text = "অভিযোগের সত্যতা পাওয়া যায়নি";
+                break;
+            case "CLOSED_ACCUSATION_PROVED":
+                text = "অভিযোগের সত্যতা প্রমানিত";
+
+                break;
+            case "CLOSED_INSTRUCTION_EXECUTED":
+                text = "নিষ্পত্তি, সেবা প্রদানের নির্দেশনা প্রতিপালিত";
+                break;
+            case "CLOSED_ANSWER_OK":
+                text = "নিষ্পত্তি, উত্তর সন্তোষজনক";
+                break;
+            case "CLOSED_SERVICE_GIVEN":
+                text = "নিষ্পত্তি, সেবা প্রদান করা হয়েছে";
+                break;
+            case "CLOSED_OTHERS":
+                text = "নিষ্পত্তি (অন্যান্য)";
+                break;
+            case "REJECTED":
+                text = "নিষ্পত্তি (নথিজাত)";
+                break;
+            case "FORWARDED_OUT":
+                text = "অন্য দপ্তরে প্রেরিত";
+                break;
+            case "FORWARDED_IN":
+                text = "আওতাধীন দপ্তরে প্রেরিত";
+                break;
+            case "FORWARDED_TO_AO":
+                text = "আপিল কর্মকর্তার নিকট প্রেরিত";
+                break;
+            default:
+                text = "এখনো নিষ্পত্তি হয়নি";
+                break;
+        }
+        return text;
+    }
+
+    function loadGrievanceRegister(page) {
+        blockUI();
+        $("#registerTable [name='grievanceCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        $.ajax({
+            url: "/api/dashboard/offices/" + $("[name='officeId']").val() + "/register",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": itemPerPage
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $("#registerTable tbody tr").css("cursor","default");
+                    $("#registerTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#registerTable [name='grievanceCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#registerTable").find(".prev, .next").addClass("disabled");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $("#registerTable .pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    grievanceMaxPage = totalPages;
+                    if (grievanceMaxPage == 1) {
+                        $("#registerTable .prev, .next").addClass("disabled");
+                    }
+                    if (grievanceCurrentPage == 1){
+                        $("#registerTable .prev").addClass("disabled");
+                    }
+                    if (grievanceMaxPage > 1 && grievanceMaxPage!=grievanceCurrentPage){
+                        $("#registerTable .next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#registerTable_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#registerTable table').dataTable().fnClearTable();
+                    $('#registerTable table').dataTable().fnAddData(response.content);
+                    $('#registerTable').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+                $("#registerTable tr").css('cursor', 'pointer');
+            }
+        });
+    }
+
+    function printRegister() {
+        $("#registerTablePrintBody .print-report").on("click", function () {
+            var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+            mywindow.document.write('<html><head>');
+            mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+            var table = $("#registerTablePrintBody").clone().find('.remove-on-print').remove().end();
+            table.find('table').removeAttr('style')
+
+            mywindow.document.write(table.html());
+            mywindow.document.write('</body></html>');
+            mywindow.print();
+            mywindow.close();
+            /*$("#registerTablePrintBody").clone()
+                .css("padding-top", "50px")
+                .find(".remove-on-print")
+                .remove()
+                .end()
+                .printThis({
+                    importStyle: true,
+                    importCSS: true,
+                    formValues: false
+                });*/
+        });
+    }
+
+    function initGrievanceRegisterTable() {
+        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        var table1 = $('#registerTable table');
+        var emptyTxt = (languageCode == 'en' ? "Sorry. No grievances found." : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": "<div class='text-center'>" + emptyTxt + "</div>",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bAutoWidth": true,
+            "createdRow": function( row, data, dataIndex ) {
+                var currentRow = $(row);
+                currentRow.attr("data-toggle", "tooltip");
+                currentRow.attr("title", rowTitle);
+            },
+            columns: [{
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var serialNumber = (((grievanceCurrentPage - 1) * itemPerPage) + meta.row + 1);
+                    return "<div class='text-center'>" + ((languageCode == "en") ? serialNumber : ("" + serialNumber).toBanglaNumber()) + "</div>";
+                }
+            }, {
+                data: "trackingNumber",
+                render: function (data, type, row, meta) {
+                    return (languageCode == 'en' ? data.toEnglishNumber() : data.toBanglaNumber());
+                }
+            }, {
+                data: "dateBng",
+                render: function (data, type, row, meta) {
+                    var splittedParts = data.split(" ");
+                    return (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] );
+                }
+            },
+
+
+                {
+                data: "complainantName",
+                render: function (data, type, row, meta) {
+                    var complainantInfo = "";
+                    if (data) {
+                        complainantInfo = "<div class='bold'>" + data + "</div>";
+                    } else {
+                        complainantInfo = "<div class='bold'>নাম প্রকাশে অনিচ্ছুক</div>";
+                    }
+                    if(row.complainantMobile) {
+                        complainantInfo += "<div>" + row.complainantMobile.toBanglaNumber() + "</div>";
+                    }
+                    if(row.complainantEmail) {
+                        complainantInfo += "<div><a href='mailto:" + row.complainantEmail + "' class='clickable-link tooltips' data-toggle='tooltip' title='" + "ইমেইল করুন" + "'>" + row.complainantEmail + "</a></div>";
+                    }
+                    return complainantInfo;
+                }
+            }, {
+                data: "medium",
+                    'visible' : false,
+                    render: function (data, type, row, meta) {
+                    return "<div class='text-center'>" + MEDIUMS[data] + "</div>";
+                }
+            }, {
+                data: "serviceType",
+                    'visible' : false,
+                render: function (data, type, row, meta) {
+                    return "<div class='text-center'>" + SERVICE_TYPES[data] + "</div>";
+                }
+            }, {
+
+                data: "service",
+                    'visible' : false
+            }, {
+                data: "subject",
+                'visible' : false,
+                render: function (data, type, row, meta) {
+                    return "<a href='viewGrievances.do?id=" + row.id + "' class='clickable-link tooltips' data-toggle='tooltip' title='" + "অভিযোগের বিস্তারিত দেখুন" + "'>" +  data + "</a>";
+                }
+            },
+                {
+                data: "closingOrRejectingDateBng",
+                render: function (data, type, row, meta) {
+                    if(data) {
+                        var splittedParts = data.split(" ");
+                        return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                    } else {
+                        return "<div class='text-center bold'>-</div>";
+                    }
+                }
+            }, {
+                data: "currentStatus",
+                render: function (data, type, row, meta) {
+                    return getResolveTypeText(data);
+                }
+            }]
+        });
+
+        table1.on('click', 'tr', function () {
+            var table = table1.DataTable();
+            var data = table.row(this).data();
+            if (data != undefined) {
+                if ( $(this).hasClass('active') ) {
+                    $(this).removeClass('active');
+                }
+                else {
+                    table.$('tr.selected').removeClass('active');
+                    $(this).addClass('active');
+                }
+
+                var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+                $.blockUI({
+                    message: '<h1>  ' + msg + '</h1>'
+                });
+                window.setTimeout(function() {
+                    window.location.href = "/viewGrievances.do?id=" + data.id;
+                }, 500);
+            }
+        });
+
+        $("#registerTable .next").click(function(e) {
+            grievanceCurrentPage = grievanceCurrentPage + 1;
+            $("#registerTable .prev").removeClass("disabled");
+            if (grievanceCurrentPage == grievanceMaxPage) {
+                $("#registerTable .next").addClass("disabled");
+            }
+            if (grievanceCurrentPage > grievanceMaxPage) {
+                grievanceCurrentPage = grievanceMaxPage;
+            }
+            loadGrievanceRegister(grievanceCurrentPage);
+        });
+
+        $("#registerTable .prev").click(function(e) {
+            grievanceCurrentPage = grievanceCurrentPage - 1;
+            $("#registerTable .next").removeClass("disabled");
+            if (grievanceCurrentPage == 1) {
+                $("#registerTable .prev").addClass("disabled");
+            }
+            if (grievanceCurrentPage < 1) {
+                grievanceCurrentPage = 1;
+            }
+            loadGrievanceRegister(grievanceCurrentPage);
+        });
+
+        var paginationFieldDom = $("#registerTable [name='grievanceCurrentPage']");
+        paginationFieldDom.blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + paginationFieldDom.val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= grievanceMaxPage) {
+                    grievanceCurrentPage = curValue;
+                    if (grievanceCurrentPage == 1) {
+                        $("#registerTable .prev").addClass("disabled");
+                    } else {
+                        $("#registerTable .prev").removeClass("disabled");
+                    }
+                    if (grievanceCurrentPage == grievanceMaxPage) {
+                        $("#registerTable .next").addClass("disabled");
+                    } else {
+                        $("#registerTable .next").removeClass("disabled");
+                    }
+                    loadGrievanceRegister(grievanceCurrentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    paginationFieldDom.val( languageCode == 'en' ? ("" + grievanceCurrentPage) : ("" + grievanceCurrentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                paginationFieldDom.val(languageCode == 'en' ? ("" + grievanceCurrentPage) : ("" + grievanceCurrentPage).toBanglaNumber());
+            }
+        });
+    }
+</script>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="includes/htmlhead :: htmlhead">
+
+</head>
+<body>
+
+<div></div>
+<div class="container">
+    <div class="form-inline">
+        <select id="ministryDropDown" class="form-control"></select>
+        <select id="layerDropDown" class="form-control"></select>
+        <select id="officeDropDown" class="form-control"></select>
+    </div>
+
+    <form id="serviceSelectFor">
+        <table class="table table-bordered table-hover" id="serviceSelectTable">
+        </table>
+    </form>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+function CallAjax(url, onSuccess) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: onSuccess,
+    });
+}
+
+function populateMinistryDropDown(data) {
+	$select = $('#ministryDropDown');
+    $select.html('');
+    $('#layerDropDown').html('');
+    $('#officeDropDown').html('');
+    $('#serviceSelectTable').html('');
+    $select.append('<tbody>');
+    $.each(data.objects, function(key, val) {
+        $select.append('<option value="' + val.id + '">' + val.name + '</option>');
+    })
+    $select.append('</tbody>');
+    $('#ministryDropDown').trigger('change');
+}
+
+function populateLayerDropDown(data) {
+	$select = $('#layerDropDown');
+    $select.html('');
+    $('#officeDropDown').html('');
+    $('#serviceSelectTable').html('');
+    $select.append('<tbody>');
+    $.each(data.objects, function(key, val) {
+        $select.append('<option value="' + val.id + '">' + val.name + '</option>');
+    })
+    $select.append('</tbody>');
+    $('#layerDropDown').trigger('change');
+}
+
+function populateOfficeDropDown(data) {
+    $('#serviceSelectTable').html('');
+	$select = $('#officeDropDown');
+    $select.html('');
+    $select.append('<tbody>');
+    $.each(data.objects, function(key, val) {
+        $select.append('<option value="' + val.id + '">' + val.name + '</option>');
+    })
+    $select.append('</tbody>');
+    $('#officeDropDown').trigger('change');
+}
+
+function populateServiceTable(data) {
+	$select = $('#serviceSelectTable');
+    $select.html('');
+    if (data.services.length > 0) {
+        $select.append('<tr><th class=\"text-center\">Select</th><th class=\"text-center\">ক্রমিক নং</th><th class=\"text-center\">সেবার নাম</th><th class=\"text-center\">সেবা প্রদান পদ্ধতি</th><th class=\"text-center\">প্রয়োজনীয় কাগজপত্র এবং প্রাপ্তিস্থান</th><th class=\"text-center\">সেবার মুল্য এবং পরিশোধ পদ্ধতি</th><th class=\"text-center\">সেবা প্রদানের সময়সীমা</th><th class=\"text-center\">দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি, ফোন নম্বর ও ইমেইল)</th></tr>');
+        $select.append('<tr><th class=\"text-center\"></th><th class=\"text-center\">(১)</th><th class=\"text-center\">(২)</th><th class=\"text-center\">(৩)</th><th class=\"text-center\">(৪)</th><th class=\"text-center\">(৫)</th><th class=\"text-center\">(৬)</th><th class=\"text-center\">(৭)</th></tr>');
+    } else {
+        $select.append('<h1 class=\"text-danger\">No Services found</h1>');
+    }
+    var i = 0;
+    $select.append('<tbody>');
+    $.each(data.services, function(key, val) {
+        $select.append('<tr><td><input type=\"radio\" name=\"gender\" value=\"male\"></td><td>' + val.id + '</td><td>' + val.name + '</td><td>' + val.procedure + '</td><td>' + val.documentsAndLocation + '</td><td>' + val.payment + '</td><td>' + val.deadlineDays + '</td><td id=\"responsible' + val.id + '\"></td></tr>');
+        $officer = $('#responsible' + val.id);
+        console.log($officer);
+        $.each(val.responsible, function(key2, value) {
+            $officer.append(value.name + '<br>' + value.designation + '<br>' + value.phoneNumber + '<br>' + value.email + '<br><br>');
+        })
+    })
+    $select.append('<tbody>');
+}
+function initializeMinistryDropDown(){
+	var url = 'http://127.0.0.1:8080/api/office/ministry';
+	CallAjax(url, populateMinistryDropDown);
+}
+function ministryDropDownEventHandler(){
+	var url = 'http://127.0.0.1:8080/api/office/layer/'+$(this).find( "option:selected").val();
+	CallAjax(url, populateLayerDropDown);
+}
+function layerDropDownEventHandler(){
+	var url = 'http://127.0.0.1:8080/api/office/'+$('#ministryDropDown').find( "option:selected").val()+'/'+$('#layerDropDown').find( "option:selected").val();
+	CallAjax(url, populateOfficeDropDown);
+}
+function officeDropDownEventHandler(){
+	var url = 'http://127.0.0.1:8080/api/office/service/' + $('#officeDropDown').find("option:selected").val();
+	CallAjax(url, populateServiceTable);
+}
+
+$(document).ready(function() {
+	initializeMinistryDropDown();
+	$('#ministryDropDown').on('change', ministryDropDownEventHandler );
+	$('#layerDropDown').on('change', layerDropDownEventHandler );
+	$('#officeDropDown').on('change', officeDropDownEventHandler );
+});
+
+</script>
+
+</body>
+</html>

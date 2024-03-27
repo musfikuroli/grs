@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="appealFromOffices" th:remove="tag">
+    <div class="panel-body" style="background: white;">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="appealCountBySources">
+                        <thead>
+                        <tr class="text-center">
+                            <th> ক্রমিক </th>
+                            <th> আপিলের উৎস </th>
+                            <th> আপিলের সংখ্যা </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr><td colspan="3" class="text-center">কোনো তথ্য পাওয়া যায়নি</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div id="ao-appeal-source-chart" class="chart" style="height: 500px;"></div>
+            </div>
+        </div>
+    </div>
+</div>

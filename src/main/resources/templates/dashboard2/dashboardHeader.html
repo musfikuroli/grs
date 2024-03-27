@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<div th:fragment="dashboardHeader" th:remove="tag">
+    <ul class="app-menu" id="left-menu-tabs">
+        <li th:if="${canViewGrievanceDashboard}">
+            <a href="javascript:;" class="app-menu__item active" id="tab0">
+                <i class="app-menu__icon fa fa-home"></i>
+                <span class="app-menu__label">দপ্তরের ড্যাশবোর্ড</span>
+            </a>
+        </li>
+<!--        <li th:if="${canViewGrievanceDashboard}">-->
+<!--            <a href="javascript:;" class="app-menu__item" id="tabSafetyNetDashboard">-->
+<!--                <i class="app-menu__icon fa fa-home"></i>-->
+<!--                <span class="app-menu__label">সেফটি নেট ড্যাশবোর্ড</span>-->
+<!--            </a>-->
+<!--        </li>-->
+        <th:block th:if="${isCentralDashboardRecipient}">
+            <li>
+                <a href="javascript:;" class="app-menu__item" id="tabCentral">
+                    <i class="app-menu__icon fa fa-institution"></i>
+                    <span class="app-menu__label">অভিযোগ প্রতিকার ব্যবস্থাপনার <br>সামগ্রিক চিত্র</span>
+                </a>
+            </li>
+        </th:block>
+        <li th:if="${isCellGRO}">
+            <a href="javascript:;" class="app-menu__item" id="tabCell">
+                <i class="app-menu__icon fa fa-star"></i>
+                <span class="app-menu__label">অভিযোগ ব্যবস্থাপনা সেলের <br>ড্যাশবোর্ড</span>
+            </a>
+        </li>
+        <li th:if="${isDivisionLevelFC || isDistrictLevelFC}">
+            <a href="javascript:;" class="app-menu__item" id="tabCoordinator">
+                <i class="app-menu__icon fa fa-street-view"></i>
+                <span class="app-menu__label">মাঠ পর্যায়ের সমন্বয়কের ড্যাশবোর্ড</span>
+            </a>
+        </li>
+
+        <li id="circularMenu" data-toggle="collapse" data-target="#circularMenuSection" style="cursor: pointer">
+            <div class="app-menu__item" style="background: #000000 ">
+                <i class="app-menu__icon fa fa-line-chart"></i>
+                <span class="app-menu__label">প্রতিবেদনসমূহ</span>
+            </div>
+        </li>
+
+        <li id="circularMenuSection" class="collapse">
+            <ul class="p-0" style="background-color:#757484;list-style: none">
+                <li th:if="${isCentralDashboardRecipient || isMinistryLevelGro}">
+                    <a href="javascript:;" class="app-menu__item" id="tabCustomReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">দপ্তরসমূহের সময়ভিত্তিক প্রতিবেদন</span>
+                    </a>
+                </li>
+                <li th:if="${canViewGrievanceDashboard}">
+                    <a href="javascript:;" class="app-menu__item" id="tabMonthlyReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">মাসিক প্রতিবেদন</span>
+                    </a>
+                </li>
+                <li th:if="${isCentralDashboardRecipient || isMinistryLevelGro}">
+                    <a href="javascript:;" class="app-menu__item" id="tabMinistryReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">মন্ত্রণালয় ভিত্তিক</span>
+                    </a>
+                </li>
+                <li th:if="${isCentralDashboardRecipient || isMinistryLevelGro}">
+                    <a href="javascript:;" class="app-menu__item" id="tabLayerWiseReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">স্তরভিত্তিক </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" class="app-menu__item" id="tabLocationBasedReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">ভৌগোলিক অবস্থান ভিত্তিক</span>
+                    </a>
+                </li>
+                <li th:if="${isCentralDashboardRecipient || isMinistryLevelGro}">
+                    <a href="javascript:;" class="app-menu__item" id="tabUpazilaWiseGrievanceReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">সামাজিক সুরক্ষা প্রোগ্রাম</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+
+        <th:block th:if="${canViewGrievanceDashboard}">
+            <li id="grievanceManagementMenu" data-toggle="collapse" data-target="#grievanceManagementMenuSection" style="cursor: pointer">
+                <div class="app-menu__item" style="background: #000000;">
+                    <i class="app-menu__icon fa fa-file-o"></i>
+                    <span class="app-menu__label">দপ্তরের অভিযোগ ব্যবস্থাপনার চিত্র</span>
+                </div>
+            </li>
+            <!--            <li>-->
+            <!--                <a href="javascript:;" class="app-menu__item" id="tabOfficeSetUpMissing">-->
+            <!--                    <i class="app-menu__icon fa fa-angle-right"></i>-->
+            <!--                    <span class="app-menu__label">GRS এ দপ্তর সেটআপ (অনিযুক্ত)</span>-->
+            <!--                </a>-->
+            <!--            </li>-->
+            <li id="grievanceManagementMenuSection" class="collapse">
+                <ul class="p-0" style="background-color:#757484;list-style: none">
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabGrievanceRegister">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">অভিযোগ রেজিস্টার</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabGrievanceExpired">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">সময় অতিক্রান্ত অভিযোগ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabGrievanceResolved">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">নিষ্পন্ন অভিযোগ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabCountBySections">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">শাখাভিত্তিক বিভাজন</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabCountByServices">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">সেবাভিত্তিক বিভাজন</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabGrievancesFeedback">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">প্রতিক্রিয়া</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabGrievanceCharts">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">চিত্রলেখ</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </th:block>
+
+        <th:block th:if="${canViewAppealAndSubOfficeDashboard}">
+            <li id="appealManagementMenu" data-toggle="collapse" data-target="#appealManagementMenuSection" style="cursor: pointer">
+                <div class="app-menu__item" style="background: #000000;">
+                    <i class="app-menu__icon fa fa-gavel"></i>
+                    <span class="app-menu__label">দপ্তরের আপিল ব্যবস্থাপনার চিত্র</span>
+                </div>
+            </li>
+
+            <li id="appealManagementMenuSection" class="collapse">
+                <ul class="p-0" style="background-color:#757484;list-style: none">
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabAppealRegister">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">আপিল রেজিস্টার</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabAppealExpired">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">সময় অতিক্রান্ত আপিল</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabAppealResolved">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">নিষ্পন্ন আপিল</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabCountByChildOffices">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">দপ্তরভিত্তিক বিভাজন</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabAppealsFeedback">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">প্রতিক্রিয়া</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabAppealCharts">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">চিত্রলেখ</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li id="underCoveredDepartmentMenu" data-toggle="collapse" data-target="#underCoveredDepartmentMenuSection" style="cursor: pointer">
+                <div class="app-menu__item" style="background: #000000;">
+                    <i class="app-menu__icon fa fa-sitemap"></i>
+                    <span class="app-menu__label">আওতাধীন দপ্তরের চিত্র</span>
+                </div>
+            </li>
+
+            <li id="underCoveredDepartmentMenuSection" class="collapse">
+                <ul class="p-0" style="background-color:#757484;list-style: none">
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabChildOfficesStatus">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">আওতাধীন দপ্তরের অভিযোগ <br>নিষ্পত্তির চিত্র</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="app-menu__item" id="tabChildOfficesReports">
+                            <i class="app-menu__icon fa fa-angle-right"></i>
+                            <span class="app-menu__label">আওতাধীন দপ্তরের সর্বশেষ <br>মাসের প্রতিবেদন</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </th:block>
+
+        <th:block th:if="${canViewGrievanceDashboard}">
+            <li>
+                <a href="javascript:;" class="app-menu__item" id="tabAppealedComplaints">
+                    <i class="app-menu__icon fa fa-tasks"></i>
+                    <span class="app-menu__label">আপিলকৃত অভিযোগসমূহের তালিকা</span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:;" class="app-menu__item" id="tabTagidList">
+                    <i class="app-menu__icon fa fa-tasks"></i>
+                    <span class="app-menu__label" th:text="#{tagid.list}"></span>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:;" class="app-menu__item" id="tabSuggestions">
+                    <i class="app-menu__icon icon-speech"></i>
+                    <span class="app-menu__label">পরামর্শের তালিকা</span>
+                </a>
+            </li>
+        </th:block>
+
+    </ul>
+</div>

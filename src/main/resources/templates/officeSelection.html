@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="officeSelection">
+    <div class="">
+        <input th:id="searchOffice + ${selectionType ?: ''}" class="form-control" style="font-size: 14px;"
+               th:placeholder="#{type.to.search.office}"/>
+        <span class="font-red error-text" style="display: none"
+              th:text="#{no.office.found}">কোনো দপ্তর পাওয়া যায়নি</span>
+    </div>
+    <div class="form-inline text-center" style="width: 80%">
+        <span>অথবা</span>
+    </div>
+    <div class="form-inline" th:id="officeSelectionOptions + ${selectionType ?: ''}">
+        <div th:replace="officeSelection :: officeSelectionDropdowns" th:remove="tag">
+        </div>
+    </div>
+</div>
+
+<div th:fragment="officeSelectionDropdowns">
+    <select th:name="officeLayers" th:id="officeLayers + ${selectionType ?: ''}" class="select2 form-control"
+            data-width="180px">
+        <option value="" selected disabled th:text="#{select.x(#{office.type})}"></option>
+        <option value="1" th:text="#{option.ministry.division}"></option>
+        <option value="2" th:text="#{option.directorate}"></option>
+        <option value="3" th:text="#{option.other.office}"></option>
+        <option value="4" th:text="#{option.divisional.office}"></option>
+        <option value="7" th:text="#{option.regional.office}"></option>
+        <option value="5" th:text="#{option.district.office}"></option>
+        <option value="6" th:text="#{option.upazilla.office}"></option>
+        <option value="0" th:text="#{cell}"></option>
+    </select>
+    <select th:id="firstSelection + ${selectionType ?: ''}" class="select2 form-control input-inline" data-width="260px"
+            style="display: none;"></select>
+    <select th:id="secondSelection + ${selectionType ?: ''}" class="select2 form-control input-inline"
+            data-width="260px" style="display: none;"></select>
+</div>
+
+<script th:inline="javascript" th:fragment="officeSelectionScript">
+    /*<![CDATA[*/
+    const currentUserOfficeId = /*[[${officeId}]]*/ -1;
+    /*]]>*/
+    /*<![CDATA[*/
+    const showAllOffices = /*[[${showAllOffices}]]*/ false;
+    /*]]>*/
+    /*<![CDATA[*/
+    const showChildOfficesOnly = /*[[${showChildOfficesOnly}]]*/ false;
+    /*]]>*/
+    /*<![CDATA[*/
+    const list = /*[[${searchableOffices}]]*/ [];
+    /*]]>*/
+    /*<![CDATA[*/
+    const layerLevel = /*[[${layerLevel}]]*/ [];
+    /*]]>*/
+    /*<![CDATA[*/
+    const isCentralDashboardUser = /*[[${isCentralDashboardUser}]]*/ [];
+
+    /*]]>*/
+
+    function getLanguageVersion(object) {
+        return (languageCode == "en" ? object.nameEnglish : object.nameBangla);
+    }
+
+    function getSelectedOfficeId() {
+        return $('#secondSelection').val();
+    }
+
+    function getSelectedOfficeId(tag) {
+        return $('#secondSelection' + tag).val();
+    }
+
+    function getSelectedOfficeName(tag) {
+        return $('#secondSelection' + tag + " :selected").text();
+    }
+
+    function getSelectedOfficeOriginId(tag) {
+        return $('#firstSelection' + tag).val();
+    }
+
+    function isOfficeSelectionValid() {
+        var officeId = getSelectedOfficeId();
+        return officeId != null && officeId.length > 0;
+    }
+
+    function isOfficeSelectionValid(tag) {
+        var officeId = getSelectedOfficeId(tag);
+        return officeId != null && officeId.length > 0;
+    }
+
+    function clearAll(tag) {
+        if ($("#firstSelection" + tag).hasClass("select2-hidden-accessible")) {
+            $("#firstSelection" + tag).select2("destroy");
+            $("#firstSelection" + tag).hide();
+        }
+        if ($("#secondSelection" + tag).hasClass("select2-hidden-accessible")) {
+            $("#secondSelection" + tag).select2("destroy");
+            $("#secondSelection" + tag).hide();
+        }
+        officeId = null;
+    }
+
+    function clearSecond(tag) {
+
+        if ($("#secondSelection" + tag).hasClass("select2-hidden-accessible")) {
+            $("#secondSelection" + tag).select2("destroy");
+            $("#secondSelection" + tag).hide();
+        }
+        officeId = null;
+    }
+
+    function sortObjectsByProperty(objectList, propName) {
+        return objectList.sort(function (a, b) {
+            return a[propName].trim().replace(" ", "") > b[propName].trim().replace(" ", "") ? 1 : -1;
+        });
+    }
+
+    function getOfficesByOfficeLayerId(id, tag, name, flag) {
+        var firstSelect = $("#firstSelection" + tag);
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        if (showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices == true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        name = name || "";
+
+        $.getJSON("/api/officelayers/" + id + urlPartForGrsEnabled, function (result) {
+            var secondSelect = $("#secondSelection" + tag),
+                isEnglish = (languageCode == "en"),
+                propName = isEnglish ? "nameEnglish" : "nameBangla",
+                defaultText = isEnglish ? ("Please Select " + name) : (name + " বাছাই করুন"),
+                noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+            sortObjectsByProperty(result, propName);
+            secondSelect.empty();
+            secondSelect.append("<option value='null' selected disabled>" + placeholder + "</option>");
+
+            if (typeof flag != 'undefined' && ((flag == 'appendAllIfExist' && result.length > 0) || (flag == 'appendAll'))) {
+                allOfficesText = isEnglish ? "All Offices" : "সকল অফিস";
+                secondSelect.append("<option originid='null' value='9999'>" + allOfficesText + "</option>");
+            }
+
+            $.each(result, function (i, field) {
+                secondSelect.append("<option originid='" + field.officeOriginId + "' value='" + field.id + "'>" + field[propName] + "</option>");
+            });
+            secondSelect.select2();
+            secondSelect.show();
+            secondSelect.select2("open");
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+
+    function populateFirstLayerWithData(result, tag, name) {
+        var firstSelection = $("#firstSelection" + tag),
+            isEnglish = (languageCode == "en"),
+            propName = isEnglish ? "officeNameEnglish" : "officeNameBangla",
+            defaultText = isEnglish ? ("Please Select " + name) : (name + " বাছাই করুন"),
+            noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+            placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+        sortObjectsByProperty(result, propName);
+        firstSelection.empty();
+        firstSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+        $.each(result, function (i, field) {
+            firstSelection.append("<option value='" + field.id + "'>" + field[propName] + "</option>");
+        });
+        firstSelection.select2();
+        firstSelection.show();
+        firstSelection.select2("open");
+        $("#secondSelection" + tag).hide();
+    }
+
+    function getOfficeOriginsByOfficeLayerId(id, tag, name, flag) {
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        if (showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices == true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        name = name || "";
+        $.getJSON("/api/office-origin/" + id + urlPartForGrsEnabled, function (result) {
+            var firstSelection = $("#firstSelection" + tag),
+                isEnglish = (languageCode == "en"),
+                propName = isEnglish ? "officeNameEnglish" : "officeNameBangla",
+                defaultText = isEnglish ? ("Please Select " + name) : (name + " বাছাই করুন"),
+                noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+            sortObjectsByProperty(result, propName);
+            firstSelection.empty();
+            firstSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+            if (typeof flag != 'undefined' && ((flag == 'appendAllIfExist' && result.length > 0) || (flag == 'appendAll'))) {
+                allOfficesText = isEnglish ? "All Offices" : "সকল অফিস";
+                firstSelection.append("<option originid='null' value='9999'>" + allOfficesText + "</option>");
+            }
+            $.each(result, function (i, field) {
+                firstSelection.append("<option value='" + field.id + "'>" + field[propName] + "</option>");
+            });
+            firstSelection.select2();
+            firstSelection.show();
+            firstSelection.select2("open");
+            $("#secondSelection" + tag).hide();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getCustomOfficeLayersByLayerLevel(layerLevel, tag, flag) {
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        $.getJSON("/api/layer-level/" + layerLevel + "/custom-layers", function (result) {
+            var firstSelection = $("#firstSelection" + tag),
+                isEnglish = (languageCode == "en"),
+                propName = "name",
+                defaultText = isEnglish ? ("Please Select Offices/Organizations Type") : ("অন্যান্য দপ্তর/সংস্থা এর ধরন বাছাই করুন"),
+                noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+            sortObjectsByProperty(result, propName);
+            firstSelection.empty();
+            firstSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+
+            if (typeof flag != 'undefined' && ((flag == 'appendAllIfExist' && result.length > 0) || (flag == 'appendAll'))) {
+                allOfficesText = isEnglish ? "All Offices" : "সকল অফিস";
+                firstSelection.append("<option originid='null' value='9999'>" + allOfficesText + "</option>");
+            }
+            $.each(result, function (i, field) {
+                firstSelection.append("<option value='" + field.id + "'>" + field[propName] + "</option>");
+            });
+            firstSelection.select2();
+            firstSelection.show();
+            firstSelection.select2("open");
+            $("#secondSelection" + tag).hide();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getOfficesByOfficeOriginId(id, tag, flag) {
+        //var tag = '';
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        if (showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices == true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        $.getJSON("/api/office-origins/" + id + "/offices" + urlPartForGrsEnabled, function (result) {
+            var secondSelection = $("#secondSelection" + tag),
+                isEnglish = (languageCode == "en"),
+                propName = isEnglish ? "nameEnglish" : "nameBangla",
+                defaultText = isEnglish ? "Please Select Office" : "দপ্তর বাছাই করুন",
+                noDataText = isEnglish ? "No Office Found" : "কোনো দপ্তর পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+            sortObjectsByProperty(result, propName);
+            secondSelection.empty();
+            secondSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+            if (typeof flag != 'undefined' && ((flag == 'appendAllIfExist' && result.length > 0) || (flag == 'appendAll'))) {
+                allOfficesText = isEnglish ? "All Offices" : "সকল অফিস";
+                secondSelection.append("<option originid='null' value='9999'>" + allOfficesText + "</option>");
+            }
+            $.each(result, function (i, field) {
+                secondSelection.append("<option originid='" + field.officeOriginId + "' value='" + field.id + "'>" + field[propName] + "</option>");
+            });
+            secondSelection.select2();
+            secondSelection.show();
+            secondSelection.select2("open");
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getOfficesByCustomLayerId(layerLevel, customLayerId, tag, flag) {
+        //var tag = '';
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        if (showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices == true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        $.getJSON("/api/layer-level/" + layerLevel + "/custom-layers/" + customLayerId + "/offices" + urlPartForGrsEnabled, function (result) {
+            var secondSelection = $("#secondSelection" + tag),
+                isEnglish = (languageCode == "en"),
+                propName = isEnglish ? "nameEnglish" : "nameBangla",
+                defaultText = isEnglish ? "Please Select Office" : "দপ্তর বাছাই করুন",
+                noDataText = isEnglish ? "No Office Found" : "কোনো দপ্তর পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+            sortObjectsByProperty(result, propName);
+            secondSelection.empty();
+            secondSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+
+            if (typeof flag != 'undefined' && ((flag == 'appendAllIfExist' && result.length > 0) || (flag == 'appendAll'))) {
+                allOfficesText = isEnglish ? "All Offices" : "সকল অফিস";
+                secondSelection.append("<option originid='null' value='9999'>" + allOfficesText + "</option>");
+            }
+
+            $.each(result, function (i, field) {
+                secondSelection.append("<option originid='" + field.officeOriginId + "' value='" + field.id + "'>" + field[propName] + "</option>");
+            });
+            secondSelection.select2();
+            secondSelection.show();
+            secondSelection.select2("open");
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function initOfficeSearchBar(tag) {
+        $('#searchOffice' + tag).easyAutocomplete({
+            data: list,
+            getValue: (languageCode == "en" ? "nameEnglish" : "nameBangla"),
+            list: {
+                maxNumberOfElements: 100,
+                match: {
+                    enabled: true
+                },
+                sort: {
+                    enabled: true
+                }
+            },
+            adjustWidth: false
+        });
+    }
+
+    function autoSelectDropDownContentsType(response, tag, type) {
+        var isEnglish = (languageCode == "en"),
+            propName = isEnglish ? "nameEnglish" : "nameBangla",
+            layerLevel = response.layerLevel,
+            firstSelectionDOM = $("#firstSelection" + tag),
+            secondSelectionDOM = $("#secondSelection" + tag);
+        clearAll(tag);
+        $("#officeLayers" + tag).val(layerLevel).trigger("change.select2");
+        if (layerLevel > 2) {
+            var result = response.firstSelectionList,
+                defaultText = isEnglish ? "Please Select" : "বাছাই করুন",
+                noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+            sortObjectsByProperty(result, propName);
+            firstSelectionDOM.empty();
+            firstSelectionDOM.append("<option value='null' selected disabled>" + placeholder + "</option>");
+
+            $.each(result, function (i, field) {
+                firstSelectionDOM.append("<option value='" + field.id + "' " + (field.selected ? "selected" : "") + ">" + field[propName] + "</option>");
+            });
+            firstSelectionDOM.select2();
+            firstSelectionDOM.show();
+        }
+
+        var result = response.secondSelectionList,
+            defaultText = isEnglish ? "Please Select Office" : "দপ্তর বাছাই করুন",
+            noDataText = isEnglish ? "No Office Found" : "কোনো দপ্তর পাওয়া যায়নি",
+            placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+        sortObjectsByProperty(result, propName);
+        secondSelectionDOM.empty();
+        secondSelectionDOM.append("<option value='null' selected disabled>" + placeholder + "</option>");
+        if (typeof type != 'undefined' && ((type == 'appendAllIfExist' && result.length > 0) || (type == 'appendAll'))) {
+            allOfficesText = isEnglish ? "All Offices" : "সকল অফিস";
+            secondSelectionDOM.append("<option originid='null' value='9999'>" + allOfficesText + "</option>");
+        }
+        $.each(result, function (i, field) {
+            secondSelectionDOM.append("<option value='" + field.id + "' " + (field.selected ? "selected" : "") + ">" + field[propName] + "</option>");
+        });
+        secondSelectionDOM.select2();
+        secondSelectionDOM.show();
+        secondSelectionDOM.trigger("change");
+    }
+
+    function autoSelectDropDownContents(response, tag) {
+        var isEnglish = (languageCode == "en"),
+            propName = isEnglish ? "nameEnglish" : "nameBangla",
+            layerLevel = response.layerLevel,
+            firstSelectionDOM = $("#firstSelection" + tag),
+            secondSelectionDOM = $("#secondSelection" + tag);
+        clearAll(tag);
+        $("#officeLayers" + tag).val(layerLevel).trigger("change.select2");
+        if (layerLevel > 2) {
+            var result = response.firstSelectionList,
+                defaultText = isEnglish ? "Please Select" : "বাছাই করুন",
+                noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+            sortObjectsByProperty(result, propName);
+            firstSelectionDOM.empty();
+            firstSelectionDOM.append("<option value='null' selected disabled>" + placeholder + "</option>");
+            $.each(result, function (i, field) {
+                firstSelectionDOM.append("<option value='" + field.id + "' " + (field.selected ? "selected" : "") + ">" + field[propName] + "</option>");
+            });
+            firstSelectionDOM.select2();
+            firstSelectionDOM.show();
+        }
+
+        var result = response.secondSelectionList,
+            defaultText = isEnglish ? "Please Select Office" : "দপ্তর বাছাই করুন",
+            noDataText = isEnglish ? "No Office Found" : "কোনো দপ্তর পাওয়া যায়নি",
+            placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+        sortObjectsByProperty(result, propName);
+        secondSelectionDOM.empty();
+        secondSelectionDOM.append("<option value='null' selected disabled>" + placeholder + "</option>");
+        $.each(result, function (i, field) {
+            secondSelectionDOM.append("<option value='" + field.id + "' " + (field.selected ? "selected" : "") + ">" + field[propName] + "</option>");
+        });
+        secondSelectionDOM.select2();
+        secondSelectionDOM.show();
+        secondSelectionDOM.trigger("change");
+    }
+
+    function loadDataForAutoSelection(item, tag) {
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        if (showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices == true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        var url = "/api/search-office/layer-levels/" + item.layerLevel + "/office-origins/" + item.originId + "/custom-layers/" + item.customLayerId + "/offices/" + item.id + urlPartForGrsEnabled;
+        blockUI();
+        $("#searchOffice" + tag).closest(".form-inline").find(".error-text").hide();
+        $.getJSON(url, function (response) {
+            autoSelectDropDownContents(response, tag);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(function () {
+        });
+    }
+
+    function loadDataForAutoSelectionType(item, tag, type) {
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        if (showChildOfficesOnly) {
+            urlPartForGrsEnabled += ((showAllOffices == true ? "&" : "?") + "showChildOfficesOnly=true");
+        }
+        var url = "/api/search-office/layer-levels/" + item.layerLevel + "/office-origins/" + item.originId + "/custom-layers/" + item.customLayerId + "/offices/" + item.id + urlPartForGrsEnabled;
+        blockUI();
+        $("#searchOffice" + tag).closest(".form-inline").find(".error-text").hide();
+        $.getJSON(url, function (response) {
+            autoSelectDropDownContentsType(response, tag, type);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(function () {
+        });
+    }
+
+    function bindSearchOfficeAction(tag) {
+        var searchField = $("#searchOffice" + tag);
+        var searchArea = searchField.closest(".easy-autocomplete");
+        searchArea.on("click", "li", function () {
+            searchField.trigger("load-office");
+        });
+        searchArea.on("keydown", function (event) {
+            if (event.keyCode === 13) {
+                searchField.trigger("load-office");
+            }
+        });
+        searchField.on("load-office", function () {
+            var searchText = searchField.val();
+            searchField.focusout();
+            if (searchText.trim().length == 0) {
+                return;
+            }
+            var fieldName = (languageCode == "en") ? "nameEnglish" : "nameBangla";
+            var result = list.find(function (element) {
+                return element[fieldName] == searchText;
+            });
+            if (!result) {
+                searchField.closest(".form-inline").find(".error-text").show();
+            } else {
+                loadDataForAutoSelection(result, tag);
+            }
+        });
+    }
+
+    function bindOfficeLayersChangeActions(tag) {
+        initOfficeSearchBar(tag);
+        bindSearchOfficeAction(tag);
+
+        clearAll(tag);
+        var layerLevel = $('#officeLayers' + tag);
+        layerLevel.on("change", function () {
+            clearAll(tag);
+            $("#searchOffice" + tag).val("");
+            var value = layerLevel.val();
+            var name = layerLevel.find("option:selected").text();
+            if (value == 1 || value == 2 || value == 0) {
+                getOfficesByOfficeLayerId(value, tag, name);
+            } else if (value == 3) {
+                $("#secondSelection" + tag).off("change");
+                $("#firstSelection" + tag).off("change").on("change", function () {
+                    getOfficesByCustomLayerId(value, $(this).val(), tag);
+                });
+                getCustomOfficeLayersByLayerLevel(value, tag);
+            } else {
+                $("#secondSelection" + tag).off("change");
+                $("#firstSelection" + tag).off("change").on("change", function () {
+                    getOfficesByOfficeOriginId($(this).val(), tag);
+                });
+                getOfficeOriginsByOfficeLayerId(this.value, tag);
+            }
+        });
+        layerLevel.select2();
+    }
+
+
+    function bindOfficeLayersChangeActionsForReport(tag, type) {
+        initOfficeSearchBar(tag);
+        bindSearchOfficeAction(tag);
+
+        clearAll(tag);
+        var layerLevel = $('#officeLayers' + tag);
+        var officeIdCurrentUser = $("[name='officeId']").val();
+        if (officeIdCurrentUser == 28 && tag == '') {
+            $('#officeLayers' + tag + "  option:first").after(new Option("সকল অফিস", "9999"));
+        }
+
+
+        layerLevel.on("change", function () {
+            clearAll(tag);
+            $("#searchOffice" + tag).val("");
+            var value = layerLevel.val();
+            var name = layerLevel.find("option:selected").text();
+
+
+            if (value == 1 || value == 2 || value == 0) {
+                getOfficesByOfficeLayerId(value, tag, name, type);
+            } else if (value == 3) {
+                $("#secondSelection" + tag).off("change");
+                $("#firstSelection" + tag).off("change").on("change", function () {
+                    if ($(this).val() != 9999) {
+                        getOfficesByCustomLayerId(value, $(this).val(), tag, type);
+                    } else {
+                        clearSecond(tag);
+                    }
+                });
+                getCustomOfficeLayersByLayerLevel(value, tag, type);
+            } else if (value == 9999) {
+                clearSecond(tag);
+
+            } else {
+                $("#secondSelection" + tag).off("change");
+                $("#firstSelection" + tag).off("change").on("change", function () {
+                    if ($(this).val() != 9999) {
+                        getOfficesByOfficeOriginId($(this).val(), tag, type);
+                    } else {
+                        clearSecond(tag);
+                    }
+                });
+                getOfficeOriginsByOfficeLayerId(this.value, tag, "", type);
+            }
+        });
+        layerLevel.select2();
+    }
+
+</script>

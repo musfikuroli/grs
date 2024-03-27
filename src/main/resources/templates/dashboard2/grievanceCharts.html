@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="grievanceCharts" th:remove="tag">
+    <div class="panel-body" style="background: white;">
+        <div class="font-lg text-center margin-bottom-20">প্রাপ্ত অভিযোগসমূহের সার্বিক অবস্থা</div>
+        <div class="row">
+            <div class="col-sm-6" th:if="${officeId==28}">
+                <th:block th:replace="officeSelection :: officeSelection(selectionType='Graph')"></th:block>
+            </div>
+            <div class="col-sm-2" style="padding-top: 52px;">
+                <div class='input-group date' id="graphReportYearGraph">
+                    <input class="form-control" style="font-size: 14px!important;" type="text" readonly>
+                    <span class="input-group-addon" style="width: auto;">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                </div>
+            </div>
+            <div class="col-sm-2" style="padding-top: 52px;">
+                <select id="graphReportMonthGraph" class="select2 form-control input-inline" data-width="260px">
+                    <option value="-1" selected th:text="#{all}"></option>
+                    <option value="1" th:text="#{month.january}"></option>
+                    <option value="2" th:text="#{month.february}"></option>
+                    <option value="3" th:text="#{month.march}"></option>
+                    <option value="4" th:text="#{month.april}"></option>
+                    <option value="5" th:text="#{month.may}"></option>
+                    <option value="6" th:text="#{month.june}"></option>
+                    <option value="7" th:text="#{month.july}"></option>
+                    <option value="8" th:text="#{month.august}"></option>
+                    <option value="9" th:text="#{month.september}"></option>
+                    <option value="10" th:text="#{month.october}"></option>
+                    <option value="11" th:text="#{month.november}"></option>
+                    <option value="12" th:text="#{month.december}"></option>
+                </select>
+            </div>
+            <div class="col-sm-2" style="padding-top: 52px;">
+                <a class="btn btn-outline btn-info view-report" id="view-reportGraph"
+                   style="cursor: pointer; color: #ffffff;">
+                    <i class="fa fa-area-chart"></i>&nbsp;
+                    <span>প্রতিবেদন দেখুন</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row" style="padding-top: 50px;">
+            <div class="col-sm-6" id="grievanceTable1">
+                <div class="table-scrollable">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr class="text-center">
+                            <th> #</th>
+                            <th> অভিযোগের অবস্থা</th>
+                            <th> অভিযোগের সংখ্যা</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td colspan="3">No Data</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div id="grievanceChart1" class="chart" style="height: 250px; width: 800px"></div>
+            </div>
+        </div>
+<!--        <div class="font-lg text-center">প্রাপ্ত অভিযোগসমূহের বর্তমান অবস্থা</div>-->
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="grievanceChart2" class="chart" style="height: 300px; width: 1600px"></div>
+            </div>
+            <!--        </div>-->
+            <!--        <div class="row">-->
+<!--            <div class="col-sm-6" style="display: none">-->
+<!--                <div id="grievanceChart3" class="chart" style="height: 300px; width: 800px"></div>-->
+<!--            </div>-->
+        </div>
+    </div>
+</div>

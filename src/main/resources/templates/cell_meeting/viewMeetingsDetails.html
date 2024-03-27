@@ -1,0 +1,382 @@
+<!DOCTYPE html xmlns:th="http://www.thymeleaf.org" >
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="viewMeetingsDetailsIncludeStyle" th:remove="tag">
+    <div th:replace="fileUpload :: fileUploadIncludeStyle"></div>
+    <link href="/assets/global/plugins/bootstrap-sweetalert/sweetalert.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css"/>
+</div>
+<div class="page-content" th:fragment="viewMeetingsDetails">
+    <h3 class="page-title" id="addGrievanceTitle" th:text="#{cell.meeting.details.header}"></h3>
+    <div class="portlet light bordered">
+
+        <div class="portlet-body form">
+            <div class="form-horizontal" role="form" id="addMeetingForm" action="javascript:;" accept-charset="UTF-8">
+                <div class="form-body">
+
+                    <div class="form-group">
+                        <label class="col-md-3 control-label"><span th:remove="tag"
+                                                                    th:utext="#{cell.meeting.form.subject}"></span>:
+                        </label>
+                        <div class="col-md-9">
+                            <label class="control-label" id="subject"></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-3 control-label"><span th:remove="tag"
+                                                                    th:utext="#{cell.meeting.form.deadline}"></span>:
+                        </label>
+                        <div class="col-md-2">
+                            <label class="control-label" id="meetingDate"></label>
+                            <div id="insertDateErrorSpan"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-3 control-label"><span th:remove="tag"
+                                                                    th:utext="#{cell.meeting.details.active}"></span>:
+                        </label>
+                        <div class="col-md-9">
+                            <label class="control-label" id="active"></label>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        &nbsp;
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-md-3 control-label"><span th:remove="tag"
+                                                                    th:utext="#{cell.meeting.details.grievance}"></span>:
+                        </label>
+                        <div class="col-md-9">
+                            <div class="mt-checkbox-list" id="grievanceSelector">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group hide" id="noteDiv">
+                        <label class="col-md-3 control-label"><span th:remove="tag"
+                                                                    th:utext="#{cell.meeting.details.note}"></span>:
+                        </label>
+                        <div class="col-md-9">
+                            <div class="timeline-body-content" id="note">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group hide" id="filesDiv">
+                        <label class="col-md-3 control-label"><span th:remove="tag"
+                                                                    th:utext="#{cell.meeting.details.files}"></span>:
+                        </label>
+                        <div class="col-md-9">
+                            <div class="mt-checkbox-list" id="files">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button type="button" id="submitButton" class="btn green hide"
+                                    th:utext="#{cell.meeting.details.submit.button}"
+                                    onclick="javascript:showMeetingResolutionModal()"></button>
+                            <button type="button" class="btn default" th:utext="#{cell.meeting.form.cancel.button}"
+                                    onclick="window.history.go(-1); return false;"></button>
+                            <button type="button" id="deleteButton" class="btn red hide"
+                                    th:utext="#{cell.meeting.form.delete.button}"
+                                    onclick="javascript:deleteMeeting()"></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="../assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{processing}"> &nbsp;&nbsp;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalCloseMeeting" class="modal fade bs-modal-lg" tabindex="-1" data-backdrop="static"
+         data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title"><i class="icon-bubble"></i> মিটিং সমাধান </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body">
+                        <div class="progress-extended"> &nbsp;</div>
+                        <div class="form-group">
+                            <label class="control-label">মিটিং এর সিদ্ধান্ত বিস্তারিত লিখুন</label>
+                            <div class="summernote" id="closeModalNote"></div>
+                            <div class="progress-extended"> &nbsp;</div>
+                            <form id="fileuploadCloseMeeting" action="api/file/upload" method="POST"
+                                  enctype="multipart/form-data" class="">
+                                <div th:replace="fileUpload :: fileUploadHtml"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn green btn-primary btn-action"
+                            onclick="closeMeetingWithResolution();">প্রেরণ করুন
+                    </button>
+                    <button type="button" data-dismiss="modal" class="btn btn-outline dark">বন্ধ করুন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="fileViewerModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button">বন্ধ করুন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fileUpload :: fileUploadTemplateScriptGrievanceDetails"></div>
+    <div th:replace="fileSettingsInputTemplate :: fileSettingsInputTemplate"></div>
+</div>
+
+<div th:fragment="viewMeetingsDetailsIncludeScript" th:remove="tag">
+    <div th:replace="fileUpload :: fileUploadIncludeScript"></div>
+    <script src="/assets/global/plugins/bootstrap-sweetalert/sweetalert.min.js" type="text/javascript"></script>
+    <div th:replace="fileSettingsInputTemplate :: fileSettingsInputTemplateScript"></div>
+</div>
+
+<script th:inline="javascript" th:fragment="viewMeetingsDetailsScript">
+
+    function ajaxCall(url, accept, methodType, contentType, postData, onSuccess, onError) {
+        $.ajax({
+            type: methodType,
+            url: url,
+            dataType: accept,
+            contentType: contentType,
+            data: postData,
+            success: onSuccess,
+            error: onError
+        });
+    }
+
+    $(document).ready(function () {
+        loadDetails();
+    });
+
+    function loadDetails() {
+        var meetingId = window.location.href.split("=")[1];
+        ajaxCall("/api/cell/meeting/" + meetingId, null, "GET", "application/json", null, onSuccessLoad, null);
+    }
+
+    function showInProgressModal() {
+        toastr.info("প্রিন্ট করার পদ্ধতি নির্মাণাধীন");
+    }
+
+    function deleteMeeting() {
+        var meetingId = window.location.href.split("=")[1];
+        ajaxCall("/api/cell/meeting/" + meetingId, null, "DELETE", "application/json", null,
+            function (data) {
+                toastr.info(data.message);
+                window.setTimeout(function () {
+                    window.history.go(-1);
+                }, 1000);
+            },
+            function () {
+                toastr.info("অপসারণ করা যাচ্ছে না");
+            });
+    }
+
+    function onSuccessLoad(data) {
+        $("#subject").html(data.meeting.subject);
+        $("#meetingDate").html(data.meeting.meetingDate);
+        $("#active").html(data.meeting.active ? "চলমান " : "সমাপ্ত");
+
+        if (data.meeting.active == false) {
+            $("#noteDiv").removeClass("hide");
+            $("#filesDiv").removeClass("hide");
+
+            $("#note").html(data.note);
+            $select = $('#files');
+            $select.html('');
+
+            if (data.files.length > 0) {
+                var strFilesContent = "";
+                var attrib = "";
+                $.each(data.files, function (key, val) {
+                    var value = val.url;
+                    if (value.toLowerCase().endsWith('.png/') || value.toLowerCase().endsWith('.jpeg/') || value.toLowerCase().endsWith('.jpg/') || value.toLowerCase().endsWith('.bmp/') || value.toLowerCase().endsWith('.gif/')) {
+                        attrib = 'data-lightbox=\"' + value + '\"';
+                    } else if (value.toLowerCase().endsWith('.pdf/') || value.toLowerCase().endsWith('.txt/') || value.toLowerCase().endsWith('.xls/') || value.toLowerCase().endsWith('.xlsx/') || value.toLowerCase().endsWith('.doc/') || value.toLowerCase().endsWith('.docx/')) {
+                        attrib = 'class=\"media-embed\" onclick=\"javascript:previewFile(this, event)\"';
+                    } else if (value.toLowerCase().endsWith('.mp3/')) {
+                        attrib = 'class=\"media-audio\" onclick=\"javascript:previewFile(this, event)\"';
+                    } else if (value.toLowerCase().endsWith('.mp4/')) {
+                        attrib = 'class=\"media-video\" onclick=\"javascript:previewFile(this, event)\"';
+                    }
+                    var fileName = (!val.name || 0 === val.name.length) ? "Untitled File" : val.name;
+                    strFilesContent += '' +
+                        '<li class="mt-list-item">' +
+                        '<div class="list-icon-container">' +
+                        '<i class="icon-paper-clip"></i>' +
+                        '<h3 class="uppercase inline">' +
+                        '<a href="' + value + '" ' + attrib + 'data-asset=\"false\">' + fileName + '</a>' +
+                        '</h3>' +
+                        '</li>';
+                })
+                $select.html(strFilesContent);
+            } else {
+                $select.remove();
+            }
+
+        } else {
+            $("#submitButton").removeClass("hide");
+            $("#deleteButton").removeClass("hide");
+        }
+
+        $select = $('#grievanceSelector');
+        $select.html('');
+        $.each(data.grievances, function (key, val) {
+            $select.append(' <label class=\"control-label\"> ' + 'ট্র্যাকিং নংঃ ' + val.trackingNumberBangla + ', তারিখঃ ' + val.dateBangla.split(" ")[0] + ', বিষয়ঃ ' + val.subject + ', <a href=/viewGrievances.do?id=' + val.id + '  target="_blank" >বিস্তারিত</a></label> <br>');
+        });
+    }
+
+    function showMeetingResolutionModal() {
+        $("#modalCloseMeeting").modal('show');
+    }
+
+    function hideMeetingResolutionModal() {
+        $("#modalCloseMeeting").modal('hide');
+    }
+
+    function checkNotAllowedFiles(obj, buttonId) {
+        var numberOfDisallowedFiles = $(obj).find("strong.error.label.label-danger").length;
+        if (numberOfDisallowedFiles == 1) {
+            $(buttonId).removeAttr('disabled');
+        } else {
+            $(buttonId).attr('disabled', 'disabled');
+        }
+    }
+
+    function closeMeetingWithResolution() {
+
+        var files = [];
+        $("tr.template-download.fade.in").find("p.name").each(function () {
+            files.push({
+                name: $(this).find("input[name='fileNameByUser']").val(),
+                url: $(this).find("a").attr("href")
+            });
+        });
+
+        var opinion = {};
+        var bodyContent = $("#closeModalNote").summernote("code");
+        opinion['note'] = bodyContent;
+        opinion['meetingId'] = window.location.href.split("=")[1];
+        opinion['files'] = files;
+
+        var cleanText = $("#closeModalNote").summernote('code').replace(/<\/?[^>]+(>|$)/g, "");
+        if (cleanText == "") {
+            toastr.error("অনুগ্রহ করে কোন বিষয়ে অনুমতি দিয়েছেন তা লিখুন।");
+            return;
+        }
+        $("#closeModalNote").summernote('reset');
+        $("#ajaxProcessingModal").modal('show');
+        ajaxCall("api/cell/meeting/close", "json", "POST", "application/json", JSON.stringify(opinion), postSuccess, postFailure);
+    }
+
+    function postSuccess(data) {
+        $("#ajaxProcessingModal").modal('hide');
+        if (data.success) {
+            toastr.info(data.message);
+            hideMeetingResolutionModal();
+            window.setTimeout(function () {
+                window.history.go(-1);
+            }, 1000);
+        } else {
+            toastr.error(data.message);
+        }
+    }
+
+    function postFailure(data) {
+        toastr.error(data.message);
+        $("#submitButton").removeAttr('disabled');
+    }
+
+    function previewFile(clickedLink, e) {
+        if (e) {
+            e.preventDefault();
+        }
+        var domainURL = "http://" + document.location.host;
+        if ($(clickedLink).attr("href").startsWith("http://")) {
+            domainURL = "";
+        }
+        if ($(clickedLink).hasClass("media-embed")) {
+            var isEmbed = false;
+            if ($(clickedLink).attr("data-asset") == "true") {
+                isEmbed = true;
+            }
+            if (isEmbed) {
+                $("#fileViewerModal .modal-body").html('<embed src="' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;"></embed>');
+            } else {
+                $("#fileViewerModal .modal-body").html('<iframe src="http://docs.google.com/gview?embedded=true&url=' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;" frameborder="0"></iframe>');
+            }
+            $("#fileViewerModal").modal("show");
+            return false;
+        } else if ($(clickedLink).hasClass("media-audio")) {
+            $("#fileViewerModal .modal-body").html('<audio style="width:100%;" controls><source src="' + $(clickedLink).attr("href") + '" type="audio/mpeg">Your browser does not support the audio element.</audio>');
+            $("#fileViewerModal").modal("show");
+            return false;
+        } else if ($(clickedLink).hasClass("media-video")) {
+            $("#fileViewerModal .modal-body").html('<video style="width:100%;height:480px;" controls><source src="' + $(clickedLink).attr("href") + '" type="video/mp4">Your browser does not support the video tag.</video>');
+            $("#fileViewerModal").modal("show");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function featureComingSoon() {
+        if (languageCode == "en") {
+            swal({
+                title: "Under construction",
+                text: "Sorry, we are currently building this",
+                type: "info",
+                showCancelButton: false,
+                confirmButtonClass: "btn-info",
+                confirmButtonText: "OK",
+                closeOnConfirm: true
+            });
+        } else {
+            swal({
+                title: "নির্মাণাধীন",
+                text: "দুঃখিত, এই ফীচারটি এখন নির্মাণাধীন",
+                type: "info",
+                showCancelButton: false,
+                confirmButtonClass: "btn-info",
+                confirmButtonText: "বন্ধ করুন",
+                closeOnConfirm: true
+            });
+        }
+    }
+
+</script>

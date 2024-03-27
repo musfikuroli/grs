@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+
+<div th:fragment="officeManagementIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/plugins/easy-autocomplete/easy-autocomplete.css" rel="stylesheet" type="text/css"/>
+</div>
+
+<div class="page-content" th:fragment="officeManagement" th:object="${office}">
+
+    <th:block th:if="${manageOwnOffice == null}">
+        <div class="col-md-10 margin-bottom-20">
+            <th:block th:replace="officeSelection :: officeSelection"></th:block>
+        </div>
+        <button type="button" class="btn blue" id="manageOfficerAndCitizenCharter" th:text="#{setup.office}"></button>
+        <button type="button" class="btn red" id="disableOffice" th:text="#{remove.office}" disabled="disabled"></button>
+    </th:block>
+
+    <input type="hidden" name="manageOwnOffice" th:value="${manageOwnOffice}"/>
+    <input type="hidden" name="superAdmin" th:value="${superAdmin}"/>
+    <input type="hidden" name="officeId" th:value="${officeId}"/>
+    <input type="hidden" name="officeName" th:value="${officeName}"/>
+    <input type="hidden" name="officeOriginId" th:value="${officeOriginId}"/>
+    <input type="hidden" name="officeUnitOrganogramId" th:value="${officeUnitOrganogramId}"/>
+    <div class="" id="preview" style="display: none; margin-top: 10px;">
+        <table id="detailsTable" class="table table-responsive table-bordered">
+            <tbody>
+            <tr>
+                <td width="20%" th:text="#{ao}"></td>
+                <td th:colspan="${canNotChangeAO == null || canNotChangeAO == false ? '1' : '2'}" width="70%">
+                    <div id="selectAo"></div>
+                </td>
+                <td th:if="${canNotChangeAO == null || canNotChangeAO == false}" width="10%">
+                    <a class="btn btn-circle btn-xs btn-primary" onclick="javascript:defaultOfficer('Ao');"><i class="fa fa-edit"></i> সম্পাদনা </a>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" th:text="#{gro}"></td>
+                <td width="70%">
+                    <div id="selectGro"></div>
+                </td>
+                <td width="10%">
+                    <a class="btn btn-circle btn-xs btn-primary" onclick="javascript:defaultOfficer('Gro');"><i class="fa fa-edit"></i> সম্পাদনা </a>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%" th:text="#{office.admin}"></td>
+                <td width="70%">
+                    <div id="selectAdmin"></div>
+                </td>
+                <td width="10%">
+                    <a class="btn btn-circle btn-xs btn-primary" onclick="javascript:defaultOfficer('Admin');"><i class="fa fa-edit"></i> সম্পাদনা </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table id="selectSo" class="table table-responsive table-bordered">
+            <thead>
+            <tr>
+                <th> অবস্থা</th>
+                <th> সেবার নাম (বাংলা)</th>
+                <th> সেবা প্রদানের সময়সীমা</th>
+                <th> দায়িত্বপ্রাপ্ত কর্মকর্তা</th>
+                <th> বিস্তারিত</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="modal fade bs-modal-lg in" id="serviceDetails" tabindex="-1" data-backdrop="static"
+         data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title text-center">সেবার বিস্তারিত</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="service-details">
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.name} , #{bangla})}"></div>
+                            <div class="col-md-7 value service-name-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.name} , #{english})}"></div>
+                            <div class="col-md-7 value service-name-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{x.y.bracket(#{service.procedure} , #{bangla})}"></div>
+                            <div class="col-md-7 value service-procedure-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name"
+                                 th:text="#{x.y.bracket(#{service.procedure} , #{english})}"></div>
+                            <div class="col-md-7 value service-procedure-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name"
+                                 th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{bangla})}"></div>
+                            <div class="col-md-7 value document-location-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name"
+                                 th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{english})}"></div>
+                            <div class="col-md-7 value document-location-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name"
+                                 th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{bangla})}"></div>
+                            <div class="col-md-7 value payment-method-bng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name"
+                                 th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{english})}"></div>
+                            <div class="col-md-7 value payment-method-eng"></div>
+                        </div>
+                        <div class="row static-info">
+                            <div class="col-md-5 name" th:text="#{service.time}">
+                            </div>
+                            <div class="col-md-7 value service-time-value"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">বন্ধ করুন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-lg in" id="officersListGro" data-backdrop="static"
+         data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:if="${manageOwnOffice == null}" th:remove="tag">
+                        <th:block th:replace="officeSelection :: officeSelection(selectionType='Gro')"></th:block>
+                        <button type="button" class="btn blue" id="viewGro" th:text="#{view.x(#{employee.list})}"></button>
+                    </div>
+                    <input type="hidden" name="groOfficeId" th:field="*{officesGroDTO.groOfficeId}"/>
+                    <table id="listViewTableGro"
+                           class="table table-striped table-bordered table-hover table-checkable order-column">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th th:text="#{serial}"></th>
+                            <th th:text="#{employee.name}"></th>
+                            <th th:text="#{email}"></th>
+                            <th th:text="#{mobile.number}"></th>
+                            <th th:text="#{designation}"></th>
+                            <th th:text="#{select.as.x(#{gro})}"></th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-lg in" id="officersListAo" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <th:block th:replace="officeSelection :: officeSelection(selectionType='Ao')"></th:block>
+                    <input type="hidden" name="appealOfficeId" th:field="*{officesGroDTO.appealOfficeId}"/>
+                    <button type="button" class="btn blue" id="viewAo" th:text="#{view.x(#{employee.list})}"></button>
+                    <table id="listViewTableAo"
+                           class="table table-striped table-bordered table-hover table-checkable order-column">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th th:text="#{serial}"></th>
+                            <th th:text="#{employee.name}"></th>
+                            <th th:text="#{email}"></th>
+                            <th th:text="#{mobile.number}"></th>
+                            <th th:text="#{designation}"></th>
+                            <th th:text="#{select.as.x(#{ao})}"></th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-lg in" id="officersListAdmin" data-backdrop="static"
+         data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:if="${manageOwnOffice == null}" th:remove="tag">
+                        <th:block th:replace="officeSelection :: officeSelection(selectionType='Admin')"></th:block>
+                        <button type="button" class="btn blue" id="viewAdmin" th:text="#{view.x(#{employee.list})}"></button>
+                    </div>
+                    <input type="hidden" name="adminOfficeId" th:field="*{officesGroDTO.adminOfficeId}"/>
+                    <table id="listViewTableAdmin"
+                           class="table table-striped table-bordered table-hover table-checkable order-column">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th th:text="#{serial}"></th>
+                            <th th:text="#{employee.name}"></th>
+                            <th th:text="#{email}"></th>
+                            <th th:text="#{mobile.number}"></th>
+                            <th th:text="#{designation}"></th>
+                            <th th:text="#{select.as.x(#{office.admin})}"></th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-lg in" id="officersListSo" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-inline" id="officeSelectionOptionsSo">
+                        <input type="hidden" name="serviceId"/>
+                        <table id="listViewTableSo"
+                               class="table table-striped table-bordered table-hover table-checkable order-column">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th th:text="#{serial}"></th>
+                                <th th:text="#{employee.name}"></th>
+                                <th th:text="#{email}"></th>
+                                <th th:text="#{mobile.number}"></th>
+                                <th th:text="#{designation}"></th>
+                                <th th:text="#{select.as.x(#{service.officer})}"></th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="/assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="selectGROPopup" tabindex="-1" role="basic" data-dismiss="modal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:text="#{select.gro.confirmation.text}"></div>
+                    <h4 class="text-center font-lg employee-name"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn blue btn-outline confirm-button" th:text="#{confirm}"></button>
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal"
+                            th:text="#{cancel}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="selectAOPopup" tabindex="-1" data-dismiss="modal" role="basic" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:text="#{select.ao.confirmation.text}"></div>
+                    <h4 class="text-center font-lg employee-name"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn blue btn-outline confirm-button" th:text="#{confirm}"></button>
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{cancel}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="selectAdminPopup" tabindex="-1" data-dismiss="modal" role="basic" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:text="#{select.admin.confirmation.text}"></div>
+                    <h4 class="text-center font-lg employee-name"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn blue btn-outline confirm-button" th:text="#{confirm}"></button>
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{cancel}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="selectSOPopup" tabindex="-1" data-dismiss="modal" role="basic" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+                    <div th:text="#{select.so.confirmation.text}"></div>
+                    <h4 class="text-center font-lg employee-name"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn blue btn-outline confirm-button" th:text="#{confirm}"></button>
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{cancel}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:fragment="officeManagementIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/easy-autocomplete/jquery.easy-autocomplete.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/printThis.js"></script>
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+</div>
+
+<script th:fragment="officeManagementScript">
+
+    function getOfficeName(tag) {
+        var manageOwnOffice = ($("[name='manageOwnOffice']").val() == "true");
+        if(manageOwnOffice) {
+            return $("[name='officeName']").val();
+        } else {
+            return $("#secondSelection"+tag+" option:selected").text();
+        }
+    }
+
+    function initializeServices() {
+        $("#selectSo").dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": "<div class='text-center'>কোনো সেবা যোগ করা নেই</div>",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "ফিল্টার:",
+                "zeroRecords": "",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bPaginate": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "columnDefs": [{
+                'targets': 0,
+                'searchable':false,
+                'orderable':false,
+                'className': 'text-center',
+            }, {
+                'orderable': false,
+                'targets': [0, 4]
+            }, {
+                "searchable": false,
+                "targets": [0, 4]
+            }, {
+                targets: [0],
+                orderData: [0]
+            }, {
+               'className': 'text-center'
+            }],
+            columns: [{
+                data: function(row){
+                    if(row.status == true) {
+                        return "<input type='checkbox' class='checkboxes' name='tick" + row.serviceId + "' onclick='javascript:changeStatus("+ row.serviceId + ");' checked value ='" + row.status + "'>";
+                    } else {
+                        return "<input type='checkbox' class='checkboxes' name='tick" + row.serviceId + "' onclick='javascript:changeStatus("+ row.serviceId + ");' value ='" + row.status + "'>";
+                    }
+                }
+            }, {
+                data: function(row) {
+                    return row.serviceNameBangla == null ? "" : row.serviceNameBangla;
+                }
+            }, {
+                data: function(row) {
+                    return row.serviceTime == null ? "" : (("" + row.serviceTime).toBanglaNumber() + " দিন");
+                }
+            }, {
+                data: function(row) {
+                    if(row.names.length == 1) {
+                        var soInfo = row.names[0] + ", " + row.designations[0] + ", " + row.officeUnits[0] + ", " + row.officeNames[0] + ", " + (row.phoneNumbers[0] ? row.phoneNumbers[0].toBanglaNumber() : "");
+                        return "<span class='so-info'>" + soInfo + "</span><button class='btn btn-circle btn-xs btn-primary pull-right' class='viewOfficeEmployeesListSo' onclick='javascript:initSO(" + row.serviceId + ");' id='viewOfficeEmployeesListSo" +
+                        row.serviceId + "'" + (row.status ? "" : "disabled='disabled'") + "><i class='fa fa-edit'></i> সম্পাদনা </button>";
+                    } else {
+                        var inputFields = "<div class='responsible-so'><div class='so-list'>";
+                        for (var i = 0, len = row.names.length; i < len; i++) {
+                        var soInfo = row.names[i] + ", " + row.designations[i] + ", " + row.officeUnits[i] + ", " + row.officeNames[i] + ", " + (row.phoneNumbers[i] ? row.phoneNumbers[i].toBanglaNumber() : "");
+                            inputFields += "<input type='radio' name='chooseSO' value='" + row.serviceId + "' data-office-id='" + row.soOfficeIds[i] + "' data-office-unit-id='" + row.soOfficeUnitIds[i] + "' data-organogram-id='" + row.soOfficeUnitOrganogramIds[i] + "' data-service-id='" + row.serviceId + "' data-office-unit-name='" + row.officeUnits[i] + "' data-office-name='" + row.officeNames[i] + "'><span class='so-info'>" + soInfo + "</span><br>";
+                        }
+                        inputFields += "</div><button class='btn btn-circle btn-xs btn-primary pull-right' class='viewOfficeEmployeesListSo' onclick='javascript:initSO(" + row.serviceId + ");' id='viewOfficeEmployeesListSo" +
+                        row.serviceId + "'" + (row.status ? "" : "disabled='disabled'") + "><i class='fa fa-edit'></i> সম্পাদনা </button></div>";
+                        return inputFields;
+                    }
+                }
+            }, {
+                data: function(row) {
+                    return "<a class = 'fa fa-external-link btn btn-circle btn-xs btn-primary view-service' onclick = 'javascript:showServiceDetails(" + row.serviceId + ");' data-service-id = '" + row.serviceId + "'></a>";
+                }
+            }],
+            "order": [
+                [1, "asc"]
+            ]
+        });
+    }
+
+    var id = "";
+    var serviceNameBangla = "";
+    var serviceNameEnglish = "";
+    var serviceProcedureBangla = "";
+    var serviceProcedureEnglish = "";
+    var paymentMethodBangla = "";
+    var paymentMethodEnglish = "";
+    var documentAndLocationBangla = "";
+    var documentAndLocationEnglish = "";
+    var serviceTime = "";
+    var name = "";
+    var officeName = "";
+    var officeUnitName = "";
+    var designation = "";
+    var mobileNumber = "";
+
+    function changeStatus(serviceId){
+        var dataObj = {};
+        var checkbox = $("#selectSo").find("[name='tick" + serviceId + "']");
+        dataObj.status = checkbox.val();
+        $.ajax({
+            url: "/api/office/" + getSelectedOfficeId("") + "/status-change/" + serviceId,
+            type: "PUT",
+            data: JSON.stringify(dataObj),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                var row = checkbox.closest("tr");
+                var isEnglish = (languageCode == "en");
+                var message = "";
+                if (response && response.success) {
+                    row.removeClass("greyishFont");
+                    $('#viewOfficeEmployeesListSo' + serviceId).removeAttr('disabled');
+                    message = isEnglish ? "Service activated successfully" : "সেবাটি সক্রিয় করা হয়েছে";
+                } else {
+                    row.addClass("greyishFont");
+                    $('#viewOfficeEmployeesListSo' + serviceId).attr('disabled', 'disabled');
+                    message = isEnglish ? "Service inactivated successfully" : "সেবাটি নিষ্ক্রিয় করা হয়েছে";
+                }
+                toastr.info(message, null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    function loadServices(page) {
+        var currentPage = 1,
+        maxPage = 1,
+        searchSize = 9999;
+        blockUI();
+        $("#currentPage").val(page);
+        var officeId = $("[name='officeId']").val();
+        var officeOriginId = $("[name='officeOriginId']").val();
+        var dataObj = {};
+        $.ajax({
+            url: "/api/office/" + getSelectedOfficeId("") + "/citizen-charters" + "?officeOriginId=" + getSelectedOfficeOriginId(""),
+            type: "PUT",
+            data: {
+                "page": (page - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                $.each(response, function(index, value) {
+                    id = value.id;
+                    serviceNameBangla = value.serviceNameBangla;
+                    serviceNameEnglish = value.serviceNameEnglish;
+                    serviceProcedureBangla = value.serviceProcedureBangla;
+                    serviceProcedureEnglish = value.serviceProcedureEnglish;
+                    paymentMethodBangla = value.paymentMethodBangla;
+                    paymentMethodEnglish = value.paymentMethodEnglish;
+                    documentAndLocationBangla = value.documentAndLocationBangla;
+                    documentAndLocationEnglish = value.documentAndLocationEnglish;
+                    serviceTime = value.serviceTime;
+                    name = value.name;
+                    mobileNumber = value.mobileNumber;
+                    designation = value.designation;
+                    officeUnitName = value.officeUnitName;
+                    officeName = value.officeName;
+                });
+                if (response == 0 || response == "" || response.length == 0) {
+                    $(".pagination-panel-total").html(0);
+                    $("#currentPage").val(0);
+                    $(".prev, .next").addClass("disabled");
+                    $('#selectSo').dataTable().fnClearTable();
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $(".pagination-panel-total").html(totalPages);
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+
+                    $("#selectSo_info").html(totalElements + " এর মধ্যে " + (number * dataSize + 1) + "-" + (number * dataSize + numberOfElements) + " এর  তথ্য দেখানো হচ্ছে");
+                    $('#selectSo').dataTable().fnClearTable();
+                    $('#selectSo').dataTable().fnFilter('');
+                    $('#selectSo').dataTable().fnAddData(response);
+                }
+                defaultSoSelectionAction();
+            },
+            error: function (response) {
+                toastr.error("অফিস সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+            },
+            complete: function (response) {
+                unblockUI();
+            }
+        });
+    }
+
+    function getSelectedOfficeId(tag) {
+        var manageOwnOffice = ($("[name='manageOwnOffice']").val() == "true");
+        if(manageOwnOffice) {
+            return $("[name='officeId']").val();
+        } else {
+            return $('#secondSelection' + tag).val();
+        }
+    }
+
+    function getSelectedOfficeOriginId(tag) {
+        var manageOwnOffice = ($("[name='manageOwnOffice']").val() == "true");
+        var officeOriginId;
+        if(manageOwnOffice) {
+            officeOriginId = $("[name='officeOriginId']").val();
+        } else {
+            officeOriginId = $('#firstSelection' + tag + " option:selected").attr("originid");
+        }
+        if (officeOriginId == null) {
+            return '0';
+        }
+        return officeOriginId;
+    }
+
+
+    function initializeModal(tag) {
+        $("#viewOfficeEmployeesList" + tag).on("click", function() {
+            $("#officersList" + tag).modal('show');
+        });
+    }
+
+    function initSO(serviceId) {
+        var modal = $("#officersListSo");
+        var officeId = getSelectedOfficeId("");
+        var tag = "So";
+        modal.find("[name='serviceId']").val(serviceId);
+        modal.modal('show');
+        $('#listViewTableSo').dataTable().fnClearTable();
+        $.getJSON("/api/office/" + officeId + "/service/" +  serviceId + "/so/organogram-id", function(groOrganogramIdAsObject) {
+            loadOfficeEmployeeList(officeId, groOrganogramIdAsObject.id, 1, tag);
+        }).always(function (groOrganogramIdAsObject) {
+            $("#ajaxProcessingModal").modal("hide");
+        });
+        updateEmployeeListOnSelection(tag, serviceId);
+    }
+
+    function loadOfficeEmployeeList(id, organogramId, page, tag) {
+        var currentPage = 1,
+        maxPage = 1,
+        searchSize = 9999;
+        blockUI();
+        $("#currentPage").val(page);
+        $.ajax({
+            url: "/api/office/" + id + "/employees",
+            type: "GET",
+            data: {
+                "page": (page - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            success: function(result) {
+                var officeId = result.officeId;
+                var officeName = (languageCode == "en") ? result.officeNameEnglish : result.officeNameBangla;
+                var response = result.employeeRecords;
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $(".pagination-panel-total").html(0);
+                    $("#currentPage").val(0);
+                    $(".prev, .next").addClass("disabled");
+                    $('#listViewTable' + tag).dataTable().fnClearTable();
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $(".pagination-panel-total").html(totalPages);
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+                    var employees = response.content;
+                    sortObjectsByProperty(employees, "name")
+                    employees.forEach(function(employee) {
+                        employee.officeId = officeId;
+                        employee.officeName = officeName;
+                    });
+                    $("#listViewTable" + tag + "_info").html(totalElements + " এর মধ্যে " + (number * dataSize + 1) + "-" + (number * dataSize + numberOfElements) + " এর  তথ্য দেখানো হচ্ছে");
+                    $("#listViewTable" + tag).dataTable().fnClearTable();
+                    $("#listViewTable" + tag).dataTable().fnFilter('');
+                    $("#listViewTable" + tag).dataTable().fnAddData(employees);
+                }
+                updateSelectedEmployeeLabel(organogramId, tag);
+            },
+            error: function (response) {
+                $("#listViewTable" + tag).dataTable().fnClearTable();
+                toastr.error("দুঃখিত! কর্মকর্তাগণের তালিকা লোড করা যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+            },
+            complete: function () {
+                $("#officersList"+tag).modal("show");
+                unblockUI();
+            }
+        });
+    }
+
+    function updateSelectedEmployeeLabel(organogramId, tag) {
+        var prevSelectedEmployeeLabel = $("#listViewTable" + tag + " .selected-employee-label");
+        if(prevSelectedEmployeeLabel.length) {
+            prevSelectedEmployeeLabel.prev("input").show();
+            prevSelectedEmployeeLabel.remove();
+        }
+        if(organogramId) {
+            var currentSelectedEmployeeLabel = "<span class='label label-info circle selected-employee-label'><i class='fa fa-check'></i></span>";
+            var inputElement = $("#listViewTable" + tag + " [data-organogram-id='" + organogramId + "']");
+            $(currentSelectedEmployeeLabel).insertAfter(inputElement)
+            inputElement.hide();
+        }
+    }
+
+    function initializeOfficeEmployeeList(table) {
+        $(table).dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": "কোনো কর্মকর্তা পাওয়া যায়নি",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "ফিল্টার:",
+                "zeroRecords": "",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bPaginate": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "columnDefs": [{
+                'orderable': false,
+                'targets': [1, 6]
+            }, {
+                "searchable": false,
+                "targets": [0, 6]
+            },  {
+                'visible': false,
+                'targets': [0]
+            }, {
+                targets: [0],
+                orderData: [0]
+            }],
+            columns: [{
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },  {
+                data: "id",
+                render: function (data, type, row, meta) {
+                    return ("" + (meta.row + 1)).toBanglaNumber();
+                }
+            }, {
+                data: "name"
+            }, {
+                data: "email"
+            }, {
+                data: function (row) {
+                    var phoneNumber = row.phoneNumber ? row.phoneNumber : "";
+                    return (languageCode == "en") ? phoneNumber.toEnglishNumber() : phoneNumber.toBanglaNumber();
+                }
+            }, {
+                data: "designation"
+            }, {
+                data: function(row) {
+                    var designationList = row.officeUnitWithDesignations;
+                    var inputFields = "";
+                    designationList.forEach(function(elm, index) {
+                        inputFields += (index > 0 ? "<br>" : "") + "<input type='radio' name='employeeId' value='" + row.id + "' data-name='" + row.name + "' data-phoneNumber='" + row.phoneNumber + "' data-designation='" + elm.designation + "' data-office-unit-name='" + elm.officeUnitNameBangla + "' data-organogram-id='" + elm.officeUnitOrganogramId + "' data-office-name='" + row.officeName + "' data-office-id='" + row.officeId + "'><span>" + elm.designation + ", " + elm.officeUnitNameBangla + "</span>";
+                    });
+                    return inputFields;
+                }
+            }],
+            "order": [
+                [0, "asc"]
+            ]
+        });
+    }
+
+    function enableDisableListViewButton(tag) {
+        var actionButton = tag ? ("#view" + tag) : tag;
+        $("#manageOfficerAndCitizenCharter").attr("disabled", "disabled");
+        $("#disableOffice").attr("disabled", "disabled");
+        $("#officeSelectionOptions" + tag).on("change", "select", function(event) {
+            if(isOfficeSelectionValid(tag)) {
+                $(actionButton).removeAttr("disabled");
+                $("#manageOfficerAndCitizenCharter").removeAttr("disabled");
+                $("#disableOffice").removeAttr("disabled");
+            } else {
+                $(actionButton).attr("disabled", "disabled");
+                $("#manageOfficerAndCitizenCharter").attr("disabled", "disabled");
+                $("#disableOffice").attr("disabled", "disabled");
+            }
+        });
+    }
+
+    var officeId = "";
+    var groOfficeId = "";
+    var aoOfficeId = "";
+    var adminOfficeId = "";
+    var groOrganogramId = "";
+    var aoOrganogramId = "";
+    var adminOrganogramId = "";
+    var groUnitId = "";
+    var aoUnitId = "";
+    var adminUnitId = "";
+    var soOfficeId = "";
+
+    function defaultSoSelectionAction() {
+        $("[name='chooseSO']").on('click', function () {
+            var _this = $(this),
+            serviceId = _this.attr("data-service-id"),
+            soOrganogramId = _this.attr("data-organogram-id"),
+            soUnitId = _this.attr("data-office-unit-name");
+            if(_this.is(":checked")) {
+                    var dataObj = {};
+                    soOfficeId = getSelectedOfficeId("So");
+                    if(soOfficeId == "" || soOfficeId == null) {
+                        soOfficeId = getSelectedOfficeId("");
+                    }
+                    dataObj.soOfficeId = soOfficeId;
+                    dataObj.soOfficeUnitOrganogramId = soOrganogramId;
+                    dataObj.soOfficeUnitId = _this.attr("data-office-unit-id");
+                    dataObj.soOfficeUnitName = soUnitId;
+                    $.ajax({
+                        url: "api/office/"+ getSelectedOfficeId("") + "/service/"+ serviceId +"/assign/SO" ,
+                        type: "PUT",
+                        data: JSON.stringify(dataObj),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            toastr.info("সেবাপ্রদানকারী কর্মকর্তা সঠিকভাবে সেটআপ করা হয়েছে।", null, {positionClass: 'toast-top-center'});
+                        },
+                        error: function (response) {
+                            toastr.error("সেবাপ্রদানকারী কর্মকর্তা সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+                        }
+                    }).always(function (response) {
+                    });
+            }
+        });
+    }
+
+    function groSelectionAction() {
+        $("#listViewTableGro").on("click", "[name='employeeId']", function () {
+            var _this = $(this),
+            name = _this.attr("data-name"),
+            groOrganogramId = _this.attr("data-organogram-id"),
+            groOfficeId = _this.attr("data-office-id"),
+            phoneNumber = _this.attr("data-phoneNumber"),
+            groUnitId = _this.attr("data-office-unit-name"),
+            designation = _this.attr("data-designation"),
+            officeName = _this.attr("data-office-name");
+            var groName = name + ", "  + designation + ", " + groUnitId + ", " + officeName + ", " + (phoneNumber ? phoneNumber.toBanglaNumber() : "") ;
+            if(_this.is(":checked")) {
+                $("#selectGROPopup").modal('show');
+                $("#selectGROPopup").find(".employee-name").text(name);
+                $("#selectGROPopup .confirm-button").off();
+                $("#selectGROPopup .confirm-button").on("click", function (event) {
+                    var dataObj = {};
+                    officeId = getSelectedOfficeId("");
+                    dataObj.officeId = officeId;
+                    dataObj.officeOriginId = getSelectedOfficeOriginId("");
+                    dataObj.groOfficeId = groOfficeId;
+                    dataObj.groOfficeUnitOrganogramId = groOrganogramId;
+                    dataObj.groOfficeUnitName = groUnitId;
+                    dataObj.officeName = getOfficeName("");
+                    blockUI();
+                    $.ajax({
+                        url: "/api/office/setup/" + officeId,
+                        type: "PUT",
+                        data: JSON.stringify(dataObj),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            id = response.id;
+                            officeId = response.officeId;
+                            groOfficeId = response.groOfficeId;
+                            groOrganogramId = response.groOfficeUnitOrganogramId;
+                            groUnitId = response.groOfficeUnitName;
+                            aoOfficeId = response.appealOfficeId;
+                            aoOrganogramId = response.appealOfficerOfficeUnitOrganogramId;
+                            aoUnitId =  response.aoOfficeUnitName;
+                            adminOfficeId = response.adminOfficeId;
+                            adminOrganogramId = response.adminOfficeUnitOrganogramId;
+                            adminUnitId = response.adminOfficeUnitName;
+                            $("#selectGro").empty();
+                            $("#selectGro").html(groName);
+                            toastr.info("অনিক সঠিকভাবে সেটআপ করা হয়েছে।", null, {positionClass: 'toast-top-center'});
+                        },
+                        error: function (response) {
+                            toastr.error("অনিক সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+                        }
+                    }).always(function (response) {
+                        $("#selectGROPopup").modal('hide');
+                        $("#officersListGro").modal('hide');
+                        unblockUI();
+                    });
+                });
+            }
+        });
+    }
+
+    function soSelectionAction() {
+        $("#listViewTableSo").on("click", "[name='employeeId']", function () {
+            var _this = $(this),
+            name = _this.attr("data-name"),
+            serviceId = $("#officersListSo [name='serviceId']").val(),
+            soOrganogramId = _this.attr("data-organogram-id"),
+            soOfficeId = _this.attr("data-office-id"),
+            phoneNumber = _this.attr("data-phoneNumber"),
+            soUnitId = _this.attr("data-office-unit-name"),
+            designation = _this.attr("data-designation"),
+            officeName = _this.attr("data-office-name");
+            if(_this.is(":checked")) {
+                $("#selectSOPopup").modal('show');
+                $("#selectSOPopup").find(".employee-name").text(name);
+                $("#selectSOPopup .confirm-button").off().on("click", function (event) {
+                    var editButton = $("#viewOfficeEmployeesListSo"+serviceId);
+                    var dataObj = {};
+                    officeId = getSelectedOfficeId("");
+                    dataObj.officeId = officeId;
+                    dataObj.officeOriginId = getSelectedOfficeOriginId("");
+                    dataObj.soOfficeId = soOfficeId;
+                    dataObj.serviceId = serviceId;
+                    dataObj.soOfficeUnitOrganogramId = soOrganogramId;
+                    dataObj.soOfficeUnitName = soUnitId;
+                    dataObj.officeUnitName = soUnitId;
+                    dataObj.name = name;
+                    dataObj.designation = soUnitId;
+                    dataObj.mobileNumber = phoneNumber;
+                    dataObj.officeName = getOfficeName("So");
+                    $.ajax({
+                        url: "api/office/"+ getSelectedOfficeId("") + "/service/"+ serviceId +"/assign/SO" ,
+                        type: "PUT",
+                        data: JSON.stringify(dataObj),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            id = response.id;
+                            soOfficeId = response.soOfficeId;
+                            soOrganogramId = response.soOfficeUnitOrganogramId;
+                            soUnitId = response.soOfficeUnitName;
+                            var soInfo = response.name + ", " + response.designation + ", " + response.officeUnitName + ", " + response.officeName + ", " + (response.mobileNumber ? response.mobileNumber.toBanglaNumber() : "");
+                            editButton.siblings(".so-info").empty().html(soInfo);
+                            toastr.info("সেবাপ্রদানকারী কর্মকর্তা সঠিকভাবে সেটআপ করা হয়েছে।", null, {positionClass: 'toast-top-center'});
+                        },
+                        error: function (response) {
+                            toastr.error("সেবাপ্রদানকারী কর্মকর্তা সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+                        }
+                    }).always(function (response) {
+                        $("#selectSOPopup").modal('hide');
+                        $("#officersListSo").modal('hide');
+                    });
+                });
+            }
+        });
+    }
+
+    function aoSelectionAction() {
+        $("#listViewTableAo").on("click", "[name='employeeId']", function () {
+            var _this = $(this),
+            name = _this.attr("data-name"),
+            aoOrganogramId = _this.attr("data-organogram-id"),
+            aoOfficeId = _this.attr("data-office-id"),
+            phoneNumber = _this.attr("data-phoneNumber"),
+            aoUnitId = _this.attr("data-office-unit-name"),
+            designation = _this.attr("data-designation"),
+            officeName = _this.attr("data-office-name");
+            var aoName = name + ", " + designation + ", " + aoUnitId + ", " + officeName + ", " + (phoneNumber ? phoneNumber.toBanglaNumber() : "");
+            if(_this.is(":checked")) {
+                $("#selectAOPopup").modal('show');
+                $("#selectAOPopup").find(".employee-name").text(name);
+                $("#selectAOPopup .confirm-button").off();
+                $("#selectAOPopup .confirm-button").on("click", function (event) {
+                    var dataObj = {};
+                    officeId = getSelectedOfficeId("");
+                    dataObj.officeId = officeId;
+                    dataObj.officeOriginId = getSelectedOfficeOriginId("");
+                    dataObj.appealOfficeId = aoOfficeId;
+                    dataObj.appealOfficerOfficeUnitOrganogramId = aoOrganogramId;
+                    dataObj.aoOfficeUnitName = aoUnitId;
+                    dataObj.officeName = getOfficeName("");
+                    blockUI();
+                    $.ajax({
+                        url: "/api/office/setup/" + officeId,
+                        type: "PUT",
+                        data: JSON.stringify(dataObj),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            id = response.id;
+                            officeId = response.officeId;
+                            groOfficeId = response.groOfficeId;
+                            groOrganogramId = response.groOfficeUnitOrganogramId;
+                            groUnitId = response.groOfficeUnitName;
+                            aoOfficeId = response.appealOfficeId;
+                            aoOrganogramId = response.appealOfficerOfficeUnitOrganogramId;
+                            aoUnitId =  response.aoOfficeUnitName;
+                            adminOfficeId = response.adminOfficeId;
+                            adminOrganogramId = response.adminOfficeUnitOrganogramId;
+                            adminUnitId = response.adminOfficeUnitName;
+                            $("#selectAo").empty();
+                            $("#selectAo").html(aoName);
+                            toastr.info("আপিল কর্মকর্তা সঠিকভাবে সেটআপ করা হয়েছে।", null, {positionClass: 'toast-top-center'});
+                        },
+                        error: function (response) {
+                            toastr.error("আপিল কর্মকর্তা সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+                        }
+                    }).always(function (response) {
+                        $("#selectAOPopup").modal('hide');
+                        $("#officersListAo").modal('hide');
+                        unblockUI();
+                    });
+                });
+            }
+        });
+    }
+
+    function adminSelectionAction() {
+        $("#listViewTableAdmin").on("click", "[name='employeeId']", function () {
+            var _this = $(this),
+            name = _this.attr("data-name"),
+            adminOrganogramId = _this.attr("data-organogram-id"),
+            adminOfficeId = _this.attr("data-office-id"),
+            phoneNumber = _this.attr("data-phoneNumber"),
+            adminUnitId = _this.attr("data-office-unit-name"),
+            designation = _this.attr("data-designation"),
+            officeName = _this.attr("data-office-name");
+            var adminName = name + ", " + designation + ", " + adminUnitId + ", " + officeName + ", " + (phoneNumber ? phoneNumber.toBanglaNumber() : "");
+            if(_this.is(":checked")) {
+                $("#selectAdminPopup").modal('show');
+                $("#selectAdminPopup").find(".employee-name").text(name);
+                $("#selectAdminPopup .confirm-button").off();
+                $("#selectAdminPopup .confirm-button").on("click", function (event) {
+                    var dataObj = {};
+                    officeId = getSelectedOfficeId("");
+                    dataObj.officeId = officeId;
+                    dataObj.officeOriginId = getSelectedOfficeOriginId("");
+                    dataObj.adminOfficeId = adminOfficeId;
+                    dataObj.adminOfficeUnitOrganogramId = adminOrganogramId;
+                    dataObj.adminOfficeUnitName = adminUnitId;
+                    dataObj.officeName = getOfficeName("");
+                    blockUI();
+                    $.ajax({
+                        url: "/api/office/setup/" + officeId,
+                        type: "PUT",
+                        data: JSON.stringify(dataObj),
+                        dataType: "json",
+                        contentType: "application/json",
+                        success: function (response) {
+                            id = response.id;
+                            officeId = response.officeId;
+                            groOfficeId = response.groOfficeId;
+                            groOrganogramId = response.groOfficeUnitOrganogramId;
+                            groUnitId = response.groOfficeUnitName;
+                            aoOfficeId = response.appealOfficeId;
+                            aoOrganogramId = response.appealOfficerOfficeUnitOrganogramId;
+                            aoUnitId =  response.aoOfficeUnitName;
+                            adminOfficeId = response.adminOfficeId;
+                            adminOrganogramId = response.adminOfficeUnitOrganogramId;
+                            adminUnitId = response.adminOfficeUnitName;
+                            $("#selectAdmin").empty();
+                            $("#selectAdmin").html(adminName);
+                            toastr.info("অফিস অ্যাডমিন সঠিকভাবে সেটআপ করা হয়েছে।", null, {positionClass: 'toast-top-center'});
+                            var userOfficeId = $("[name='officeId']").val();
+                            var userOfficeUnitOrganogramId = $("[name='officeUnitOrganogramId']").val();
+                            setTimeout(function () {
+                                if((userOfficeId == adminOfficeId) && (userOfficeUnitOrganogramId != adminOrganogramId)) {
+                                    window.location.replace("/ssologout");
+                                }
+                            }, 1000);
+                        },
+                        error: function (response) {
+                            toastr.error("অফিস অ্যাডমিন সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+                        }
+                    }).always(function (response) {
+                        $("#selectAdminPopup").modal('hide');
+                        $("#officersListAdmin").modal('hide');
+                        unblockUI();
+                    });
+                });
+            }
+        });
+    }
+
+    function updateEmployeeListOnSelection(tag, serviceId) {
+        var viewButton = "#view" + tag;
+        if(tag == "So") {
+            $(viewButton).off("click");
+        }
+        $(viewButton).on("click", function() {
+            if(!isOfficeSelectionValid(tag)) {
+                toastr.error("দপ্তর বাছাই সঠিক নয়", null, {positionClass: 'toast-top-center'});
+            } else {
+                var officeId = $('#secondSelection' + tag).val();
+                var url;
+                if(serviceId) {
+                    url = "/api/office/" + officeId + "/service/" +  serviceId + "/so/organogram-id";
+                } else {
+                    url = "/api/office/" + officeId + "/" + tag.toLowerCase() + "/organogram-id";
+                }
+                $("#ajaxProcessingModal").modal("show");
+                $.getJSON(url, function(organogramIdAsObject) {
+                    loadOfficeEmployeeList(officeId, organogramIdAsObject.id, 1, tag);
+                }).always(function (organogramIdAsObject) {
+                    $("#ajaxProcessingModal").modal("hide");
+                });
+            }
+        });
+    }
+
+    function defaultOfficer(tag) {
+        var officeId = getSelectedOfficeId("");
+        var officeIdForEmployeeList = officeId;
+        if(tag == "Ao" && $("#selectAo").attr("data-ao-id")) {
+            officeIdForEmployeeList = $("#selectAo").attr("data-ao-id");
+        }
+        clearAll(tag);
+        $.getJSON("/api/office/" + officeId + "/" + tag.toLowerCase() + "/organogram-id", function(organogramIdAsObject) {
+            loadOfficeEmployeeList(officeIdForEmployeeList, organogramIdAsObject.id, 1, tag);
+        }).always(function (organogramIdAsObject) {
+            $("#ajaxProcessingModal").modal("hide");
+        });
+    }
+
+    function loadOfficeInformation(officeId) {
+        var fieldNames = ["groOfficeId","groOfficeUnitOrganogramId","appealOfficeId","appealOfficerOfficeUnitOrganogramId","adminOfficeId","adminOfficeUnitOrganogramId","groOfficeUnitName","aoOfficeUnitName","adminOfficeUnitName"];
+        $("#preview").css("display","block");
+
+        $.ajax({
+            url: "/api/office/" + officeId + "/setup",
+            type: "GET",
+            data: {office_id : officeId},
+            dataType: "json",
+            success: function (response) {
+                groAoAdminName();
+                if(!response) {
+                    return;
+                }
+                fieldNames.forEach(function (field) {
+                    $("#preview").find("[name='" + field + "']").val(response[field]);
+                });
+                loadServices(1);
+                soSelectionAction();
+            },
+            error: function (response) {
+                groAoAdminName();
+                toastr.error("অফিস সঠিকভাবে সেটআপ করা যায় নি।", null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    function manageOfficerAndCitizenCharter(manageOwnOffice, superAdmin) {
+        if(manageOwnOffice) {
+            var officeId = $("[name='officeId']").val();
+            loadOfficeInformation(officeId);
+        } else {
+            $("#manageOfficerAndCitizenCharter").on("click", function () {
+                var officeId = getSelectedOfficeId("");
+                if(superAdmin) {
+                    loadOfficeInformation(officeId);
+                } else {
+                    $.getJSON("/api/offices/" + officeId + "/check-if-user-from-ancestors", function (isValid) {
+                        if(isValid) {
+                            loadOfficeInformation(officeId);
+                        } else {
+                            swal({
+                                title: "স্থগিত",
+                                text: "দুঃখিত! আপনার এই দপ্তরটি সেটআপ করার কোনো অনুমতি নেই",
+                                type: "warning"
+                            }, function() {
+                                window.location.reload();
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    function sortObjectsByProperty(objectList, propName) {
+        return objectList.sort(function(a,b) {
+            return a[propName].trim().replace(" ", "") > b[propName].trim().replace(" ", "") ? 1 : -1;
+        });
+    }
+
+    function groAoAdminName() {
+        $.ajax({
+            url: "/api/office/" + getSelectedOfficeId("") + "/gro-ao-admin-info",
+            type: "GET",
+            contentType: "application/json",
+            success: function (response) {
+                $("#selectGro").empty().html(response.groName + ", " + response.groDesignation + ", " + response.groOfficeUnitName + ", " + response.groOfficeName + ", " + (response.groPhone ? response.groPhone.toBanglaNumber() : ""));
+                $("#selectAo").empty().html(response.aoName + ", " + response.aoDesignation + ", " + response.aoOfficeUnitName + ", " + response.aoOfficeName + ", " + (response.aoPhone ? response.aoPhone.toBanglaNumber() : ""));
+                $("#selectAdmin").empty().html(response.adminName + ", " + response.adminDesignation + ", " + response.adminOfficeUnitName + ", " + response.adminOfficeName + ", " + (response.adminPhone ? response.adminPhone.toBanglaNumber() : ""));
+                if(response && response.appealOfficeId) {
+                    $("#selectAo").attr("data-ao-id", response.appealOfficeId);
+                } else {
+                    $("#selectAo").removeAttr("data-ao-id");
+                }
+            },
+            error: function (response) {
+                toastr.error("অফিস সঠিকভাবে সেটআপ করা নেই", null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    function getFormattedServiceTime(serviceTime) {
+        if(!serviceTime) {
+            return "-";
+        }
+        return (languageCode == "en") ? ("" + serviceTime + " " + (serviceTime > 1 ? "Days" : "Day")) : (("" + serviceTime).toBanglaNumber() + " দিন");
+    }
+
+    function showServiceDetails(serviceId) {
+        $("#ajaxProcessingModal").modal("show");
+        var modal = $("#serviceDetails");
+        $.getJSON("/api/office/" + getSelectedOfficeId("") + "/service/" + serviceId, function (response) {
+            var service = response;
+            modal.find(".service-name-bng").empty().html(service.serviceNameBangla ? service.serviceNameBangla : "-");
+            modal.find(".service-name-eng").empty().html(service.serviceNameEnglish ? service.serviceNameEnglish : "-");
+            modal.find(".service-procedure-bng").empty().html(service.serviceProcedureBangla ? service.serviceProcedureBangla : "-");
+            modal.find(".service-procedure-eng").empty().html(service.serviceProcedureEnglish ? service.serviceProcedureEnglish : "-");
+            modal.find(".document-location-bng").empty().html(service.documentAndLocationBangla ? service.documentAndLocationBangla : "-");
+            modal.find(".document-location-eng").empty().html(service.documentAndLocationEnglish ? service.documentAndLocationEnglish : "-");
+            modal.find(".payment-method-bng").empty().html(service.paymentMethodBangla ? service.paymentMethodBangla : "-");
+            modal.find(".payment-method-eng").empty().html(service.paymentMethodEnglish ? service.paymentMethodEnglish : "-");
+            modal.find(".service-time-value").empty().html(getFormattedServiceTime(service.serviceTime));
+            modal.modal("show");
+        }).fail(function () {
+            toastr.error("দুঃখিত! বিস্তারিত দেখানো যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+        }).always(function () {
+            $("#ajaxProcessingModal").modal("hide");
+        });
+    }
+
+    function blockUI() {
+        var isEnglish = (languageCode == "en");
+        var msg = isEnglish ? "Loading... Just a moment" : "লোড হচ্ছে... দয়া করে অপেক্ষা করুন" ;
+        $.blockUI({
+            message: '<h1>' + msg + '</h1>',
+            baseZ:11111
+        });
+    }
+
+    function unblockUI() {
+        $.unblockUI();
+    }
+
+    function disableOffice(isSuperAdmin) {
+        $("#disableOffice").on("click", function () {
+            if (isSuperAdmin){
+                swal({
+                    title: "অফিস অপসারণ",
+                    text: "",
+                    type: "error",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-success",
+                    confirmButtonText: "অপসারণ করুন",
+                    cancelButtonText: "বাতিল",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm) {
+                    if (isConfirm) {
+                        var officeId = getSelectedOfficeId("");
+                        var url = "/api/offices/disable/" + officeId;
+                        ajaxGET(url, function (response) {
+                            if(response.success){
+//                                swal.close();
+                                swal("অফিস অপসারণ সফল ", "", "success", window.location.reload());
+                            }
+                        }, function () {});
+                    } else {
+                        swal.close();
+                    }
+                });
+            }
+        });
+    }
+
+    function ajaxGET(url, onSuccess, onError) {
+        $.ajax({
+            url: url,
+            type: "GET",
+            contentType: "application/json",
+            success: onSuccess,
+            error: onError
+        });
+    }
+
+
+    $(document).ready(function() {
+        var manageOwnOffice = ($("[name='manageOwnOffice']").val() == "true");
+        var superAdmin = ($("[name='superAdmin']").val() == "true");
+        if(!manageOwnOffice) {
+            bindOfficeLayersChangeActions("");
+            bindOfficeLayersChangeActions("Gro");
+            bindOfficeLayersChangeActions("Admin");
+            enableDisableListViewButton("");
+            enableDisableListViewButton("Gro");
+            enableDisableListViewButton("Ao");
+            enableDisableListViewButton("Admin");
+        }
+        bindOfficeLayersChangeActions("Ao");
+        initializeModal("Gro");
+        initializeModal("Ao");
+        initializeModal("Admin");
+        initializeOfficeEmployeeList("#listViewTableGro");
+        initializeOfficeEmployeeList("#listViewTableAo");
+        initializeOfficeEmployeeList("#listViewTableAdmin");
+        updateEmployeeListOnSelection("Gro");
+        updateEmployeeListOnSelection("Ao");
+        updateEmployeeListOnSelection("Admin");
+        groSelectionAction();
+        aoSelectionAction();
+        adminSelectionAction();
+        manageOfficerAndCitizenCharter(manageOwnOffice, superAdmin);
+        disableOffice(superAdmin);
+        initializeServices();
+        initializeOfficeEmployeeList("#listViewTableSo");
+   });
+
+</script>

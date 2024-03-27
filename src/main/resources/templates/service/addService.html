@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="page-content" style="min-height: 1601px;" th:fragment="addService">
+    <div class="form-body">
+        <form id="serviceCreateEditForm" class="ajax-submit-form" data-url="/api/office/services" th:object="${service}">
+            <input type="hidden" name="id" th:field="*{id}" />
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.name} , #{bangla})}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="text" name="serviceNameBangla" class="form-control" th:field="*{serviceNameBangla}" th:placeholder="#{provide.x(#{service.name})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.name} , #{english})}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="text" name="serviceNameEnglish" class="form-control" th:field="*{serviceNameEnglish}" th:placeholder="#{provide.x(#{service.name})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.procedure} , #{bangla})}"></label>
+                    <textarea name="serviceProcedureBangla" class="form-control" rows="3" th:field="*{serviceProcedureBangla}" th:placeholder="#{provide.x(#{service.procedure})}"></textarea>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.procedure} , #{english})}"></label>
+                    <textarea name="serviceProcedureEnglish" class="form-control" rows="3" th:field="*{serviceProcedureEnglish}" th:placeholder="#{provide.x(#{service.procedure})}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{bangla})}"></label>
+                    <textarea name="documentAndLocationBangla" class="form-control" rows="3" th:field="*{documentAndLocationBangla}" th:placeholder="#{provide.x(#{necessary.x(#{document.and.location})})}" ></textarea>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{english})}"></label>
+                    <textarea name="documentAndLocationEnglish" class="form-control" rows="3" th:field="*{documentAndLocationEnglish}" th:placeholder="#{provide.x(#{necessary.x(#{document.and.location})})}" ></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{bangla})}"></label>
+                    <input type="text" name="paymentMethodBangla" class="form-control" th:field="*{paymentMethodBangla}" th:placeholder="#{provide.x(#{service.price.and.payment.method})}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{english})}"></label>
+                    <input type="text" name="paymentMethodEnglish" class="form-control" th:field="*{paymentMethodEnglish}" th:placeholder="#{provide.x(#{service.price.and.payment.method})}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{service.time}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="number" name="serviceTime" class="form-control" th:field="*{serviceTime}" th:placeholder="#{provide.x(#{service.time})}" th:attr="data-number-message=#{error.message.for.number}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <div class="mt-radio-inline" th:field="*{status}" th:attr="data-required-message=#{error.message.for.required}">
+                        <label class="control-label" th:text="#{status}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <input name="status" id="yes" type="radio" value="true" th:checked="*{status}"/>
+                        <label for="yes">
+                            <span th:remove="tag" th:text="#{yes}"></span>
+                        </label>
+                        <input name="status" id="no" type="radio" value="false" th:checked="*{status}==false ? true:false"/>
+                        <label for="no">
+                            <span th:remove="tag" th:text="#{no}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn blue" th:text="#{${service.getId() != null ? 'update' : 'save'}}"></button>
+            <button type="reset" class="btn green" th:text="#{reset}"></button>
+            <button type="button" class="btn default back-button" th:text="#{back}"></button>
+        </form>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="addServiceIncludeScript" th:remove="tag">
+    <script>
+        $("form.ajax-submit-form").on("submit", function (event) {
+            event.preventDefault();
+            $("#ajaxProcessingModal").modal("show");
+            var _this = $(this);
+            var url = _this.attr("data-url");
+            var type = "POST";
+            var id = _this.find("[name='id']").val();
+            if(!isNaN(parseInt(id))) {
+                type = "PUT";
+                url += "/" + id;
+            }
+            var dataObject = {};
+            _this.serializeArray().forEach(function(item) {
+                dataObject[item.name] = item.value;
+            });
+            var data = JSON.stringify(dataObject);
+            $.ajax({
+                type : type,
+                url : url,
+                data : data,
+                dataType : "json",
+                contentType: "application/json",
+                success : function (data){
+                    $(_this).trigger("ajax-submit-success", [data]);
+                },
+                error: function (data){
+                    $(_this).trigger("ajax-submit-error", [data]);
+                }
+            }).done(function(data) {
+                $("#ajaxProcessingModal").modal("hide");
+            });
+        });
+        $("form.ajax-submit-form button.back-button").on("click", function() {
+            window.history.back();
+        });
+    </script>
+</div>
+
+<script th:fragment="addServiceScript">
+    var form = $("#serviceCreateEditForm");
+    form.validate({
+        rules: {
+            serviceNameBangla: {
+                required: true,
+                minlength: 3
+            },
+            serviceNameEnglish: {
+                required: true,
+                minlength: 3
+            },
+            serviceTime: {
+                number: true
+            },
+            status: {
+                required: true
+            }
+        },
+        messages: {
+            serviceNameBangla: {
+                required: form.find("[name='serviceNameBangla']").attr("data-required-message"),
+                minlength: form.find("[name='serviceNameBangla']").attr("data-minlength-message")
+            },
+            serviceNameEnglish: {
+                required: form.find("[name='serviceNameEnglish']").attr("data-required-message"),
+                minlength: form.find("[name='serviceNameEnglish']").attr("data-minlength-message")
+            },
+            serviceTime: {
+                number: form.find("[name='serviceTime']").attr("data-number-message")
+            },
+            status: {
+                required: form.find("[name='status']").attr("data-required-message")
+            }
+        }
+    });
+    $("#serviceCreateEditForm").on("ajax-submit-success", function (event, data) {
+        if(data.success) {
+            toastr.success(data.message, null, {positionClass: 'toast-top-center'});
+            setTimeout(function() {
+                $(location).attr("href", "/viewServices.do");
+            }, 500);
+        } else {
+            toastr.error(data.message, null, {positionClass: 'toast-top-center'});
+        }
+    });
+</script>

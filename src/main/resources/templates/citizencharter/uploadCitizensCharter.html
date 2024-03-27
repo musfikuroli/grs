@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="uploadCitizensCharterIncludeStyle">
+    <link href="/assets/global/plugins/bootstrap-sweetalert/sweetalert.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+</div>
+
+<div class="page-content" th:fragment="uploadCitizensCharter">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 a">
+            <div class="main-box-div">
+                <div class="title-div" th:title ="#{index.menu.citizen.charter}"></div>
+                <p class="font-lg bold" th:text ="#{choose.office.from.citizen.charter.list}"></p>
+                <div class="horizontal-form">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-inline" id="officeSelectionOptions">
+                                <select id="officeLayers" class="form-control" >
+                                    <option value='null' selected disabled th:text="#{select.x(#{office.type})}"></option>
+                                    <option value="1" th:text="#{option.ministry.division}"></option>
+                                    <option value="2" th:text="#{option.directorate}"></option>
+                                    <option value="3" th:text="#{option.other.office}"></option>
+                                    <option value="4" th:text="#{option.divisional.office}"></option>
+                                    <option value="7" th:text="#{option.regional.office}"></option>
+                                    <option value="5" th:text="#{option.district.office}"></option>
+                                    <option value="6" th:text="#{option.upazilla.office}"></option>
+                                </select>
+                                <select id="firstSelection" class="form-control" style="display: none;"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="custom-file btn btn-primary" for="csvInput">
+                                <input id="csvInput" type="file" accept=".xlsx" class="custom-file-input" style="display: none;">
+                                <span class="custom-file-control">EXCEL ফাইল আপলোড করুন</span>
+                            </label>
+                            <a class="btn btn-info" th:href="@{assets/Citizen Charter Format for GRS.xlsx}" target="_blank">নমুনা EXCEL ফাইল দেখুন</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="hidden" name="isOfficeAdmin" th:value="${isOfficeAdmin}"/>
+                        <input type="hidden" name="superAdmin" th:value="${superAdmin}"/>
+                        <div class="col-md-12" id="printableArea">
+                            <div id="servicesList">
+                                <h1 class="text-center">
+                                    <div class="font-lg" th:text="#{index.footer.bangladesh.government}"></div>
+                                    <div class="office-name font-lg"></div>
+                                    <div class="office-url font-lg"></div>
+                                    <div class="font-lg" th:text="#{citizen.charter}"></div>
+                                </h1>
+                                <h1 class="font-lg" th:text="#{x.dot.y(#{number.one}, #{vision.mission})}"></h1>
+                                <h1 class="row">
+                                    <span class="col-md-1"><span th:text="#{vision}"></span> : </span>
+                                    <span class="vision-text col-md-5"><input class="form-control" style="font:14px" data-bind="value : visionBangla" placeholder="বাংলায় ভিশন লিখুন"/></span>
+                                    <span class="vision-text col-md-5"><input class="form-control" style="font:14px" data-bind="value : visionEnglish" placeholder="ইংরেজিতে ভিশন লিখুন"/></span>
+                                </h1>
+                                <h1 class="row">
+                                    <span class="col-md-1"><span th:text="#{mission}"></span> : </span>
+                                    <span class="mission-text col-md-5"><input class="form-control" style="font:14px" data-bind="value : missionBangla" placeholder="বাংলায় মিশন লিখুন"/></span>
+                                    <span class="mission-text col-md-5"><input class="form-control" style="font:14px" data-bind="value : missionEnglish" placeholder="ইংরেজিতে মিশন লিখুন"/></span>
+                                </h1>
+                                <h1 class="font-lg" th:text="#{service.pledge}"></h1>
+                                <h2 class="text-center font-lg" th:text="#{services.nagorik}"></h2>
+                                <table class="table table-bordered table-hover" id="citizenServicesTable">
+                                    <thead>
+                                    <tr>
+                                        <th>ক্রমিক নম্বর</th>
+                                        <th>সেবার নাম</th>
+                                        <th>সেবা প্রদান পদ্ধতি</th>
+                                        <th>প্রয়োজনীয় কাগজপত্র এবং প্রাপ্তিস্থান</th>
+                                        <th>সেবার মূল্য এবং পরিশোধ পদ্ধতি</th>
+                                        <th>সেবা প্রদানের সময়সীমা</th>
+                                        <th>দায়িত্বপ্রাপ্ত কর্মকর্তা<br>(পদবি, শাখা)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach : ko.utils.arrayFilter(citizenCharterDTOList(), function(item){return item.service().serviceType == 'NAGORIK'})">
+                                    <!-- ko if: service().serviceType == "NAGORIK" -->
+                                    <tr>
+                                        <td data-bind="text: toBanglaNum($index()+1)"></td>
+                                        <td>
+                                            <span data-bind="text : service().nameBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().nameEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().servingProcessBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().servingProcessEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().documentAndLocationBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().documentAndLocationEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().paymentMethodBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().paymentMethodEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : toBanglaNum(service().serviceTime)+' কার্যদিবস'"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().serviceTime +' day(s)'"></span>
+                                        </td>
+                                        <td>
+                                            <select class="so-designation" data-bind="options: $root.employees, value: serviceOfficer, optionsText: 'formattedDesignation' "></select>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                    </tbody>
+                                </table>
+                                <h2 class="text-center font-lg" th:text="#{services.daptorik}"></h2>
+                                <table class="table table-bordered table-hover" id="officialServicesTable">
+                                    <thead>
+                                    <tr>
+                                        <th>ক্রমিক নম্বর</th>
+                                        <th>সেবার নাম</th>
+                                        <th>সেবা প্রদান পদ্ধতি</th>
+                                        <th>প্রয়োজনীয় কাগজপত্র এবং প্রাপ্তিস্থান</th>
+                                        <th>সেবার মূল্য এবং পরিশোধ পদ্ধতি</th>
+                                        <th>সেবা প্রদানের সময়সীমা</th>
+                                        <th>দায়িত্বপ্রাপ্ত কর্মকর্তা<br>(পদবি, শাখা)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach : ko.utils.arrayFilter(citizenCharterDTOList(), function(item){return item.service().serviceType == 'DAPTORIK'})">
+                                    <!-- ko if: service().serviceType == "DAPTORIK" -->
+                                    <tr>
+                                        <td data-bind="text: toBanglaNum($index()+1)"></td>
+                                        <td>
+                                            <span data-bind="text : service().nameBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().nameEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().servingProcessBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().servingProcessEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().documentAndLocationBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().documentAndLocationEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().paymentMethodBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().paymentMethodEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : toBanglaNum(service().serviceTime)+' কার্যদিবস'"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().serviceTime +' day(s)'"></span>
+                                        </td>
+                                        <td>
+                                            <select class="so-designation" data-bind="options: $root.employees, value: serviceOfficer, optionsText: 'formattedDesignation'"></select>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                    </tbody>
+                                </table>
+                                <h2 class="text-center font-lg" th:text="#{services.staff}"></h2>
+                                <table class="table table-bordered table-hover" id="internalServicesTable">
+                                    <thead>
+                                    <tr>
+                                        <th>ক্রমিক নম্বর</th>
+                                        <th>সেবার নাম</th>
+                                        <th>সেবা প্রদান পদ্ধতি</th>
+                                        <th>প্রয়োজনীয় কাগজপত্র এবং প্রাপ্তিস্থান</th>
+                                        <th>সেবার মূল্য এবং পরিশোধ পদ্ধতি</th>
+                                        <th>সেবা প্রদানের সময়সীমা</th>
+                                        <th>দায়িত্বপ্রাপ্ত কর্মকর্তা<br>(পদবি, শাখা)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach : ko.utils.arrayFilter(citizenCharterDTOList(), function(item){return item.service().serviceType == 'STAFF'})">
+                                    <!-- ko if: service().serviceType == "STAFF" -->
+                                    <tr>
+                                        <td data-bind="text: toBanglaNum($index()+1)"></td>
+                                        <td>
+                                            <span data-bind="text : service().nameBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().nameEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().servingProcessBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().servingProcessEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().documentAndLocationBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().documentAndLocationEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : service().paymentMethodBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().paymentMethodEnglish"></span>
+                                        </td>
+                                        <td>
+                                            <span data-bind="text : toBanglaNum(service().serviceTime)+' কার্যদিবস'"></span>
+                                            <br><br>
+                                            <span data-bind="text : service().serviceTime +' day(s)'"></span>
+                                        </td>
+                                        <td>
+                                            <select class="so-designation" data-bind="options: $root.employees, value: serviceOfficer, optionsText: 'formattedDesignation'"></select>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                    </tbody>
+                                </table>
+                                <table class="table table-bordered table-hover" id="controlledOfficesServiceTable"></table>
+                                <h1 class="font-lg" th:text="#{expectation.of.us}"></h1>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <input class="form-control" type="text" data-bind="value : expectationBangla" placeholder="প্রত্যাশা বাংলায় লিখুন" style="font:14px">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input class="form-control" type="text" data-bind="value : expectationEnglish" placeholder="প্রত্যাশা ইংরেজিতে লিখুন" style="font:14px">
+                                    </div>
+                                    <button class="btn btn-default" data-bind="click : addExpectation, enable : (expectationBangla() != '' && expectationEnglish() != '')" th:text="#{add.expectation}">Add expectation</button>
+                                </div>
+                                <div class="clearfix">&nbsp;</div>
+                                <table class="table table-bordered table-hover" id="expectations">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center" th:text="#{serial.number}"></th>
+                                        <th class="text-center" th:text="#{to.do}"></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach : expectations">
+                                    <tr>
+                                        <td data-bind="text: toBanglaNum($index()+1)"></td>
+                                        <td>
+                                            <span data-bind="text : nameBangla"></span>
+                                            <br><br>
+                                            <span data-bind="text : nameEnglish"></span>
+                                        </td>
+                                        <td><a href="#" data-bind="click : $root.removeExpectation" th:text="#{delete}"></a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <h1 class="hide" th:text="#{grs.4}"></h1>
+                                <table class="table table-bordered table-hover hide" id="responsiblePersonnelInfo">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="5" th:text="#{contact}"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center" th:text="#{serial.number}"></th>
+                                        <th class="text-center" th:text="#{contact.when}"></th>
+                                        <th class="text-center" th:text="#{contact.whom}"></th>
+                                        <th class="text-center" th:text="#{contact.info}"></th>
+                                        <th class="text-center" th:text="#{resolve.period}"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td th:text="#{number.one}"></td>
+                                        <td th:text="#{authority.negative}"></td>
+                                        <td th:text="#{onik}"></td>
+                                        <td class="gro-info"></td>
+                                        <td th:text="#{month.three}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td th:text="#{number.two}"></td>
+                                        <td th:text="#{gro.negative}"></td>
+                                        <td th:text="#{ao}"></td>
+                                        <td class="ao-info"></td>
+                                        <td th:text="#{month.one}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td th:text="#{number.three}"></td>
+                                        <td th:text="#{ao.negative}"></td>
+                                        <td th:text="#{grievance.management.cell}"></td>
+                                        <td>
+                                            <div th:text="#{grievance.center}"></div>
+                                            <div th:text="#{address}"></div>
+                                            <div th:text="#{web}"></div>
+                                        </td>
+                                        <td th:text="#{month.three}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-primary pull-right margin-top-10" id="btnUpload" data-bind="click : upload" disabled th:text="#{upload.citizen.charter}"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="ajaxProcessingModal" data-bind="visible : isLoading" tabindex="-1" data-backdrop="static" data-keyboard="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/global/img/dashboard-loading.gif" alt="..." class="loading img-responsive center-block">
+                                    <div class="text-center" th:text="#{loading.please.wait}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                        <div id="i18n-th-1" th:attr="data-message=#{serial.no}" ></div>
+                        <div id="i18n-th-2" th:attr="data-message=#{service.name}" ></div>
+                        <div id="i18n-th-3" th:attr="data-message=#{service.procedure}" ></div>
+                        <div id="i18n-th-4" th:attr="data-message=#{document.and.location}" ></div>
+                        <div id="i18n-th-5" th:attr="data-message=#{service.price.and.payment.method}" ></div>
+                        <div id="i18n-th-6" th:attr="data-message=#{service.time}" ></div>
+                        <div id="i18n-th-7" th:attr="data-message=#{x.y.bracket(#{responsible.officer}, #{designation.phone.and.email})}" ></div>
+                        <div id="i18n-th-complain" th:attr="data-message=#{complain.against.service}" ></div>
+                        <div id="i18n-table-title-1" th:attr="data-message=#{x.y(#{number.two.point.one}, #{x.service(#{citizen})})}" ></div>
+                        <div id="i18n-table-title-2" th:attr="data-message=#{x.y(#{number.two.point.two}, #{x.service(#{official})})}" ></div>
+                        <div id="i18n-table-title-3" th:attr="data-message=#{x.y(#{number.two.point.three}, #{x.service(#{internal})})}" ></div>
+                        <div id="i18n-table-title-4" th:attr="data-message=#{x.y(#{number.two.point.four}, #{services.from.child.offices})}" ></div>
+                        <div id="i18n-no-vision" th:attr="data-message=#{no.x.added(#{vision})}" ></div>
+                        <div id="i18n-no-mission" th:attr="data-message=#{no.x.added(#{mission})}" ></div>
+                        <div id="i18n-no-website" th:attr="data-message=#{no.x.added(#{website})}" ></div>
+                        <div id="i18n-no-ao" th:attr="data-message=#{no.x.appointed(#{ao})}" ></div>
+                        <div id="i18n-no-gro" th:attr="data-message=#{no.x.appointed(#{gro})}" ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="uploadCitizensCharterIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-sweetalert/sweetalert.min.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/knockout-3.4.2.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/jszip.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/xlsx.js" type="text/javascript"></script>
+</div>
+
+<script th:inline="javascript" th:fragment="uploadCitizensCharterScript">
+    /*<![CDATA[*/
+    const showAllOffices = /*[[${showAllOffices}]]*/ true;
+    /*]]>*/
+    /*<![CDATA[*/
+    const showChildOfficesOnly = /*[[${showChildOfficesOnly}]]*/ false;
+    /*]]>*/
+
+    function verifyUserAccessBeforeCcUpload(postJson) {
+        var isOfficeAdmin = ($("[name='isOfficeAdmin']").val() == "true");
+        var superAdmin = ($("[name='superAdmin']").val() == "true");
+        var officeOriginId = getSelectedOfficeOriginId();
+        var flag = true;
+        var message = "";
+        var jsonVal = JSON.parse(postJson);
+        jsonVal.citizenCharters.forEach (function(element) {
+            var val = element.service;
+            var timeFlag =  val.serviceTime && !isNaN(parseInt(val.serviceTime.toEnglishNumber()));
+            if(!val.nameBangla || !timeFlag || !val.serviceType){
+                message = !val.nameBangla ? "সেবার নাম সঠিক নয়" : "সেবার নাম = " + val.nameBangla;
+	            message += !timeFlag ? ", সেবা প্রদানের সময়সীমা সঠিক ফরম্যাটে নয় " : ", সেবা প্রদানের সময়সীমা = " + val.serviceTime ;
+                message += !val.serviceType ? "এবং, সেবার প্রকার  প্রদান করুন" : "এবং, সেবার প্রকার = " + val.serviceType;
+                flag = false;
+            }
+        });
+
+        if((superAdmin || isOfficeAdmin) && flag) {
+            warnBeforeCCupload(postJson);
+        } else {
+            if(!flag){
+                toastr.error(message, null, {positionClass: 'toast-top-center'});
+            } else {
+                toastr.error("দুঃখিত! আপনার সেবা প্রদান প্রতিশ্রুতি ব্যবস্থাপনার অনুমতি নেই", null, {positionClass: 'toast-top-center'});
+            }
+        }
+    }
+
+    function warnBeforeCCupload(postJson) {
+        swal({
+                title: "আপনি কি নিশ্চিত?",
+                text: "সেবা প্রদান প্রতিশ্রুতি আপলোড করতে চাচ্ছেন?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "হ্যাঁ, আপলোড করুন!",
+                cancelButtonText: "না, বাতিল করুন!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },
+            function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/origin-citizen-charter/upload",
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: postJson,
+                        success: function(data) {
+                            if(data.success) {
+                                swal({
+                                    title: "সেবা প্রদান প্রতিশ্রুতি আপলোড",
+                                    text: data.message,
+                                    type: "success"
+                                }, function () {
+                                    window.location.href = "/manageOffice.do";
+                                });
+                            } else {
+                                swal("স্থগিত", data.message, "error");
+                            }
+                        },
+                        beforeSend: function (data) {
+                            $.blockUI({
+                                message: (languageCode == "en" ? "Uploading citizens charter, please wait..." : "সেবা প্রদান প্রতিশ্রুতি আপলোড হচ্ছে, দয়া করে অপেক্ষা করুন..."),
+                                baseZ: 10101
+                            });
+                        },
+                        complete: function (data) {
+                            $.unblockUI();
+                        }
+                    });
+                } else {
+                    swal("স্থগিত", "সেবা প্রদান প্রতিশ্রুতি আপলোড বাতিল করা হয়েছে", "error");
+                }
+            });
+    }
+
+    function getLanguageVersion(object) {
+        return (languageCode == "en" ? object.nameEnglish : object.nameBangla);
+    }
+
+    function getSelectedLayerLevel() {
+        return $("#officeLayers").val();
+    }
+
+    function getSelectedOfficeOriginId() {
+        return $('#firstSelection').val();
+    }
+
+    function getSelectedOfficeOriginName() {
+        return $('#firstSelection :selected').text();
+    }
+
+    function bindOfficeLayersChangeActions() {
+        $('#officeLayers').select2();
+        $('#officeLayers').on("change", function () {
+            $('#csvInput').val('');
+            $('#csvInput').attr('disabled', 'disabled');
+            $('#btnUpload').attr('disabled', 'disabled');
+            var id = $(this).val();
+            var urlPartForGrsEnabled = (showAllOffices==true) ? "?grsEnabled=false" : "";
+            if(showChildOfficesOnly) {
+                urlPartForGrsEnabled += ((showAllOffices==true ? "&" : "?") + "showChildOfficesOnly=true");
+            }
+            $.getJSON("/api/office-origin/" + id + urlPartForGrsEnabled, function (response) {
+                var isEnglish = (languageCode == "en");
+                var officeOriginSelection = $("#firstSelection");
+                officeOriginSelection.empty();
+                officeOriginSelection.append("<option value='null' selected disabled>" + (isEnglish ? "Please Select" : "বাছাই করুন") + "</option>");
+                var propName = isEnglish ? "officeNameEnglish" : "officeNameBangla";
+                sortObjectsByProperty(response, propName);
+                $.each(response, function (i, field) {
+                    officeOriginSelection.append("<option value='" + field.id + "'>" + field[propName] + "</option>");
+                });
+                officeOriginSelection.select2();
+                officeOriginSelection.show();
+                officeOriginSelection.select2("open");
+                if(!officeOriginSelection.is(":visible")) {
+                    officeOriginSelection.show();
+                }
+            }).done(function () {
+            }).fail(function () {
+            }).always(function () {
+                $("table select.so-designation").empty();
+            });
+        });
+
+        $("#firstSelection").off("change").on("change", function() {
+            $('#csvInput').removeAttr('disabled');
+        });
+    }
+
+    function sortObjectsByProperty(objectList, propName) {
+        return objectList.sort(function(a,b) {
+            return a[propName].trim().replace(" ", "") > b[propName].trim().replace(" ", "") ? 1 : -1;
+        });
+    }
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    function initCSVuploader() {
+        $('#csvInput').on('change', readFromCSV);
+    }
+
+    function readFromExcel() {
+        var excelFile = $('#csvInput')[0].files[0];
+        var reader = new FileReader();
+        reader.onload = readOnSuccess;
+        reader.readAsArrayBuffer(excelFile);
+    }
+
+    function readOnSuccess(event) {
+        var data = event.target.result;
+        var arr = String.fromCharCode.apply(null, new Uint8Array(data));
+        var wb = XLSX.read(btoa(arr), {type: 'base64'});
+        try {
+            to_json(wb);
+        }
+        catch(err) {
+            swal("স্থগিত", "দয়া করে একটি সঠিক EXCEL ফাইল আপলোড করুন।", "error");
+        }
+    }
+
+    function to_json(workbook) {
+        workbook.SheetNames.forEach(function(sheetName, index) {
+            var roa = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {defval:""});
+            if (roa.length > 0) {
+                switch(index) {
+                    case 0:
+                        console.log(sheetName);
+                        citizencharterViewModel.visionBangla(roa[0].VISION_BANGLA);
+                        citizencharterViewModel.visionEnglish(roa[0].VISION_ENGLISH);
+                        citizencharterViewModel.missionBangla(roa[0].MISSION_BANGLA);
+                        citizencharterViewModel.missionEnglish(roa[0].MISSION_ENGLISH);
+                        break;
+                    case 1:
+                        console.log(sheetName);
+                        citizencharterViewModel.listReadFromCSV($.map(roa, function(item) {
+                            return new Service(item);
+                        }));
+                        break;
+                    case 2:
+                        console.log(sheetName);
+                        citizencharterViewModel.expectations($.map(roa, function(item) {
+                            return new Expectation(item.EXPECTATION_BANGLA, item.EXPECTATION_ENGLISH);
+                        }));
+                        break;
+                }
+            }
+        });
+    }
+
+    function readFromCSV() {
+        var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xlsx|.txt)$/;
+        var isValidCsv = regex.test($('#csvInput').val().toLowerCase());
+        if(isValidCsv==false) {
+            $('#csvInput').val('');
+            swal("স্থগিত", "দয়া করে একটি সঠিক ফাইলের নাম সম্বলিত excel ফাইল আপলোড করুন।", "error");
+            return;
+        }
+        var officeOriginId = getSelectedOfficeOriginId();
+        var isValid = (officeOriginId != null && officeOriginId.length > 0);
+        if(!isValid) {
+            $('#csvInput').val('');
+            swal("স্থগিত", "অনুগ্রহ করে যে কোনো ১টি অফিস বাছাই করুন।", "error");
+            return;
+        }
+        var updateOfficeOriginUnitOrganograms = function (officeOriginId) {
+            $.getJSON("/api/office-origin-unit-organograms/" + officeOriginId, function(result) {
+                citizencharterViewModel.employees($.map(result, function(item){return new ServiceOfficer(item)}));
+            }).done(function () {
+                $('#csvInput, #btnUpload').removeAttr('disabled');
+            });
+        };
+        updateOfficeOriginUnitOrganograms(officeOriginId);
+        $("#firstSelection").off("change").on("change", function() {
+            updateOfficeOriginUnitOrganograms(getSelectedOfficeOriginId());
+        });
+        citizencharterViewModel.isLoading(true);
+        readFromExcel();
+    }
+
+    function Service(x) {
+        var self = this;
+        self.nameBangla = x.SERVICE_NAME_BANGLA
+        self.nameEnglish = x.SERVICE_NAME_ENGLISH;
+        self.servingProcessBangla = x.SERVING_PROCESS_BANGLA;
+        self.servingProcessEnglish = x.SERVING_PROCESS_ENGLISH;
+        self.documentAndLocationBangla = x.DOCUMENT_AND_LOCATION_BANGLA;
+        self.documentAndLocationEnglish = x.DOCUMENT_AND_LOCATION_ENGLISH;
+        self.paymentMethodBangla = x.PAYMENT_METHOD_BANGLA;
+        self.paymentMethodEnglish = x.PAYMENT_METHOD_ENGLISH;
+        self.serviceTime = x.SERVICE_TIME;
+        self.serviceType = x.SERVICE_TYPE;
+    }
+
+    function ServiceOfficer(x) {
+        var self = this;
+        self.officeOriginId = ko.observable(x.officeOriginId);
+        self.officeOriginUnitId = ko.observable(x.officeOriginUnitId);
+        self.officeOriginUnitOrganogramId = ko.observable(x.officeOriginUnitOrganogramId);
+        self.unitNameBangla = ko.observable(x.unitNameBangla);
+        self.unitNameEnglish = ko.observable(x.unitNameEnglish);
+        self.designationEnglish = ko.observable(x.designationEnglish);
+        self.designationBangla = ko.observable(x.designationBangla);
+
+        self.formattedDesignation = ko.computed(function() {
+            return self.designationBangla()+', '+self.unitNameBangla();
+        });
+    }
+
+    function CitizenCharterDTO(service, serviceOfficer) {
+        var self = this;
+        self.service = ko.observable(service);
+        self.serviceOfficer = ko.observable(serviceOfficer);
+
+        self.toBanglaNum = function(num) {
+            return (num+'').toBanglaNumber();
+        };
+    }
+
+    function Expectation(nameBangla, nameEnglish) {
+        var self = this;
+        self.nameBangla = ko.observable(nameBangla);
+        self.nameEnglish = ko.observable(nameEnglish);
+
+        self.toBanglaNum = function(num) {
+            return (num+'').toBanglaNumber();
+        };
+    }
+
+    function OriginCitizenCharterDTO(x) {
+        var self = {};
+        self.layerLevel = getSelectedLayerLevel();
+        self.officeOriginId = getSelectedOfficeOriginId();
+        self.officeOriginNameBangla = getSelectedOfficeOriginName();
+        self.officeOriginNameEnglish = null;
+        self.visionBangla = x.visionBangla();
+        self.visionEnglish = x.visionEnglish();
+        self.missionBangla = x.missionBangla();
+        self.missionEnglish = x.missionEnglish();
+        self.expectationsBangla = $.map(x.expectations(), function(item){return item.nameBangla()});
+        self.expectationsEnglish = $.map(x.expectations(), function(item){return item.nameEnglish()});
+        self.citizenCharters = x.citizenCharterDTOList();
+        return self;
+    }
+
+    function CitizencharterViewModel() {
+        //data
+        var self = this;
+        self.visionBangla = ko.observable('');
+        self.visionEnglish = ko.observable('');
+        self.missionBangla = ko.observable('');
+        self.missionEnglish = ko.observable('');
+        self.employees = ko.observableArray([]);
+        self.listReadFromCSV = ko.observableArray([]);
+        self.citizenCharterDTOList = ko.computed(function(){
+            return $.map(self.listReadFromCSV(), function(obj) {
+                return new CitizenCharterDTO(obj, self.employees()[0]);
+            });
+        });
+
+        self.expectationBangla = ko.observable('');
+        self.expectationEnglish = ko.observable('');
+        self.expectations = ko.observableArray([
+            new Expectation('স্বয়ংসম্পূর্ণ আবেদন জমা প্রদান', 'Complete application form submission'),
+            new Expectation('যথাযথ প্রক্রিয়ায় প্রয়োজনীয় ফিস পরিশোধ করা', 'Payment clearance of required fees'),
+            new Expectation('সাক্ষাতের জন্য নির্ধারিত সময়ের পূর্বেই উপস্থিত থাকা', 'To be present before the interview time when asked')
+        ]);
+
+        self.isLoading = ko.observable(false);
+
+        //operations
+        self.addExpectation = function() {
+            self.expectations.push(new Expectation(self.expectationBangla(), self.expectationEnglish()));
+            self.expectationBangla('');
+            self.expectationEnglish('');
+        };
+        self.removeExpectation = function(item) {
+            self.expectations.remove(item);
+        };
+        self.upload = function() {
+            var postJson = ko.toJSON(OriginCitizenCharterDTO(self));
+            verifyUserAccessBeforeCcUpload(postJson);
+        };
+    }
+
+    var citizencharterViewModel = new CitizencharterViewModel();
+    ko.options.useOnlyNativeEvents = false;
+    ko.applyBindings(citizencharterViewModel);
+
+    $(document).ready(function () {
+        bindOfficeLayersChangeActions();
+        initCSVuploader();
+    });
+</script>

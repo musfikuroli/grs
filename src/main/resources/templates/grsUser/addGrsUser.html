@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="addGrsUserIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/components.css" rel="stylesheet" type="text/css"/>
+</div>
+<div class="page-content" style="min-height: 1601px;" th:fragment="addGrsUser">
+    <div class="form-body">
+        <form id="grsUserCreateEditForm" class="ajax-submit-form" data-url="/api/addGrsUser" th:object="${grsUserFormData}">
+            <input type="hidden" name="id" th:field="*{Id}" />
+            <div class="row">
+                <div class="form-group col-sm-3">
+                    <label class="control-label" th:text="#{username}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                </div>
+                <div class="form-group col-sm-7">
+                    <input onblur="hideSpaceError()" type="text" name="username" class="form-control no-space-allowed" th:field="*{username}" th:placeholder="#{provide.x(#{username})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+                <div id="usernameErrorSpan"></div>
+                <span id="usernameSpaceNotAllowedErrorSpan" style="color: red; display: none" th:text="#{registration.form.nospace}"></span>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-3">
+                    <label class="control-label" th:text="#{registration.form.email.ifany}"></label>
+                </div>
+                <div class="form-group col-sm-7">
+                    <input type="text" name="email" class="form-control" th:field="*{email}" th:placeholder="#{provide.x(#{email})}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-3">
+                    <label class="control-label" th:text="#{registration.form.mobile}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                </div>
+                <div class="form-group col-sm-7">
+                    <input type="text" name="mobileNumber" onblur="getUser();" class="form-control" th:field="*{mobileNumber}" th:placeholder="#{provide.x(#{phone})}">
+                </div>
+                <div id="mobileNumberErrorSpan"></div>
+            </div>
+
+            <div class="row">
+                <label class="control-label col-md-3">
+                            <span th:text="#{choose.office.from.list}"></span>
+                </label>
+
+                <div class="col-md-7" name="test">
+                    <th:block th:replace="officeSelection :: officeSelection"></th:block>
+                    <div id="officeSelectionErrorSpan"></div>
+                    <input type="hidden" id="officeId" name="officeId" value=""/>
+                </div>
+
+            </div>
+
+
+            <button type="submit" class="btn blue" th:text="#{${grsUserFormData.getId() != null ? 'update' : 'save'}}"></button>
+            <button type="reset" class="btn green" th:text="#{reset}"></button>
+            <button type="button" class="btn default back-button" th:text="#{back}"></button>
+        </form>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="addGrsUserIncludeScript" th:remove="tag">
+    <script>
+        $("form.ajax-submit-form").on("submit", function (event) {
+            event.preventDefault();
+            window.onbeforeunload = null;
+
+            if (form.valid() == false) {
+                return;
+            }
+            $("#ajaxProcessingModal").modal("show");
+            var _this = $(this);
+            var url = _this.attr("data-url");
+            var type = "POST";
+            var id = _this.find("[name='Id']").val();
+            if(!isNaN(parseInt(id))) {
+                type = "PUT";
+                url += "/" + id;
+            }
+            var dataObject = {};
+            _this.serializeArray().forEach(function(item) {
+                dataObject[item.name] = item.value;
+            });
+            var data = JSON.stringify(dataObject);
+            $.ajax({
+                type : type,
+                url : url,
+                data : data,
+                dataType : "json",
+                contentType: "application/json",
+                success : function (data){
+                    $(_this).trigger("ajax-submit-success", [data]);
+                },
+                error: function (data){
+                    $(_this).trigger("ajax-submit-error", [data]);
+                }
+            }).done(function(data) {
+                $("#ajaxProcessingModal").modal("hide");
+            });
+        });
+        $("form.ajax-submit-form button.back-button").on("click", function() {
+            window.history.back();
+        });
+    </script>
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.js" type="text/javascript"></script>
+</div>
+
+<script th:fragment="addGrsUserScript">
+    var form = $("#grsUserCreateEditForm");
+
+    $("#grsUserCreateEditForm").on("ajax-submit-success", function (event, data) {
+        if(data.success) {
+            toastr.success(data.message, null, {positionClass: 'toast-top-center'});
+            setTimeout(function() {
+                $(location).attr("href", "/grsUsers.do");
+            }, 500);
+        } else {
+            toastr.error(data.message, null, {positionClass: 'toast-top-center'});
+        }
+    });
+
+    function hideSpaceError() {
+        $("#usernameSpaceNotAllowedErrorSpan").hide();
+    }
+
+    $(document).ready(function() {
+        initAddGrsUSer();
+        bindOfficeLayersChangeActions("");
+
+        $(".no-space-allowed").keypress(function(event){
+            var ew = event.which;
+            if(ew == 32) {
+                $("#usernameSpaceNotAllowedErrorSpan").show();
+                return false;
+            }
+            else {
+                $("#usernameSpaceNotAllowedErrorSpan").hide();
+                return true;
+            }
+        });
+
+
+    });
+
+    function initAddGrsUSer() {
+
+        if (jsLangCodeForLibs == "bn") {
+            $.fn.datepicker.dates['bn'] = {
+                months: 'জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর'.split('_'),
+                monthsShort: 'জানু_ফেব_মার্চ_এপ্র_মে_জুন_জুল_আগ_সেপ্ট_অক্টো_নভে_ডিসে'.split('_'),
+                days: 'রবিবার_সোমবার_মঙ্গলবার_বুধবার_বৃহস্পতিবার_শুক্রবার_শনিবার'.split('_'),
+                daysShort: 'রবি_সোম_মঙ্গল_বুধ_বৃহস্পতি_শুক্র_শনি'.split('_'),
+                daysMin: 'রবি_সোম_মঙ্গ_বুধ_বৃহঃ_শুক্র_শনি'.split('_'),
+                longDateFormat: {
+                    LT: 'A h:mm সময়',
+                    LTS: 'A h:mm:ss সময়',
+                    L: 'DD/MM/YYYY',
+                    LL: 'D MMMM YYYY',
+                    LLL: 'D MMMM YYYY, A h:mm সময়',
+                    LLLL: 'dddd, D MMMM YYYY, A h:mm সময়'
+                },
+                calendar: {
+                    sameDay: '[আজ] LT',
+                    nextDay: '[আগামীকাল] LT',
+                    nextWeek: 'dddd, LT',
+                    lastDay: '[গতকাল] LT',
+                    lastWeek: '[গত] dddd, LT',
+                    sameElse: 'L'
+                },
+                relativeTime: {
+                    future: '%s পরে',
+                    past: '%s আগে',
+                    s: 'কয়েক সেকেন্ড',
+                    ss: '%d সেকেন্ড',
+                    m: 'এক মিনিট',
+                    mm: '%d মিনিট',
+                    h: 'এক ঘন্টা',
+                    hh: '%d ঘন্টা',
+                    d: 'এক দিন',
+                    dd: '%d দিন',
+                    M: 'এক মাস',
+                    MM: '%d মাস',
+                    y: 'এক বছর',
+                    yy: '%d বছর'
+                },
+                meridiemParse: /রাত|সকাল|দুপুর|বিকাল|রাত/,
+                meridiemHour: function (hour, meridiem) {
+                    if (hour === 12) {
+                        hour = 0;
+                    }
+                    if ((meridiem === 'রাত' && hour >= 4) ||
+                        (meridiem === 'দুপুর' && hour < 5) ||
+                        meridiem === 'বিকাল') {
+                        return hour + 12;
+                    } else {
+                        return hour;
+                    }
+                },
+                meridiem: function (hour, minute, isLower) {
+                    if (hour < 4) {
+                        return 'রাত';
+                    } else if (hour < 10) {
+                        return 'সকাল';
+                    } else if (hour < 17) {
+                        return 'দুপুর';
+                    } else if (hour < 20) {
+                        return 'বিকাল';
+                    } else {
+                        return 'রাত';
+                    }
+                },
+                week: {
+                    dow: 0, // Sunday is the first day of the week.
+                    doy: 6 // The week that contains Jan 1st is the first week of the year.
+                }
+            };
+            moment.locale("bn");
+        }
+        form = validateForm();
+
+    }
+
+    function validateForm() {
+
+        var form = $('#grsUserCreateEditForm');
+
+        var error = $('.alert-danger', form);
+        var success = $('.alert-success', form);
+        var requiredText = "";
+
+        if (languageCode == "en") {
+            requiredText = "This field is required";
+        } else {
+            requiredText = "এই তথ্যটি প্রদান করা আবশ্যক";
+        }
+
+        jQuery.validator.addMethod('officeSelector',function(value,element){
+            document.getElementById('officeId').value = $("#secondSelection").val();
+            return ($("#secondSelection").val() != 0
+                && $("#secondSelection").val() != undefined);
+        });
+
+        form.validate({
+            doNotHideMessage: true,
+            errorElement: 'span',
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false,
+            rules: {
+                username: {
+                    required: true
+                },
+                mobileNumber: {
+                    required: true
+                },
+                // officeLayers: {
+                //     officeSelector: true
+                // },
+            },
+
+            messages: {
+                username: {
+                    required: requiredText
+                },
+                mobileNumber: {
+                    required: requiredText
+                },
+                // officeLayers: {
+                //     officeSelector: requiredText
+                // },
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.attr("name") == "username") {
+                    error.insertAfter("#usernameErrorSpan");
+                } else if (element.attr("name") == "mobileNumber") {
+                    error.insertAfter("#mobileNumberErrorSpan");
+                } else if (element.attr("name") == "officeLayers") {
+                    error.insertAfter("#officeSelectionErrorSpan");
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+
+            invalidHandler: function (event, validator) {
+                success.hide();
+                error.show();
+
+                App.scrollTo(error, -200);
+            },
+
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+
+            unhighlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+
+            success: function (label) {
+                label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+            },
+
+            submitHandler: function (form) {
+                success.show();
+                error.hide();
+            }
+        });
+
+        return form;
+
+    }
+
+    function getOfficeId() {
+        var officeId = $("#secondSelection").val();
+        if (officeId == null) {
+            officeId=0;
+        }
+        return officeId;
+    }
+
+
+
+    var banglaToEnglishDigitMapping = {
+        '০': 0,
+        '১': 1,
+        '২': 2,
+        '৩': 3,
+        '৪': 4,
+        '৫': 5,
+        '৬': 6,
+        '৭': 7,
+        '৮': 8,
+        '৯': 9
+    };
+
+
+    function convertFromBanglaNumToEnglish(input) {
+        var output = [];
+        for (var i = 0; i < input.length; ++i) {
+            if (banglaToEnglishDigitMapping.hasOwnProperty(input[i])) {
+                output.push(banglaToEnglishDigitMapping[input[i]]);
+            } else {
+                output.push(input[i]);
+            }
+        }
+        return output.join('');
+    }
+
+
+    function getJson(url, onGettingJson) {
+        $.getJSON(url, onGettingJson);
+    }
+
+    function getUser() {
+        var phoneNumber = convertFromBanglaNumToEnglish($("#mobileNumber").val());
+        if (phoneNumber.length > 0) {
+            getJson("/api/grsUSer/" + phoneNumber, checkIfUserExist);
+        }
+    }
+
+    function checkIfUserExist(data) {
+        window.onbeforeunload = null;
+        var phoneNumber =  $("input[name='mobileNumber']").val();
+        if (data.success == false) {
+            $("#divRest").css('display', 'block');
+            $("#btnRegister").removeClass("hide");
+            window.onbeforeunload = function() {
+                return true;
+            };
+        } else {
+            /*<![CDATA[*/
+            var registrationByGRO = /*[[${fromGrievanceUpload}]]*/ false;
+            /*]]>*/
+            if(registrationByGRO){
+                swal({
+                        title: "নিবন্ধিত অভিযোগকারী",
+                        text: "আপনার প্রদানকৃত মোবাইল নম্বর দিয়ে পূর্বেই নিবন্ধন করা করা আছে",
+                        type: "info",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn-success",
+                        confirmButtonText: "অভিযোগ আপলোড ফর্মে যান ",
+                        cancelButtonText: "বাতিল",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    },
+                    function(isConfirm) {
+                        if (isConfirm) {
+                            window.location.href = "/addPublicGrievancesByGRO.do?phone=" + data.mobileNumber;
+                        } else {
+                            swal.close();
+                            $("input[name='mobileNumber']").val('').focus();
+                        }
+                    });
+            } else{
+                swal({
+                        title: "নিবন্ধিত অভিযোগকারী",
+                        text: "আপনার প্রদানকৃত মোবাইল নম্বর দিয়ে পূর্বেই নিবন্ধন করা করা আছে, অনুগ্রহ করে লগইন করুন",
+                        type: "info",
+                        showCancelButton: true,
+                        confirmButtonClass: "btn-success",
+                        confirmButtonText: "লগইন",
+                        cancelButtonText: "বাতিল",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    },
+                    function(isConfirm) {
+                        if (isConfirm) {
+                            // window.location.href = "/login?a=0&redirectUrl=addPublicGrievances.do&phoneNumber=" + phoneNumber;
+                        } else {
+                            swal.close();
+                            $("input[name='mobileNumber']").val('').focus();
+                        }
+                    });
+            }
+
+            $("#divRest").css('display', 'block');
+            $("#btnRegister").removeClass("hide");
+        }
+    }
+
+</script>

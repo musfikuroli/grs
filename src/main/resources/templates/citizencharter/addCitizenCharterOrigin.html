@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="addCitizenCharterOrigin" th:remove="tag">
+    <form id="citizenCharterOriginCreateEditForm" th:object="${service}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title text-center">সেবার তথ্য</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" th:field="*{id}"/>
+                <input type="hidden" name="officeOriginId" th:value="${officeOriginId}"/>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{service.type}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <select id="serviceTypeSelection" class="form-control" name="serviceType" type="hidden" th:attr="data-required-message=#{error.message.for.required}" required="required">
+                            <option value="" selected style="display: none;" th:text="#{select.x(#{service.type})}"></option>
+                            <option th:each="type : ${serviceTypes}"
+                                    th:value="${type.getValue()}"
+                                    th:text="#{${type.getKey()}}"
+                                    th:selected="(${type.getValue()} == *{serviceType})">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{section.responsible.for.service}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <select class="form-control" name="officeOriginUnitId" type="hidden" th:attr="data-required-message=#{error.message.for.required}" required="required">
+                            <option value="" selected style="display: none;" th:text="#{select.x(#{section})}"></option>
+                            <option th:each="unit : ${officeOriginUnitList}"
+                                    th:value="${unit.getId()}"
+                                    th:text="${unit.getNameBangla()}"
+                                    th:selected="(${unit.getId()} == *{officeOriginUnitId})">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{designation.responsible.for.service}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <select class="form-control" name="officeOriginUnitOrganogramId" type="hidden" th:attr="data-required-message=#{error.message.for.required}" required="required">
+                            <span th:if="${officeOriginUnitOrganogramList != null}" th:remove="tag">
+                                <option value="" selected style="display: none;" th:text="#{select.x(#{designation})}"></option>
+                                <option th:each="organogram : ${officeOriginUnitOrganogramList}"
+                                        th:value="${organogram.getId()}"
+                                        th:text="${organogram.getNameBangla()}"
+                                        th:selected="(${organogram.getId()} == *{officeOriginUnitOrganogramId})">
+                                </option>
+                            </span>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{service.name} , #{bangla})}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <input type="text" name="serviceNameBangla" class="form-control" th:field="*{serviceNameBangla}" th:placeholder="#{provide.x(#{service.name})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}" required="required" minlength="3">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{service.name} , #{english})}"></label>
+                        <input type="text" name="serviceNameEnglish" class="form-control" th:field="*{serviceNameEnglish}" th:placeholder="#{provide.x(#{service.name})}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{service.procedure} , #{bangla})}"></label>
+                        <textarea name="serviceProcedureBangla" class="form-control" rows="3" th:field="*{serviceProcedureBangla}" th:placeholder="#{provide.x(#{service.procedure})}"></textarea>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{service.procedure} , #{english})}"></label>
+                        <textarea name="serviceProcedureEnglish" class="form-control" rows="3" th:field="*{serviceProcedureEnglish}" th:placeholder="#{provide.x(#{service.procedure})}"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{bangla})}"></label>
+                        <textarea name="documentAndLocationBangla" class="form-control" rows="3" th:field="*{documentAndLocationBangla}" th:placeholder="#{provide.x(#{necessary.x(#{document.and.location})})}" ></textarea>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{english})}"></label>
+                        <textarea name="documentAndLocationEnglish" class="form-control" rows="3" th:field="*{documentAndLocationEnglish}" th:placeholder="#{provide.x(#{necessary.x(#{document.and.location})})}" ></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{bangla})}"></label>
+                        <input type="text" name="paymentMethodBangla" class="form-control" th:field="*{paymentMethodBangla}" th:placeholder="#{provide.x(#{service.price.and.payment.method})}">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{english})}"></label>
+                        <input type="text" name="paymentMethodEnglish" class="form-control" th:field="*{paymentMethodEnglish}" th:placeholder="#{provide.x(#{service.price.and.payment.method})}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{service.time}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <input type="number" name="serviceTime" class="form-control" th:field="*{serviceTime}" th:placeholder="#{provide.x(#{service.time})}" th:attr="data-number-message=#{error.message.for.number}" required="required" min="1">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <div class="mt-radio-inline" th:field="*{status}" th:attr="data-required-message=#{error.message.for.required}">
+                            <label class="control-label" th:text="#{status}"></label>
+                            <span class="required" aria-required="true"> * </span>
+                            <div>
+                                <input name="status" id="yes" type="radio" value="true" th:checked="${service.getStatus() == null || service.getStatus() == true}"/>
+                                <label for="yes" th:text="#{active}"></label>
+                                <input name="status" id="no" type="radio" value="false" th:checked="*{status} == false ? true : false"/>
+                                <label for="no" th:text="#{inactive}"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn green btn-outline" th:text="#{${service.getId() != null ? 'update' : 'save'}}"></button>
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{close}"></button>
+            </div>
+        </div>
+    </form>
+</div>

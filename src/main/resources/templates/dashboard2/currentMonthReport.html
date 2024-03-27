@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="currentMonthReport" th:remove="tag">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body" id="monthlyReport">
+            <div class="portlet-title remove-on-print" style="margin: 0px 20px;">
+                <div class="row">
+                    <label class="control-label col-md-5 font-lg" style="color: #6495ed;">
+                        <span class="pull-right">অন্যান্য মাসের প্রতিবেদন দেখার জন্য বছর এবং মাস নির্বাচন করুন</span>
+                    </label>
+                    <div class="col-md-3">
+                        <div class='input-group date' id="reportForMonth">
+                            <input class="form-control" style="font-size: 14px!important;" type="text" readonly>
+                            <span class="input-group-addon" style="width: auto;">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        </div>
+                    </div>
+                    <a class="btn btn-outline btn-info col-md-2 view-report" style="cursor: pointer; color: #ffffff;">
+                        <i class="fa fa-area-chart"></i>&nbsp;
+                        <span>প্রতিবেদন দেখুন</span>
+                    </a>
+                    <a class="btn btn-outline btn-success col-md-1 print-report pull-right" style="cursor: pointer; color: #ffffff;">
+                        <i class="fa fa-print"></i>&nbsp;
+                        <span th:text="#{print}"></span>
+                    </a>
+                </div>
+            </div>
+            <h4 class="row text-center margin-top-20">
+                <div class="font-lg bold" th:text="${officeName}"></div>
+                <div class="font-lg">অভিযোগ প্রতিকার-সংক্রান্ত মাসিক প্রতিবেদন</div>
+                <u class="month-name font-lg"></u>
+            </h4>
+            <div class="row">
+                <div class="panel-group accordion" id="accordionGroReports">
+                    <div class="panel panel-default margin-top-10">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle caption-subject text-center font-purple bold">অভিযোগ প্রতিকারের সারসংক্ষেপ</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in" id="collapse_1_1">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="grievanceReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th colspan="3" class="text-center">বিবেচ্য মাসে প্রাপ্ত অভিযোগের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center">মোট অভিযোগ</th>
+                                            <th rowspan="2" class="text-center">অন্য দপ্তরে প্রেরিত</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে নিষ্পত্তিকৃত অভিযোগ</th>
+                                            <th colspan="2" class="text-center">চলমান অভিযোগ</th>
+                                            <th rowspan="2" class="text-center">অভিযোগ নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">ওয়েবসাইটের মাধ্যমে</th>
+                                            <th class="text-center">প্রচলিত পদ্ধতিতে</th>
+                                            <th class="text-center">স্বপ্রণোদিতভাবে গৃহীত</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়নি</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়েছে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='10' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${canViewAppealAndSubOfficeDashboard}" class="panel panel-default margin-top-20">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle caption-subject text-center font-purple bold">আপিল নিষ্পত্তির সারসংক্ষেপ</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in" id="collapse_1_2">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="appealReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে প্রাপ্ত আপিলের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center">মোট আপিল</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে নিষ্পত্তিকৃত আপিলের সংখ্যা</th>
+                                            <th colspan="2" class="text-center">চলমান আপিলের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">আপিল নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়নি</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়েছে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='7' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="currentMonthReportScript">
+
+    function bindViewAndPrintMonthlyReportAction() {
+        var grievanceDateField = $("#reportForMonth");
+        grievanceDateField.datepicker().on("changeDate", function(event) {
+            var date = grievanceDateField.find("input").val();
+            $("#monthlyReport .month-name").text(date);
+        });
+        $("#monthlyReport .view-report").on("click", function () {
+            var date = $("#reportForMonth").datepicker("getDate");
+            if(!date) {
+                toastr.error("দয়া করে সঠিক মাস ও বছর নির্বাচন করুন", null, {positionClass: 'toast-top-center'});
+                return;
+            } else {
+                loadReportData(date);
+            }
+        });
+        $("#monthlyReport .print-report").on("click", function () {
+            var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+            mywindow.document.write('<html><head>');
+            mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+            mywindow.document.write($("#monthlyReport").clone().find('.remove-on-print').remove().end().html());
+            mywindow.document.write('</body></html>');
+            mywindow.print();
+            mywindow.close();
+            /*$("#monthlyReport").clone()
+                .css("padding-top", "50px")
+                .find(".remove-on-print")
+                .remove()
+                .end()
+                .printThis({
+                    importStyle: true,
+                    importCSS: true,
+                    formValues: false
+                });*/
+        });
+    }
+
+    function loadCurrentMonthReportData() {
+        var date = new Date();
+        var monthName = MONTH_NAME_BANGLA[date.getMonth()];
+        var yearName = ("" + date.getFullYear()).toBanglaNumber();
+        $("#monthlyReport .month-name").text(monthName + ", " + yearName);
+        loadReportData(date);
+    }
+
+    function loadReportData(date) {
+        var officeId = $("[name='officeId']").val();
+        var url = "/api/offices/" + officeId + "/reports/" + date.getFullYear() + "/" + (date.getMonth() + 1);
+        blockUI();
+        $.getJSON(url, function (response) {
+            var monthlyGrievanceReport = response.monthlyGrievanceReport;
+            var monthlyAppealReport = response.monthlyAppealReport;
+            if(monthlyGrievanceReport) {
+                var grievanceReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td><td>(ঞ)</td></tr>";
+                grievanceReportBody += "<tr class='text-center bold'>" +
+                    "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["selfMotivatedAccusationCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyGrievanceReport["rate"]).toBanglaNumber() + "</td>" +
+                    "</tr>";
+                $("#grievanceReportTable tbody").empty().html(grievanceReportBody);
+            } else {
+                $("#grievanceReportTable tbody").empty().html("<tr><td colspan='9' class='text-center'>" + "দুঃখিত! কোনো তথ্য পাওয়া যায়নি" + "</td></tr>");
+            }
+            if(monthlyAppealReport) {
+                var appealReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td></tr>";
+                appealReportBody += "<tr class='text-center bold'>" +
+                    "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                    "<td>" + ("" + monthlyAppealReport["rate"]).toBanglaNumber() + "</td>" +
+                    "</tr>";
+                $("#appealReportTable tbody").empty().html(appealReportBody);
+            } else {
+                $("#appealReportTable tbody").empty().html("<tr><td colspan='9' class='text-center'>" + "দুঃখিত! কোনো তথ্য পাওয়া যায়নি" + "</td></tr>");
+            }
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function initDatepicker() {
+        if (jsLangCodeForLibs == "bn") {
+            $.fn.datepicker.dates['bn'] = {
+                months : 'জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর'.split('_'),
+                monthsShort : 'জানু_ফেব_মার্চ_এপ্র_মে_জুন_জুল_আগ_সেপ্ট_অক্টো_নভে_ডিসে'.split('_'),
+                days : 'রবিবার_সোমবার_মঙ্গলবার_বুধবার_বৃহস্পতিবার_শুক্রবার_শনিবার'.split('_'),
+                daysShort : 'রবি_সোম_মঙ্গল_বুধ_বৃহস্পতি_শুক্র_শনি'.split('_'),
+                daysMin : 'রবি_সোম_মঙ্গ_বুধ_বৃহঃ_শুক্র_শনি'.split('_'),
+                longDateFormat : {
+                    LT : 'A h:mm সময়',
+                    LTS : 'A h:mm:ss সময়',
+                    L : 'DD/MM/YYYY',
+                    LL : 'D MMMM YYYY',
+                    LLL : 'D MMMM YYYY, A h:mm সময়',
+                    LLLL : 'dddd, D MMMM YYYY, A h:mm সময়'
+                },
+                calendar : {
+                    sameDay : '[আজ] LT',
+                    nextDay : '[আগামীকাল] LT',
+                    nextWeek : 'dddd, LT',
+                    lastDay : '[গতকাল] LT',
+                    lastWeek : '[গত] dddd, LT',
+                    sameElse : 'L'
+                },
+                relativeTime : {
+                    future : '%s পরে',
+                    past : '%s আগে',
+                    s : 'কয়েক সেকেন্ড',
+                    ss : '%d সেকেন্ড',
+                    m : 'এক মিনিট',
+                    mm : '%d মিনিট',
+                    h : 'এক ঘন্টা',
+                    hh : '%d ঘন্টা',
+                    d : 'এক দিন',
+                    dd : '%d দিন',
+                    M : 'এক মাস',
+                    MM : '%d মাস',
+                    y : 'এক বছর',
+                    yy : '%d বছর'
+                },
+                meridiemParse: /রাত|সকাল|দুপুর|বিকাল|রাত/,
+                meridiemHour : function (hour, meridiem) {
+                    if (hour === 12) {
+                        hour = 0;
+                    }
+                    if ((meridiem === 'রাত' && hour >= 4) ||
+                        (meridiem === 'দুপুর' && hour < 5) ||
+                        meridiem === 'বিকাল') {
+                        return hour + 12;
+                    } else {
+                        return hour;
+                    }
+                },
+                meridiem : function (hour, minute, isLower) {
+                    if (hour < 4) {
+                        return 'রাত';
+                    } else if (hour < 10) {
+                        return 'সকাল';
+                    } else if (hour < 17) {
+                        return 'দুপুর';
+                    } else if (hour < 20) {
+                        return 'বিকাল';
+                    } else {
+                        return 'রাত';
+                    }
+                },
+                week : {
+                    dow : 0, // Sunday is the first day of the week.
+                    doy : 6  // The week that contains Jan 1st is the first week of the year.
+                }
+            };
+            moment.locale("bn");
+        }
+
+        $("#reportForMonth").datepicker({
+            format: "MM, yyyy",
+            startView: 2,
+            minViewMode: 1,
+            maxViewMode: 2,
+            autoclose: true,
+            startDate: new Date(2018, 10, 1),
+            endDate: "-0m",
+            language: jsLangCodeForLibs,
+            onSelect: function(dateText, instance) {
+                date = $.datepicker.parseDate(instance.settings.dateFormat, dateText, instance.settings);
+                date.setDay(1);
+                $(this).datepicker("setDate", date);
+            },
+            beforeShowDay: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getDate()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowYear: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowDecade: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowCentury: function(date){
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content" : ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            }
+        });
+    }
+
+    function initMonthlyReportTabContents() {
+        initDatepicker();
+        bindViewAndPrintMonthlyReportAction();
+    }
+</script>

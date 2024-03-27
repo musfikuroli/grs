@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="subOfficesStatistics" th:remove="tag">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body">
+            <div class="font-lg text-center margin-20">আওতাধীন দপ্তরসমূহের তালিকা</div>
+            <div class="table-scrollable">
+                <table class="table table-bordered table-striped table-hover" id="subOfficesStatisticsTable">
+                    <thead>
+                    <tr>
+                        <th class="text-center">ক্রমিক</th>
+                        <th class="text-center">আওতাধীন দপ্তরের নাম</th>
+                        <th class="text-center">মোট অভিযোগ</th>
+                        <th class="text-center">অভিযোগ নিষ্পত্তির হার</th>
+                        <th class="text-center">সময় অতিক্রান্ত অভিযোগ</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

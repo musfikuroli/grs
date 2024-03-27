@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-content" th:fragment="viewTimeExpiredGrievances">
+    <div class="portlet" th:classappend="${!isMobileLogin ? 'light' : ''}">
+        <div class="portlet-title">
+            <div class="caption font-green-sharp">
+                <span class="glyphicon glyphicon-dashboard"></span>
+                <span class="caption-subject bold uppercase" th:text="${isAppeal ? 'সময় অতিক্রান্ত আপিলসমূহ' : 'সময় অতিক্রান্ত অভিযোগসমূহ'}"></span>
+                <span class="caption-helper">(তাগিদ প্রদান)</span>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="panel panel-default expired-grievances">
+                <div class="panel-collapse">
+                    <div th:classappend="${!isMobileLogin ? 'panel-body' : ''}">
+                        <input type="hidden" name="officeId" th:value="${officeId}">
+                        <input type="hidden" name="isAppeal" th:value="${isAppeal}">
+                        <div class="table-scrollable">
+                            <table id="grievancesListForNudge" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">ক্রমিক</th>
+                                    <th class="text-center" th:text="${isAppeal ? 'আপিলের বিষয়' : 'অভিযোগের বিষয়'}"></th>
+                                    <th class="text-center" th:text="${isAppeal ? 'আপিল সংশ্লিষ্ট সেবা' : 'অভিযোগ সংশ্লিষ্ট সেবা'}"></th>
+                                    <th class="text-center">ধরন</th>
+                                    <th class="text-center" th:text="${isAppeal ? 'আপিল নিষ্পত্তির তারিখ' : 'অভিযোগ নিষ্পত্তির তারিখ'}"></th>
+                                    <th class="text-center" th:text="${isAppeal ? 'আপিল অনিষ্পন্ন থাকার কারণ' : 'অভিযোগ অনিষ্পন্ন থাকার কারণ'}"></th>
+                                    <th class="text-center">তাগিদ প্রদান করুন</th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalProvideNudge" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form class="provide-nudge-form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title text-center">তাগিদ প্রদান করুন</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="grievanceId">
+                        <div class="form-group">
+                            <label class="control-label">তাগিদের বিস্তারিত বিবরণঃ </label>
+                            <div id="nudgeMessage"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn blue">প্রদান করুন</button>
+                        <button type="button" class="btn dark btn-outline" data-dismiss="modal">বন্ধ করুন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="viewTimeExpiredGrievancesIncludeScript" th:remove="tag">
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+    <script src="assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+
+</div>
+
+<script type="text/javascript" th:fragment="viewTimeExpiredGrievancesScript">
+
+    $(document).ready(function() {
+        var officeId = $("[name='officeId']").val();
+        $("#ajaxProcessingModal").modal("show");
+        var urlSuffix = ($("[name='isAppeal']").val() == "true") ? "/appeals/expired" : "/grievances/expired";
+        $.getJSON("/api/dashboard/office/" + officeId + urlSuffix , function (response) {
+            var list = response;
+            var bodyContents = "";
+            if(list.length > 0) {
+                list.forEach(function (obj, index) {
+                    var grievance = obj.grievance;
+                    var currentLocationList = obj.grievanceCurrentLocationList;
+                    bodyContents += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + grievance.subject + "</td>" +
+                        "<td>" + grievance.serviceNameBangla + "</td>" +
+                        "<td>" + grievance.typeBangla + "</td>" +
+                        "<td>" + grievance.expectedDateOfClosingBangla.substr(0,10) + "</td>" +
+                        "<td>" + formattedIdentifiedReasonByGRO(currentLocationList) + "</td>" +
+                        "<td class='text-center'><a href='javascript:;' data-id='" + grievance.id + "' class='provide-nudge fa fa-paper-plane btn btn-circle btn-xs btn-primary'></a></td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContents = "<tr><td colspan='7' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td></tr>";
+            }
+            $(".expired-grievances table tbody").html(bodyContents);
+        }).done(function () {
+            $("#ajaxProcessingModal").modal("hide");
+        });
+
+        var nudgeForm = $("form.provide-nudge-form");
+        var messageInputField = $("#nudgeMessage");
+        messageInputField.summernote({height: 200});
+        $("#grievancesListForNudge tbody").on("click", ".provide-nudge", function() {
+            var _this = $(this);
+            var grievanceId = _this.attr("data-id");
+            $("#modalProvideNudge [name='grievanceId']").val(grievanceId);
+            messageInputField.summernote("reset");
+            $("#modalProvideNudge").modal("show");
+        });
+        nudgeForm.on("submit", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var grievanceId = nudgeForm.find("[name='grievanceId']").val();
+            var message = $("#nudgeMessage").summernote("code");
+            var data = {
+                grievanceId: grievanceId,
+                decision: message
+            };
+            $.ajax({
+                type: "POST",
+                url: "/api/grievance/provide-nudge",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    $("#modalProvideNudge").modal("hide");
+                    toastr.success(response.message, null, {positionClass: 'toast-top-center'});
+                },
+                error: function (response) {
+                    toastr.error(response.message, null);
+                }
+            });
+        });
+    });
+
+    function formattedIdentifiedReasonByGRO(currentLocationList) {
+        if (currentLocationList.length == 0) {
+            return "-";
+        }
+        var formattedList = "";
+        currentLocationList.forEach(function (currentLocation, index) {
+            var waitingFrom = new Date(currentLocation.waitingFrom).toISOString().slice(0,10).toBanglaNumber();
+            var identifiedReason = "<li>"
+                +  currentLocation.officeName + " দপ্তরের "
+                + currentLocation.officeUnitName + " শাখায় "
+                + waitingFrom + " তারিখ হতে প্রক্রিয়াধীন রয়েছে"
+                + "</li>";
+            formattedList += identifiedReason;
+        });
+        return "<ul>" + formattedList + "</ul>";
+    }
+
+</script>
+
+</html>
+
+
+

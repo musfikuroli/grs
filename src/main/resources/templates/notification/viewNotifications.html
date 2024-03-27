@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="viewNotificationsIncludeStyle" th:remove="tag">
+
+</div>
+
+
+<div class="page-content" th:fragment="viewNotifications">
+
+    <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
+        <div class="portlet-body">
+            <div class="full-height-content-body">
+                <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered table-checkable order-column" id="tblNotification">
+                    <thead>
+                        <tr>
+                            <th th:text="#{notification.id}"></th>
+                            <th th:text="#{notification.subject}"></th>
+                            <th th:text="#{notification.time}"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-5 col-md-5">
+                        <div class="dataTables_info" id="tblNotification_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                    </div>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                            <div class="pagination-panel pull-right">
+                                <span th:text="#{page}"></span>
+                                <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                                <span th:text="#{of}"></span>
+                                <a href="javascript:;" class="btn btn-sm default prev disabled">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+                                <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPage" value="০" type="text">
+                                <a href="javascript:;" class="btn btn-sm default next disabled">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                                <span th:text="#{page.shown}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:none;">
+        <input type="hidden" name="notification-departmental-action" th:value="#{notification.departmental.action}">
+        <input type="hidden" name="notification-nudge" th:value="#{notification.nudge}">
+    </div>
+</div>
+
+<div th:fragment="viewNotificationsIncludeScript" th:remove="tag">
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+</div>
+
+<script th:fragment="viewNotificationsScript" th:inline="javascript">
+    var currentPage = 1, maxPage = 1, searchSize = 10;
+    $("#header_citizen_bar a").addClass("active");
+
+    $(document).ready(function() {
+        loadComplaintsList(currentPage);
+        var table1 = $('#tblNotification');
+        var emptyTxt = (languageCode == 'en' ? "Sorry. No grievances found." : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": emptyTxt,
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bAutoWidth": true,
+            "fixedColumns": true,
+            "columnDefs": [
+            {
+                'orderable': false,
+                "targets": [0, 1, 2]
+            }, {
+                "searchable": false,
+                "targets": [0, 1, 2]
+            }
+            ],
+            columns: [ {
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var additional = (currentPage-1);
+                    var returnValue;
+                    if (meta.row == 9){
+                        returnValue =  ("" + (additional+1) + "0").toBanglaNumber();
+                    } else {
+                        returnValue =  ("" + additional + (meta.row+1)).toBanglaNumber();
+                    }
+                    return (languageCode == 'en' ? returnValue.toEnglishNumber() : returnValue )
+                }
+            }, {
+                data: "text",
+                render: function (data) {
+                    return $("[name=" + data.replace(/\./g, '-') + "]").val();
+                }
+            }, {
+                data: "time"
+            }],
+            "order": [
+                [0, "desc"]
+            ]
+        });
+
+        $('#tblNotification tbody').on('click', 'tr', function () {
+            var table = $('#tblNotification').DataTable();
+            var data = table.row(this).data();
+            if (data != undefined ) {
+                if ( $(this).hasClass('active') ) {
+                    $(this).removeClass('active');
+                }
+                else {
+                    table.$('tr.selected').removeClass('active');
+                    $(this).addClass('active');
+                }
+                var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+                $.blockUI({
+                    message: '<h1>  ' + msg + '</h1>'
+                });
+                window.setTimeout(function() {
+                    window.location.href = "/viewGrievances.do?id=" + data.complaintId;
+                }, 500);
+            }
+        });
+
+        $(".next").click(function(e) {
+            currentPage = currentPage + 1;
+            $(".prev").removeClass("disabled");
+            if (currentPage == maxPage) {
+                $(".next").addClass("disabled");
+            }
+            if (currentPage > maxPage) {
+                currentPage = maxPage;
+            }
+            loadComplaintsList(currentPage);
+        });
+
+        $(".prev").click(function(e) {
+            currentPage = currentPage - 1;
+            $(".next").removeClass("disabled");
+            if (currentPage == 1) {
+                $(".prev").addClass("disabled");
+            }
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+            loadComplaintsList(currentPage);
+        });
+
+        $("#currentPage").blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + $("#currentPage").val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPage) {
+                    currentPage = curValue;
+                    if (currentPage == 1) {
+                        $(".prev").addClass("disabled");
+                    } else {
+                        $(".prev").removeClass("disabled");
+                    }
+                    if (currentPage == maxPage) {
+                        $(".next").addClass("disabled");
+                    } else {
+                        $(".next").removeClass("disabled");
+                    }
+                    loadComplaintsList(currentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPage").val( languageCode == 'en' ? ("" + currentPage) : ("" + currentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPage").val(languageCode == 'en' ? ("" + currentPage) : ("" + currentPage).toBanglaNumber());
+            }
+        });
+
+        if (isGrsUser) {
+            $(".nav-item").hide();
+        }
+    });
+
+    function loadComplaintsList(page) {
+        $("#ajaxProcessingModal").modal("show");
+        $("#currentPage").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        $.ajax({
+            url: "/api/notification",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $("#tblNotification tbody tr").css("cursor","default");
+                    $(".pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#currentPage").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $(".prev, .next").addClass("disabled");
+                    $("#ajaxProcessingModal").modal("hide");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $(".pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি নোটিফিকেশন এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#tblNotification_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#tblNotification').dataTable().fnClearTable();
+                    $('#tblNotification').dataTable().fnAddData(response.content);
+                    $("#ajaxProcessingModal").modal("hide");
+                }
+            }
+        });
+    }
+
+</script>

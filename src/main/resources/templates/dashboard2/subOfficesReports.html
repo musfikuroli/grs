@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="subOfficesReports" th:remove="tag">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body" id="childOfficesReport">
+            <div class="row portlet-title remove-on-print" style="margin: 0px 20px;">
+                <a class="btn btn-outline btn-success col-md-1 print-report pull-right" style="cursor: pointer; color: #ffffff;">
+                    <i class="fa fa-print"></i>&nbsp;
+                    <span th:text="#{print}"></span>
+                </a>
+            </div>
+            <h4 class="row text-center margin-top-20">
+                <div class="font-lg bold" th:text="${officeName}"></div>
+                <div class="font-lg">আওতাধীন দপ্তরসমূহের <span id="previousReportMonth"></span> মাসের অভিযোগ প্রতিকার-সংক্রান্ত মাসিক প্রতিবেদন</div>
+                <u class="month-name font-lg"></u>
+            </h4>
+            <div class="row">
+                <div class="panel-group accordion">
+                    <div class="panel panel-default margin-top-10">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle caption-subject text-center font-purple bold">অভিযোগ প্রতিকারের সারসংক্ষেপ</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="childOfficesGrievanceReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">দপ্তরের নাম</th>
+                                            <th colspan="3" class="text-center">বিবেচ্য মাসে প্রাপ্ত অভিযোগের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center">মোট অভিযোগ</th>
+                                            <th rowspan="2" class="text-center">অন্য দপ্তরে প্রেরিত</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে নিষ্পত্তিকৃত অভিযোগ</th>
+                                            <th colspan="2" class="text-center">চলমান অভিযোগ</th>
+                                            <th rowspan="2" class="text-center">অভিযোগ নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">ওয়েবসাইটের মাধ্যমে</th>
+                                            <th class="text-center">প্রচলিত পদ্ধতিতে</th>
+                                            <th class="text-center">স্বপ্রণোদিতভাবে গৃহীত</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়নি</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়েছে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='10' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${canViewAppealAndSubOfficeDashboard}" class="panel panel-default margin-top-20">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle caption-subject text-center font-purple bold">আপিল নিষ্পত্তির সারসংক্ষেপ</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="childOfficesAppealReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">দপ্তরের নাম</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে প্রাপ্ত আপিলের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center">মোট আপিল</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে নিষ্পত্তিকৃত আপিলের সংখ্যা</th>
+                                            <th colspan="2" class="text-center">চলমান আপিলের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">আপিল নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়নি</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়েছে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='7' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:fragment="subOfficesReportsScript">
+
+    function loadChildOfficesLastMonthReportData() {
+        var officeId = $("[name='officeId']").val();
+        var url = "/api/offices/" + officeId + "/child-offices-report";
+        blockUI();
+        $.getJSON(url, function (response) {
+            if(response.length > 0) {
+                var grievanceReportHeader = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td><td>(ঞ)</td><td>(ট)</td></tr>";
+                var appealReportHeader = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td></tr>";
+                var grievanceReportBody = "";
+                var appealReportBody = "";
+                var grievanceReportFooter = "";
+                var appealReportFooter = "";
+                setReportMonth(response[0]);
+                response.forEach(function (obj) {
+                    var officeName = obj.officeName;
+                    var monthlyGrievanceReport = obj.monthlyGrievanceReport;
+                    var monthlyAppealReport = obj.monthlyAppealReport;
+                    if(monthlyGrievanceReport) {
+                        grievanceReportBody += "<tr class='text-center'>" +
+                            "<td>" + officeName + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["selfMotivatedAccusationCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyGrievanceReport["rate"]).toBanglaNumber() + "</td>" +
+                            "</tr>";
+                    }
+                    if(monthlyAppealReport) {
+                        appealReportBody += "<tr class='text-center'>" +
+                            "<td>" + officeName + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                            "<td>" + ("" + monthlyAppealReport["rate"]).toBanglaNumber() + "</td>" +
+                            "</tr>";
+                    }
+                });
+                if(!grievanceReportBody) {
+                    grievanceReportBody = "<tr class='text-center'><td colspan='11'>" + "দুঃখিত! কোনো তথ্য পাওয়া যায়নি" + "</td></tr>";
+                } else {
+                    grievanceReportFooter = getGrievanceReportFooter(response);
+                }
+                if(!appealReportBody) {
+                    appealReportBody = "<tr class='text-center'><td colspan='8'>" + "দুঃখিত! কোনো তথ্য পাওয়া যায়নি" + "</td></tr>";
+                } else {
+                    appealReportFooter = getAppealReportFooter(response);
+                }
+                $("#childOfficesGrievanceReportTable tbody").empty().html(grievanceReportHeader + grievanceReportBody + grievanceReportFooter);
+                $("#childOfficesAppealReportTable tbody").empty().html(appealReportHeader + appealReportBody + appealReportFooter);
+            }
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function getGrievanceReportFooter(response) {
+        return "<tr class='text-center bold'>" +
+            "<td>" + "সর্বমোট" + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "onlineSubmissionCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "conventionalMethodSubmissionCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "selfMotivatedAccusationCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "inheritedFromLastMonthCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "totalCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "sentToOtherCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "resolvedCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "runningCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfGrievanceCountByPropertyAsString(response, "timeExpiredCount").toBanglaNumber() + "</td>" +
+            "<td>" + "-" + "</td>" +
+            "</tr>";
+    }
+
+    function getAggregatedSumOfGrievanceCountByPropertyAsString(list, prop) {
+        var value = getAggregatedSumOfGrievanceCountByProperty(list, prop);
+        return languageCode == "en" ? value : ("" + value).toBanglaNumber();
+    }
+
+    function getAggregatedSumOfGrievanceCountByProperty(list, prop) {
+        var sum = 0;
+        for(var i=0; i < list.length; i++) {
+            var monthlyGrievanceReport = list[i].monthlyGrievanceReport;
+            if(monthlyGrievanceReport) {
+                sum += monthlyGrievanceReport[prop];
+            }
+        }
+        return sum;
+    }
+
+    function getAppealReportFooter(response) {
+        return "<tr class='text-center bold'>" +
+            "<td>" + "সর্বমোট" + "</td>" +
+            "<td>" + getAggregatedSumOfAppealCountByPropertyAsString(response, "onlineSubmissionCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfAppealCountByPropertyAsString(response, "inheritedFromLastMonthCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfAppealCountByPropertyAsString(response, "totalCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfAppealCountByPropertyAsString(response, "resolvedCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfAppealCountByPropertyAsString(response, "runningCount").toBanglaNumber() + "</td>" +
+            "<td>" + getAggregatedSumOfAppealCountByPropertyAsString(response, "timeExpiredCount").toBanglaNumber() + "</td>" +
+            "<td>" + "-" + "</td>" +
+            "</tr>";
+    }
+
+    function getAggregatedSumOfAppealCountByPropertyAsString(list, prop) {
+        var value = getAggregatedSumOfAppealCountByProperty(list, prop);
+        return languageCode == "en" ? value : ("" + value).toBanglaNumber();
+    }
+
+    function getAggregatedSumOfAppealCountByProperty(list, prop) {
+        var sum = 0;
+        for(var i=0; i < list.length; i++) {
+            var monthlyAppealReport = list[i].monthlyAppealReport;
+            if(monthlyAppealReport) {
+                sum += monthlyAppealReport[prop];
+            }
+        }
+        return sum;
+    }
+
+    function setReportMonth(item) {
+        var month = item.month;
+        var year = item.year;
+        var monthName = "_জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর".split('_')[month];
+        $("#previousReportMonth").html(monthName + ", " + ("" + year).toBanglaNumber());
+    }
+
+    function bindChildOfficesReportPrintAction() {
+        $("#childOfficesReport .print-report").on("click", function () {
+            var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+            mywindow.document.write('<html><head>');
+            mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+            mywindow.document.write($("#childOfficesReport").clone().find('.remove-on-print').remove().end().html());
+            mywindow.document.write('</body></html>');
+            mywindow.print();
+            mywindow.close();
+            /*$("#childOfficesReport").clone()
+                .css("padding-top", "50px")
+                .find(".remove-on-print")
+                .remove()
+                .end()
+                .printThis({
+                    importStyle: true,
+                    importCSS: true,
+                    formValues: false
+                });*/
+        });
+    }
+
+</script>

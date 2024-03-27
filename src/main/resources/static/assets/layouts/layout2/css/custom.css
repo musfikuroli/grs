@@ -1,0 +1,8 @@
+/* here you can put your own css to customize and override the theme */
+
+.page-header-fixed .page-container {
+	margin-top: 18px;
+}
+.page-content-wrapper .page-content.login {
+	margin: 0 250px;
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="grievanceResolvedCurrentMonth" th:remove="tag">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body">
+            <div class="font-lg text-center margin-20">বর্তমান মাসে নিষ্পন্ন অভিযোগ</div>
+            <div class="table-scrollable">
+                <table class="table table-bordered table-striped table-hover" id="currentMonthResolutions">
+                    <thead>
+                    <tr>
+                        <th class="text-center">ক্রমিক</th>
+                        <th class="text-center">অভিযোগের বিষয়</th>
+                        <th class="text-center">অভিযোগ সংশ্লিষ্ট সেবা</th>
+                        <th class="text-center">অভিযোগ নিষ্পত্তির তারিখ</th>
+                        <th class="text-center">অভিযোগ উৎপত্তির কারণ</th>
+                        <th class="text-center">অভিযোগ নিষ্পত্তিতে গৃহীত ব্যবস্থা</th>
+                        <th class="text-center">অভিযোগের পূণরাবৃত্তি রোধে পরামর্শ</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

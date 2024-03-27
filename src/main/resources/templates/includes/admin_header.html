@@ -1,0 +1,346 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- BEGIN HEADER -->
+<div class="page-header navbar navbar-static-top" th:if="${!isMobileLogin}" th:fragment="header(name)">
+    <!-- BEGIN HEADER INNER -->
+    <div class="page-header-inner ">
+        <!-- BEGIN LOGO -->
+        <div class="page-logo">
+            <a href="/">
+                <img src="assets/layouts/layout/img/single-color-logo_color.png " alt="logo" class="logo-default"/>
+            </a>
+            <div class="menu-toggler sidebar-toggler hide">
+                <span></span>
+            </div>
+        </div>
+        <!-- END LOGO -->
+        <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+        <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+            <span></span>
+        </a>
+        <!-- END RESPONSIVE MENU TOGGLER -->
+        <!-- BEGIN TOP NAVIGATION MENU -->
+        <div class="top-menu">
+            <ul class="nav navbar-nav">
+                <!-- BEGIN NOTIFICATION DROPDOWN -->
+
+                <input hidden id="officerUsername" th:value="${name}"></input>
+
+                <li th:if="${grsUser==false && superAdmin==false}" class="dropdown-more">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                        <i class="fa fa-navicon"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-default">
+                        <li th:if="${isOfficeAdmin}" class="menu-office-setup">
+                            <a href="/manageOffice.do">
+                                <i class="icon-settings"></i>
+                                <span th:text="#{setup.office}"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${
+                        (isAdmin != null && isAdmin)
+                         || (isMinistryLevelAdmin != null && isMinistryLevelAdmin)
+                         || (permissions != null && permissions.contains('VIEW_MISSING_OFFICER_TYPE'))
+                         || (permissions != null && permissions.contains('VIEW_LAYERWISE_CUSTOM_REPORT'))
+                         || (permissions != null && permissions.contains('VIEW_TIMEWISE_COMPLAINANT_REPORT'))
+                         }" class="dropdown-submenu menu-sub-offices-setup">
+                            <a class="" href="javascript:;">
+                                <i class="fa fa-sitemap"></i>
+                                <span th:text="#{setup.suboffices}"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li th:if="${isAdmin}">
+                                    <a href="/uploadCitizensCharter.do">
+                                        <i class="fa fa-upload"></i>
+                                        <span th:text="#{upload.citizen.charter}"></span>
+                                    </a>
+                                    <li class="divider"></li>
+                                </li>
+                                <li th:if="${isAdmin}">
+                                    <a href="/manageCitizenCharter.do">
+                                        <i class="fa fa-list-alt"></i>
+                                        <span th:text="#{setup.citizen.charter}"></span>
+                                    </a>
+                                    <li class="divider"></li>
+                                </li>
+                                <li th:if="${isAdmin}">
+                                    <a href="/manageSubOffices.do">
+                                        <i class="fa fa-check"></i>
+                                        <span th:text="#{setup.office.at.grs}"></span>
+                                    </a>
+                                    <li class="divider"></li>
+                                </li>
+                                <li th:if="${(permissions.contains('VIEW_MISSING_OFFICER_TYPE'))}">
+                                    <a href="/manageOfficeMissing.do">
+                                        <i class="fa fa-times"></i>
+                                        <span th:text="#{missing.setup.office.at.grs}"></span>
+                                    </a>
+                                    <li class="divider"></li>
+                                </li>
+                                <li th:if="${(permissions.contains('VIEW_LAYERWISE_CUSTOM_REPORT'))}">
+                                    <a href="/layerWiseCustomReport.do">
+                                        <i class="fa fa-line-chart"></i>
+                                        <span th:text="#{menu.dashboard.layerWise.custom.report}"></span>
+                                    </a>
+                                <li class="divider"></li>
+                                </li>
+                                <li th:if="${(permissions.contains('VIEW_TIMEWISE_COMPLAINANT_REPORT'))}">
+                                    <a href="/timeWiseComplainantReport.do">
+                                        <i class="fa fa-calendar"></i>
+                                        <span th:text="#{menu.dashboard.complainantWise.custom.report}"></span>
+                                    </a>
+                                <li class="divider"></li>
+                                </li>
+                            </ul>
+                            <li class="divider"></li>
+                        </li>
+                        <li class="menu-my-grievances">
+                            <a href="/viewMyGrievances.do">
+                                <i class="fa fa-list-ul"></i>
+                                <span th:text="#{your.grievances.menu.text}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isHoo}" class="menu-official-grievances">
+                            <a href="/addOfficialGrievances.do">
+                                <i class="icon-home"></i>
+                                <span th:text="#{official.complaint}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li class="menu-add-staff-grievances">
+                            <a href="/addStaffGrievances.do">
+                                <i class="icon-envelope-letter"></i>
+                                <span th:text="#{staff.grievance}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isGro}" class="menu-add-offline-grievances">
+                            <a href="/addOfflineGrievance.do">
+                                <i class="fa fa-upload"></i>
+                                <span th:text="#{offline.grievance}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isGro}" class="menu-add-offline-grievances">
+                            <a href="/addSelfMotivatedGrievances.do">
+                                <i class="icon-envelope-letter"></i>
+                                <span th:text="#{self.motivated.grievance}" th:remove="tag"></span>
+                            </a>
+                        <li class="divider"></li>
+                        </li>
+                        <li th:if="${isGro || isAppealOfficer}">
+                            <a href="/viewBlacklist.do">
+                                <i class="fa fa-user-times"></i>
+                                <span th:text="#{blacklist}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isGro || isAppealOfficer}">
+                            <a href="/viewBlacklistRequests.do">
+                                <i class="fa fa-user-times"></i>
+                                <span th:text="#{blacklist.requests}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isCellMember }">
+                            <a href="/addMeetings.do">
+                                <i class="fa fa-users"></i>
+                                <span th:text="#{cell.meeting.add}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isCellMember}">
+                            <a href="/viewMeetings.do">
+                                <i class="icon-home"></i>
+                                <span th:text="#{cell.meeting.view}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                        <li th:if="${isGro}">
+                            <a href="/assets/grs_gro_manual.pdf" class="" onclick="javascript:previewGrsGROManual(this, event);" data-asset="false">
+                                <i class="fa fa-book"></i>
+                                <span th:text="#{user.manual.gro}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>
+                    </ul>
+                </li>
+                <li th:if="${grsUser==false && superAdmin==false}" class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
+                    <a href="/viewGrievances.do" aria-expanded="false">
+                        <i class="fa fa-commenting"></i>
+                        <span class="modulename modulename-hide-on-mobile" th:text="#{manage.x(#{grievance})}"></span>
+                    </a>
+                </li>
+                <li th:if="${grsUser==false && superAdmin==false  && isAppealOfficer==true}" class="dropdown dropdown-extended dropdown-inbox" id="header_inbox_bar">
+                    <a href="/viewAppealGrievances.do">
+                        <i class="fa fa-gavel"></i>
+                        <span class="modulename modulename-hide-on-mobile" th:text="#{manage.x(#{appeal})}"></span>
+                    </a>
+                </li>
+
+                <li th:if="${canViewDashboard}" class="dropdown dropdown-extended dropdown-tasks" id="header_task_bar">
+                    <a href="/dashboard.do">
+                        <i class="fa fa-line-chart"></i>
+                        <span class="modulename modulename-hide-on-mobile" th:text="#{dashboard}"></span>
+                    </a>
+                </li>
+
+                <li th:if="${grsUser==true}" class="dropdown dropdown-extended dropdown-tasks" id="header_citizen_bar">
+                    <a href="/viewGrievances.do">
+                        <i class="fa fa-commenting"></i>
+                        <span class="modulename modulename-hide-on-mobile" th:text="#{grievance.list}"></span>
+                    </a>
+                </li>
+
+
+                <li th:if="${grsUser==false && superAdmin==false}" class="dropdown dropdown-extended dropdown-inbox" id="header_notification_bubble">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                        <i class="icon-bell"></i>
+                        <span class="badge badge-danger" th:text="${notificationList.countBangla}"> 7 </span>
+                    </a>
+                    <ul class="dropdown-menu" style="right: 0; left: auto">
+                        <li th:if="${notificationList.count > 0}" class="external">
+                            <h3>
+                                <span class="bold"><span th:text="${notificationList.countBangla}"></span> <span th:remove="tag" th:text="#{notification.pending}"> </span> <span></span> </span> </h3>
+
+                        </li>
+                        <li>
+                            <ul class="dropdown-menu-list scroller" style="height: 250px;" data-handle-color="#637283">
+                                <li th:if="${notificationList.notifications.isEmpty()}">
+                                    <a href="#" th:classappend="well">
+                                        <span class="photo">
+                                            <span  class="label label-warning">
+                                                <i class="fa fa-bell-o"></i>
+                                            </span>
+                                        </span>
+                                        <span class="message" th:classappend="bold">
+                                            <span th:remove="tag" th:utext="#{notification.empty}"></span>
+                                        </span>
+                                    </a>
+                                </li>
+
+                                <li th:if="${!notificationList.notifications.isEmpty()}" class="external">
+                                    <a href="/notifications.do">সকল নোটিফিকেশন দেখুন</a>
+                                </li>
+
+                                <li th:each="notification : ${notificationList.notifications}">
+                                    <a th:href="@{'javascript:updateNotification(' + ${notification.id} + ')' }"  th:classappend="${notification.seen} ? '' : bg-danger">
+                                        <span  class="photo">
+                                            <span  class="label label-warning">
+                                                <i class="fa fa-bell-o"></i>
+                                            </span>
+                                        </span>
+
+                                        <span class="subject">
+                                            <span class="time" th:text="${notification.time}"></span>
+                                        </span>
+
+                                        <span class="message" th:classappend="${notification.seen} ? '' : bold">
+                                            <span th:remove="tag" th:utext="#{${notification.text}}"></span>
+                                        </span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li th:if="${isMyGovLogin}" id="sso-widget"></li>
+                <li class="dropdown dropdown-user" th:if="${grsUser || superAdmin}">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" >
+                        <img alt="" class="img-circle" src="assets/layouts/layout/img/avatar3_small.jpg"/>
+                        <span class="username hide-on-tab" th:text="${name}"> </span>
+                        <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-default" style="right: 0; left: auto">
+                        <li class="hide show-on-tab">
+                            <a href="javascript:;" style="background:#683091; color:#ffffff">
+                                <i class="fa fa-check-square-o" style="color:#ffffff;"></i>
+                                <span class="username" th:text="${name}"></span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+<!--                        <li th:if="${grsUser==true && !superAdmin}">-->
+<!--                            <a href="/profile.do">-->
+<!--                                <i class="icon-user"></i>-->
+<!--                                <span th:text="#{my.profile}"></span>-->
+<!--                            </a>-->
+<!--                        </li>-->
+                        <!--<li th:if="${grsUser==false && superAdmin==false}">
+                            <a href="http://doptor.gov.bd?landing_page_uri=profile">
+                                <i class="icon-user"></i>
+                                <span th:text="#{my.profile}" th:remove="tag"></span>
+                            </a>
+                            <li class="divider"></li>
+                        </li>-->
+                        <li th:if="${(grsUser == true || superAdmin) && !isMyGovLogin}">
+                            <a href="/logout">
+                                <i class="icon-logout"></i>
+                                <span th:text="#{logout}"></span>
+                                <li class="divider"></li>
+                            </a>
+                        </li>
+                        <li th:if="${(isMyGovLogin)}">
+                            <a href="/mygovlogout">
+                                <i class="icon-logout"></i>
+                                <span th:text="#{logout}"></span>
+                                <li class="divider"></li>
+                            </a>
+                        </li>
+                        <!--<li th:if="${grsUser==false && superAdmin==false}">
+                            <a href="/ssologout" >
+                                <i class="icon-logout"></i>
+                                <span th:text="#{logout}" th:remove="tag"></span>
+                                <li class="divider"></li>
+                            </a>
+                        </li>-->
+                    </ul>
+                </li>
+
+                <!--                <li th:if="${grsUser==false && superAdmin==false}" class="dropdown dropdown-user" id="sso-menu"></li>-->
+                <li th:if="${grsUser==false && superAdmin==false}" class="dropdown dropdown-user" id="sso-menu">
+
+
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                       data-close-others="true" aria-expanded="true">
+
+                        <img alt="" class="img-circle" src="assets/layouts/layout/img/avatar3_small.jpg">
+
+<!--                        <span class="username hide-on-tab"> জেলা প্রশাসকের কার্যালয়, চাঁদপুর</span>-->
+                        <span class="username hide-on-tab" th:text="${name}"> </span>
+
+                        <i class="fa fa-angle-down"> </i>
+
+                    </a>
+                    <ul style="right: 0; left: auto" class="dropdown-menu dropdown-menu-default" id="headermenu">
+
+                        <form id="local123" style="margin: 10px 10px;">
+                            <!--                            <button type="submit"> submit</button>-->
+                            <li><a id="sub" href="#" onClick="ssoLogout();"> <i class="icon-key"> </i> বাহির </a>
+                            </li>
+                            <li class="divider">
+                            </li>
+                        </form>
+                        <!--                        <form id="global" action="http://n-doptor-accounts-stage.nothi.gov.bd/logout?referer=aHR0cDovL3RyYWluaW5nLmdycy5nb3YuYmQvbG9naW4=" method="get"-->
+                        <!--                              style="margin: 10px 10px;">-->
+
+                        <!--                            <li onclick="global.submit();">-->
+                        <!--                                <a  href="/ssologout">-->
+                        <!--                                    <i class="icon-key">-->
+                        <!--                                    </i>-->
+                        <!--                                    বাহির (সকল ডিভাইস) </a>-->
+                        <!--                            </li>-->
+                        <!--                        </form>-->
+                    </ul>
+
+
+                </li>
+                <!-- END USER LOGIN DROPDOWN -->
+            </ul>
+        </div>
+        <!-- END TOP NAVIGATION MENU -->
+    </div>
+    <!-- END HEADER INNER -->
+</div>
+<!-- END HEADER -->

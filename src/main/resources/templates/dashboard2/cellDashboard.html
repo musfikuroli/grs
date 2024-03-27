@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="cellDashboard" th:remove="tag">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="lg-rectbox">
+                <div class="lg-rectbox-header"></div>
+                <div class="lg-rectbox-body">
+                    <h3 class="text-center lg-rectbox-heading"><span th:text="${currentMonthYear}"></span> মাসের অভিযোগ নিষ্পত্তির চিত্র</h3>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 col-12 py-2">
+                            <div class="md-rectbox">
+                                <h3 class="text-center md-heading">প্রাপ্ত অভিযোগ</h3>
+                                <div class="col-md-12 col-sm-12 col-12 h-100 text-center">
+                                    <div class="row py-2">
+                                        <div class="col-md-8 col-sm-8 col-9 col-xs-9 sm-box-1 text-center sm-min-height1">
+                                            <h3 class="text-center sm-heading">মোট অভিযোগ</h3>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4 col-3 col-xs-3 sm-box-1 text-center sm-min-height1">
+                                            <button type="button" id="totalSubmittedGrievanceOfCell" class="btn btn-type1">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 xs-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">বর্তমান মাসে প্রাপ্ত</h3>
+                                            <button type="button" id="currentMonthAcceptanceOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">জের</h3>
+                                            <button type="button" id="ascertainOfLastMonthOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6 col-12 py-2">
+                            <div class="md-rectbox">
+                                <h3 class="text-center md-heading">প্রাপ্ত অভিযোগের অবস্থা</h3>
+                                <div class="row py-2">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 xs-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">চলমান</h3>
+                                            <button type="button" id="runningGrievancesOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">অন্য দপ্তরে প্রেরিত</h3>
+                                            <button type="button" id="forwardedGrievancesOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 xs-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">সময় অতিক্রান্ত</h3>
+                                            <button type="button" id="timeExpiredGrievancesOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">নিষ্পত্তিকৃত</h3>
+                                            <button type="button" id="resolvedGrievancesOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-12 py-2">
+                            <div class="md-rectbox2 border-assh py-2">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="list-group right-two-list-group">
+                                            <div class="list-group-item">
+                                                <span class="list-icon"><img src="/assets/global/img/dashboard/grievance-resolve-rate.png" ></span>অভিযোগ নিষ্পত্তির হার<span class="item-count">(<span id="resolveRateOfCell">০.০</span>%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md-rectbox2 border-assh">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="list-group right-two-list-group">
+                                            <div class="list-group-item">
+                                                <span class="list-icon"><img src="/assets/global/img/dashboard/dashboard-rating-average.png" ></span>গড় রেটিং<span class="item-count"><span id="averageRatingOfCell">০.০</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="lg-rectbox">
+                <div class="lg-rectbox-header-darkblue">
+                </div>
+                <div class="lg-rectbox-body">
+                    <h3 class="text-center lg-rectbox-heading"><span th:text="${currentMonthYear}"></span> মাসের আপিল নিষ্পত্তির চিত্র</h3>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 col-12 py-2">
+                            <div class="md-rectbox border-dark-blue">
+                                <h3 class="text-center md-heading">প্রাপ্ত আপিল</h3>
+                                <div class="col-md-12 col-sm-12 col-12 h-100 text-center">
+                                    <div class="row py-2">
+                                        <div class="col-md-8 col-sm-8 col-9 col-xs-9 sm-box-1 text-center sm-min-height1">
+                                            <h3 class="text-center sm-heading">মোট আপিল</h3>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4 col-3 col-xs-3 sm-box-1 text-center sm-min-height1">
+                                            <button type="button" id="appealTotalOfCell" class="btn btn-type2">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 xs-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">বর্তমান মাসে প্রাপ্ত</h3>
+                                            <button type="button" id="appealCurrentMonthAcceptanceOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">জের</h3>
+                                            <button type="button" id="appealAscertainOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-12 py-2">
+                            <div class="md-rectbox border-dark-blue">
+                                <h3 class="text-center md-heading">প্রাপ্ত আপিলের অবস্থা</h3>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 py-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">চলমান</h3>
+                                            <button type="button" id="appealRunningOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5 py-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">সময় অতিক্রান্ত</h3>
+                                            <button type="button" id="appealTimeExpiredOfCell" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="sm-box-1 h-100 py-2 text-center sm-min-height2">
+                                            <h3 class="text-center sm-heading">নিষ্পত্তিকৃত</h3>
+                                            <button type="button" id="appealResolvedOfCell" class="btn btn-type3">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-12 py-2">
+                            <div class="md-rectbox2 border-assh py-2">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="list-group right-list-group">
+                                            <div class="list-group-item">
+                                                <span class="list-icon"><img src="/assets/global/img/dashboard/appeal-resolve-rate.png" ></span>আপিল নিষ্পত্তির হার<span class="item-count">(<span id="appealResolveRateOfCell">০.০</span>%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

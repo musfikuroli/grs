@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="includes/admin_htmlhead :: htmlhead"></div>
+    <div th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'IncludeStyle'}"></div>
+</head>
+
+<body class="page-sidebar-closed-hide-logo page-content-white">
+<div class="page-wrapper">
+
+    <div th:replace="includes/admin_header :: header(${name})"></div>
+    <div class="clearfix"></div>
+    <div class="page-container">
+        <div th:replace="includes/superadmin_leftmenu :: leftMenu(${adminMenus}, ${lang}, ${permissions})"></div>
+        <div class="page-content-wrapper">
+            <div th:if="${fragmentPath!=null}">
+                <div class="page-content" th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName}"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div th:replace="includes/admin_footer :: footer">...</div>
+</div>
+<div th:replace="includes/admin_footer_includes :: footer">...</div>
+<div th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'IncludeScript'}"></div>
+<script th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'Script'}"></script>
+<script th:replace="includes/superadmin_leftmenu :: superadmin_leftmenuScript"></script>
+<script src="https://idp.mygov.bd/js/widget.js?v=1.0.2"></script>
+<script type="text/javascript">
+
+    jQuery(document).ready(function($) {
+
+        /*<![CDATA[*/
+
+        var token = /*[[${token}]]*/ '';
+
+        /*]]>*/
+        if (document.getElementById('token') !=null && document.getElementById('token') !== undefined && document.getElementById('token').value != null) {
+            var tokenValue = "'" + document.getElementById('token').value + "'";
+            $('#sso-widget').ssoWidget({'token': tokenValue});
+        }
+
+    });
+
+</script>
+</body>
+</html>

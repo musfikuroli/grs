@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="appealRegister" th:remove="tag">
+    <div class="panel-body" style="background: white;">
+        <div class="font-lg font-purple text-center" th:text="#{register.view.title.appeal}"></div>
+        <div id="appealRegisterTable">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr role="row" class="heading">
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align:  middle;"><span class="title" th:text="#{serial}"></span></th>
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align:  middle;"><span class="title" th:text="#{tracking.num}"></span></th>
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.view.table.date.appeal}"></span></th>
+                    <th rowspan="2"  class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.name.appeal}"></span>,<br><span class="title" th:text="#{register.mobile.email}"></span></th>
+                    <th class="text-center" ><span class="title" th:text="#{type.of.appellant}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.service}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.grievance.closed.date}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.view.table.subject.appeal}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{register.appeal.closed.date}"></span></th>
+                    <th rowspan="2" class="text-center vertical-middle" style="vertical-align: middle;"><span class="title" th:text="#{resolve.type}"></span></th>
+                </tr>
+                <tr role="row" class="heading">
+                    <th class="text-center">(<span class="title" th:text="#{complainant.or.staff}"></span>)</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="row">
+                <div class="col-sm-5 col-md-5">
+                    <div class="dataTables_info" id="appealRegisterTable_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                </div>
+                <div class="col-md-7 col-sm-7">
+                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                        <div class="pagination-panel pull-right">
+                            <span th:text="#{page}"></span>
+                            <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                            <span th:text="#{of}"></span>
+                            <a href="javascript:;" class="btn btn-sm default prev disabled" style="cursor: pointer;">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <input class="pagination-panel-input input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" name="appealCurrentPage" value="০" type="text">
+                            <a href="javascript:;" class="btn btn-sm default next disabled" style="cursor: pointer;">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                            <span th:text="#{page.shown}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" th:fragment="appealRegisterScript">
+
+    var appealCurrentPage = 1, appealMaxPage = 1;
+
+    function getAppealResolveTypeText(status) {
+        var text = "-";
+        switch(status) {
+            case "APPEAL_CLOSED_ACCUSATION_INCORRECT":
+                text = "আপিলের সত্যতা প্রমানিত";
+                break;
+            case "APPEAL_CLOSED_ACCUSATION_PROVED":
+                text = "আপিলের সত্যতা পাওয়া যায়নি";
+                break;
+            case "APPEAL_CLOSED_INSTRUCTION_EXECUTED":
+                text = "আপিল নিষ্পত্তি, সেবা প্রদানের নির্দেশনা প্রতিপালিত";
+                break;
+            case "APPEAL_CLOSED_ANSWER_OK":
+                text = "আপিল নিষ্পত্তি, উত্তর সন্তোষজনক";
+                break;
+            case "APPEAL_CLOSED_SERVICE_GIVEN":
+                text = "আপিল নিষ্পত্তি, সেবা প্রদান করা হয়েছে";
+                break;
+            case "APPEAL_CLOSED_OTHERS":
+                text = "আপিল নিষ্পত্তি (অন্যান্য)";
+                break;
+            default:
+                text = "এখনো নিষ্পত্তি হয়নি";
+                break;
+        }
+        return text;
+    }
+
+    function loadAppealRegister(page) {
+        blockUI();
+        $("#appealRegisterTable [name='appealCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        $.ajax({
+            url: "/api/dashboard/offices/" + $("[name='officeId']").val() + "/appeal-register",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": itemPerPage
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $("#appealRegisterTable tbody tr").css("cursor","default");
+                    $("#appealRegisterTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#appealRegisterTable [name='appealCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#appealRegisterTable").find(".prev, .next").addClass("disabled");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $("#appealRegisterTable .pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    appealMaxPage = totalPages;
+                    if (appealMaxPage == 1) {
+                        $("#appealRegisterTable .prev, .next").addClass("disabled");
+                    }
+                    if (appealCurrentPage == 1){
+                        $("#appealRegisterTable .prev").addClass("disabled");
+                    }
+                    if (appealMaxPage > 1 && appealMaxPage!=appealCurrentPage){
+                        $("#appealRegisterTable .next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#appealRegisterTable_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#appealRegisterTable table').dataTable().fnClearTable();
+                    $('#appealRegisterTable table').dataTable().fnAddData(response.content);
+                    $('#appealRegisterTable').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+            }
+        });
+    }
+
+    function initAppealRegisterTable() {
+        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        var table1 = $('#appealRegisterTable table');
+        var emptyTxt = (languageCode == 'en' ? "Sorry. No appeals found" : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": "<div class='text-center'>" + emptyTxt + "</div>",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            columns: [{
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var serialNumber = (((appealCurrentPage - 1) * itemPerPage) + meta.row + 1);
+                    return "<div class='text-center'>" + ((languageCode == "en") ? serialNumber : ("" + serialNumber).toBanglaNumber()) + "</div>";
+                }
+            }, {
+                data: "trackingNumber",
+                render: function (data, type, row, meta) {
+                    return (languageCode == 'en' ? data.toEnglishNumber() : data.toBanglaNumber());
+                }
+            }, {
+                data: "dateBng",
+                render: function (data, type, row, meta) {
+                    var splittedParts = data.split(" ");
+                    return (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] );
+                }
+            }, {
+                data: "complainantName",
+                render: function (data, type, row, meta) {
+                    var complainantInfo = "";
+                    if (data) {
+                        complainantInfo = "<div class='bold'>" + data + "</div>";
+                    } else {
+                        complainantInfo = "<div class='bold'>নাম প্রকাশে অনিচ্ছুক</div>";
+                    }
+                    if(row.complainantMobile) {
+                        complainantInfo += "<div>" + row.complainantMobile.toBanglaNumber() + "</div>";
+                    }
+                    if(row.complainantEmail) {
+                        complainantInfo += "<div><a href='mailto:" + row.complainantEmail + "' class='clickable-link tooltips' data-toggle='tooltip' title='" + "ইমেইল করুন" + "'>" + row.complainantEmail + "</a></div>";
+                    }
+                    return complainantInfo;
+                }
+            }, {
+                data: "serviceType",
+                render: function (data, type, row, meta) {
+                    return "<div class='text-center'>" + SERVICE_TYPES[data] + "</div>";
+                }
+            }, {
+                data: "service"
+            }, {
+                data: "closingDateInGrievancePhase",
+                render: function (data, type, row, meta) {
+                    if(data) {
+                        var splittedParts = data.split(" ");
+                        return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                    } else {
+                        return "<div class='text-center bold'>-</div>";
+                    }
+                }
+            }, {
+                data: "subject",
+                render: function (data, type, row, meta) {
+                    return "<a href='viewGrievances.do?id=" + row.id + "' class='clickable-link tooltips' data-toggle='tooltip' title='" + "অভিযোগের বিস্তারিত দেখুন" + "'>" +  data + "</a>";
+                }
+            }, {
+                data: "closingOrRejectingDateBng",
+                render: function (data, type, row, meta) {
+                    if(data) {
+                        var splittedParts = data.split(" ");
+                        return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
+                    } else {
+                        return "<div class='text-center bold'>-</div>";
+                    }
+                }
+            }, {
+                data: "currentStatus",
+                render: function (data, type, row, meta) {
+                    return getAppealResolveTypeText(data);
+                }
+            }]
+        });
+
+        $("#appealRegisterTable .next").click(function(e) {
+            appealCurrentPage = appealCurrentPage + 1;
+            $("#appealRegisterTable .prev").removeClass("disabled");
+            if (appealCurrentPage == appealMaxPage) {
+                $("#appealRegisterTable .next").addClass("disabled");
+            }
+            if (appealCurrentPage > appealMaxPage) {
+                appealCurrentPage = appealMaxPage;
+            }
+            loadAppealRegister(appealCurrentPage);
+        });
+
+        $("#appealRegisterTable .prev").click(function(e) {
+            appealCurrentPage = appealCurrentPage - 1;
+            $("#appealRegisterTable .next").removeClass("disabled");
+            if (appealCurrentPage == 1) {
+                $("#appealRegisterTable .prev").addClass("disabled");
+            }
+            if (appealCurrentPage < 1) {
+                appealCurrentPage = 1;
+            }
+            loadAppealRegister(appealCurrentPage);
+        });
+
+        var paginationFieldDom = $("#appealRegisterTable [name='appealCurrentPage']");
+        paginationFieldDom.blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + paginationFieldDom.val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= appealMaxPage) {
+                    appealCurrentPage = curValue;
+                    if (appealCurrentPage == 1) {
+                        $("#appealRegisterTable .prev").addClass("disabled");
+                    } else {
+                        $("#appealRegisterTable .prev").removeClass("disabled");
+                    }
+                    if (appealCurrentPage == appealMaxPage) {
+                        $("#appealRegisterTable .next").addClass("disabled");
+                    } else {
+                        $("#appealRegisterTable .next").removeClass("disabled");
+                    }
+                    loadAppealRegister(appealCurrentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    paginationFieldDom.val( languageCode == 'en' ? ("" + appealCurrentPage) : ("" + appealCurrentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                paginationFieldDom.val(languageCode == 'en' ? ("" + appealCurrentPage) : ("" + appealCurrentPage).toBanglaNumber());
+            }
+        });
+    }
+</script>

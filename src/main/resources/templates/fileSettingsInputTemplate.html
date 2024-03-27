@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="fileSettingsInputTemplate" th:remove="tag">
+    <input type="hidden" name="allowedFileTypes" th:value="${allowedFileTypes}"/>
+    <input type="hidden" name="maxFileSize" th:value="${maxFileSize}"/>
+</div>
+
+<script th:fragment="fileSettingsInputTemplateScript">
+    $(document).ready(function () {
+        var fileUploadForm = $("form[id^='fileupload']");
+        var maxFileSizeInMB = 100;
+        var allowedFileTypes = "*";
+        var fileSizeValueInMB = $("[name='maxFileSize']").val();
+        var fileTypesValue = $("[name='allowedFileTypes']").val();
+        if(fileSizeValueInMB && fileSizeValueInMB.length > 0) {
+            maxFileSizeInMB = parseInt(fileSizeValueInMB);
+        }
+        if(fileTypesValue && fileTypesValue.length > 0) {
+            allowedFileTypes = fileTypesValue;
+        }
+        fileUploadForm.fileupload();
+        fileUploadForm.fileupload('option', {
+            autoUpload: true,
+            acceptFileTypes: new RegExp('(\.|\/)(' + allowedFileTypes + ')$', 'g'),
+            maxFileSize: (maxFileSizeInMB * 1000000)
+        });
+    })
+</script>

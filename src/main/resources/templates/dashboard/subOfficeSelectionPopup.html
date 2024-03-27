@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="subOfficeSelectionPopup" th:remove="tag">
+    <div class="modal fade" id="modalSubOfficesDashboard" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title text-center"> যে দপ্তরের ড্যাশবোর্ড দেখতে চান সেটি বাছাই করুন </h4>
+                </div>
+                <div class="modal-body">
+                    <th:block th:replace="officeSelection :: officeSelection"></th:block>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn blue view-other-dashboard" disabled="disabled" data-dismiss="modal">ড্যাশবোর্ড দেখুন</button>
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal">বন্ধ করুন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="subOfficeSelectionPopupScript">
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+    <script>
+        function getCurrentOfficeId() {
+            var officeId = parseInt($("#secondSelection").val());
+            if(_.isNumber(officeId) && !_.isNaN(officeId)) {
+                return officeId;
+            }
+            return null;
+        }
+
+        function encodeOfficeIdOnDrillDown(param) {
+            var encodedPrefix = btoa("" + (Math.pow(10,10) * Math.random())).substr(0,20).split("").reverse().join("");
+            var encodedParams = btoa("" + param);
+            return encodedPrefix + encodedParams;
+        }
+
+        $(document).ready(function () {
+            $("#modalSubOfficesDashboard").on("change", "select", function () {
+                var viewOtherDashboardButton = $("#modalSubOfficesDashboard .view-other-dashboard");
+                var officeId = getCurrentOfficeId();
+                if(officeId && officeId > 0) {
+                    viewOtherDashboardButton.removeAttr("disabled");
+                } else {
+                    viewOtherDashboardButton.attr("disabled", "disabled");
+                }
+            });
+
+            $("#modalSubOfficesDashboard .view-other-dashboard").on("click", function () {
+                var officeId = getCurrentOfficeId();
+                var _this = $(this);
+                if(officeId && parseInt(officeId) > 0) {
+                    var url = "dashboard.do?params=" + encodeOfficeIdOnDrillDown(officeId);
+                    window.location.replace(url);
+                }
+            });
+        });
+    </script>
+</div>

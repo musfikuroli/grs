@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="page-content" style="min-height: 1601px;" th:fragment="systemNotificationSettings">
+    <div class="form-body" style="outline-style: auto;padding: 20px;">
+        <form id="systemNotificationSettingsForm">
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label font-lg"> যেই ইমেইলে নোটিফিকেশন যাবে </label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="email" name="email" class="form-control" th:value="${email}"/>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label font-lg"> যেই মোবাইল নাম্বারে নোটিফিকেশন এসএমএস যাবে </label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="tel" name="phoneNumber" class="form-control" th:value="${phoneNumber}"/>
+                </div>
+            </div>
+            <div class="row margin-top-20">
+                <div class="form-group col-md-6">
+                    <button type="submit" class="btn blue submit-button" th:text="#{update}"></button>
+                    <button type="reset" class="btn green" th:text="#{reset}"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="margin-top-20">
+        <a class="btn btn-block purple" id="manuallyReportGenerator" href="javascript:;" style="display: inline-block;">
+            <i class="fa fa-gears"></i>&nbsp;
+            <span>সর্বশেষ মাসের মাসিক প্রতিবেদন স্বয়ংক্রিয়ভাবে প্রস্তুত না হয়ে থাকলে এখানে ক্লিক করুন</span>
+        </a>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:fragment="systemNotificationSettingsScript">
+
+    function bindMonthlyReportManuallyGenerationAction() {
+        $("#manuallyReportGenerator").on("click", function () {
+            swal({
+                    title: "আপনি কি নিশ্চিত?",
+                    text: "সর্বশেষ মাসের প্রতিবেদন স্বয়ংক্রিয়ভাবে প্রস্তুত হয়নি এবং আপনি তা প্রস্তুত করতে যাচ্ছেন",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "হ্যাঁ, নিশ্চিত",
+                    cancelButtonText: "না, বাতিল",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm) {
+                    if (isConfirm) {
+                        blockUI();
+                        $.getJSON("/api/reports/generate-last-month-report-data", function (reponse) {
+                        }).done(function (response) {
+                            if(response.success) {
+                                swal("সফল", response.message, "success");
+                            } else {
+                                swal("স্থগিত", response.message, "error");
+                            }
+                        }).error(function (response) {
+                            swal("স্থগিত", "ত্রুটির কারণে প্রতিবেদন প্রস্তুতকরণ সম্ভব হচ্ছেনা", "error");
+                        }).always(function () {
+                            unblockUI();
+                        });
+                    } else {
+                        swal("বাতিল", "প্রতিবেদন প্রস্তুতকরণ করা হয়েছে", "error");
+                    }
+                });
+        });
+
+    }
+
+    function initReportGenerationNotificationForm() {
+        var form = $("#systemNotificationSettingsForm");
+        form.on("submit", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+            var phoneNumberReg = /^((\+[1-9]{1,4}[ \-]*)|(\([0-9]{2,3}\)[ \-]*)|([0-9]{2,4})[ \-]*)*?[0-9]{3,4}?[ \-]*[0-9]{3,4}?$/;
+            var email = form.find("[name='email']").val();
+            var phoneNumber = form.find("[name='phoneNumber']").val();
+            if(!emailReg.test(email)) {
+                toastr.error("অনুগ্রহ করে সঠিক ইমেইল অ্যাড্রেস প্রদান করুন", null, {positionClass: 'toast-top-center'});
+            } else if(!phoneNumberReg.test(phoneNumber)) {
+                toastr.error("অনুগ্রহ করে সঠিক মোবাইল নাম্বার প্রদান করুন", null, {positionClass: 'toast-top-center'});
+            } else {
+                var data = {
+                    email: email,
+                    phoneNumber: phoneNumber
+                };
+                form.find(".submit-button").attr("disabled", "disabled");
+                $("#ajaxProcessingModal").modal("show");
+                $.ajax({
+                    type: "PUT",
+                    url: "/api/settings/system-notification-settings",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (response) {
+                        if(response.success) {
+                            toastr.success(response.message, null, {positionClass: 'toast-top-center'});
+                        } else {
+                            toastr.error(response.message, null, {positionClass: 'toast-top-center'});
+                        }
+                    },
+                    error: function (response) {
+                        var errorMessage = (languageCode == "en") ? "Sorry! cannot update settings" : "দুঃখিত! সেটিংস হালনাগাদ করা যাচ্ছেনা";
+                        toastr.error(errorMessage, null, {positionClass: 'toast-top-center'});
+                    },
+                    complete: function (response) {
+                        form.find(".submit-button").removeAttr("disabled");
+                        $("#ajaxProcessingModal").modal("hide");
+                    }
+                });
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        initReportGenerationNotificationForm();
+        bindMonthlyReportManuallyGenerationAction();
+    });
+</script>

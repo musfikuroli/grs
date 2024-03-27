@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<div th:fragment="fileUploadIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/css/lightbox.css" rel="stylesheet" type="text/css" />
+</div>
+
+<div class="form-group" th:fragment="fileUpload" >
+    <div class="col-md-12">
+        <div th:replace="fileUpload :: fileUploadHtml">
+        </div>
+    </div>
+
+    <div th:replace="fileUpload :: fileUploadTemplateScript">
+    </div>
+</div>
+
+
+<div th:remove="tag" th:fragment="fileUploadHtml">
+    <label class="control-label" th:text="#{file.attach.ifany}"></label>
+    <div class="row fileupload-buttonbar">
+        <div class="col-sm-3">
+            <span class="btn green fileinput-button">
+                <i class="fa fa-plus"></i>
+                <span th:text="#{add.file}"></span>
+                <input name="files[]" multiple="" type="file" id="fileSelector">
+            </span>
+            <button type="submit" class="btn blue start hidden" id="submitButtonForFile">
+                <i class="fa fa-upload"></i>
+                <span th:text="#{start.upload}">  </span>
+            </button>
+            <button type="reset" class="btn warning cancel hidden">
+                <i class="fa fa-ban-circle"></i>
+                <span><span th:remove="tag" th:text="#{cancel.button}"></span></span>
+            </button>
+            <span class="fileupload-process"> </span>
+        </div>
+        <div class="col-sm-6 font-purple">
+            <span>(</span>
+            <span th:text="#{file.size.and.type.label.one}"></span>&nbsp;
+            <span id="fileSizeLabel" th:text="${fileSizeLabel}"></span>&nbsp;
+            <span th:text="#{file.size.and.type.label.two}"></span>&nbsp;
+            <span id="fileTypeLabel" th:text="${fileTypesLabel}"></span>
+            <span>)</span>
+        </div>
+        <div class="col-sm-4 fileupload-progress fade">
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+            </div>
+            <div class="progress-extended"> &nbsp;</div>
+        </div>
+    </div>
+    <table role="presentation" class="table table-striped clearfix">
+        <tbody class="files"></tbody>
+    </table>
+</div>
+
+<div th:remove="tag" th:fragment="fileUploadTemplateScript">
+    <script id="template-upload" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+            {% $("#submitButton").attr('disabled','disabled');
+                $('#cancelButton').attr('disabled','disabled'); %}
+                    <tr class="template-upload fade">
+                        <td>
+                            <span class="preview"></span>
+                        </td>
+                        <td>
+                            <p class="name">{%=file.name%}</p>
+                            <strong class="error label label-danger"></strong>
+                        </td>
+                        <td>
+                            <p class="size" th:text="#{upload.processing}"></p>
+                            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                            </div>
+                        </td>
+                        <td> {% if (!i && !o.options.autoUpload) { %}
+                            <button class="btn blue start" disabled>
+                                <i class="fa fa-upload"></i>
+                                <span th:text="#{start}"></span>
+                            </button> {% } %} {% if (!i) { %}
+                            <button class="btn red cancel" onclick="javascript:checkNotAllowedFiles()">
+                                <i class="fa fa-ban"></i>
+                                <span th:text="#{cancel}"></span>
+                            </button> {% } %} </td>
+                    </tr> {% } %}
+
+    </script>
+    <script id="template-download" type="text/x-tmpl">
+    {% for (var i=0, file; file=o.files[i]; i++) { %}
+    {% $("#submitButton").removeAttr('disabled');
+        $('#cancelButton').removeAttr('disabled');
+        checkNotAllowedFiles(); %}
+            <tr class="template-download fade">
+                <td>
+                    <span class="preview"> {% if (file.thumbnailUrl) { %}
+                        <a {%=file.previewerCode%} onclick="javascript:previewFile(this);" href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery>
+                            <img src="{%=file.thumbnailUrl%}">
+                        </a>
+                        {% } %}
+                    </span>
+                </td>
+                <td>
+                    <p class="name"> {% if (file.url) { %}
+                        <a {%=file.previewerCode%} onclick="javascript:previewFile(this);" id="img_{%=file.name%}" href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl? 'data-gallery': ''%}>{%=file.name%}</a> {% } else { %}
+                        <span>{%=file.name%}</span>
+                        {% } %}
+                         <input class="form-control" name="fileNameByUser" placeholder="সংযুক্ত ফাইল এর বিবরণ দিন" type="text">
+                         </p> {% if (file.error) { %}
+                    <div>
+                        <span class="label label-danger" th:text="#{error}"></span> {%=file.error%}</div> {% } %} </td>
+                <td>
+                    <span class="size">{%=o.formatFileSize(file.size)%}</span>
+                </td>
+                <td> {% if (file.deleteUrl) { %}
+                    <button class="btn red delete btn-sm" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" {% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}' {% } %}>
+                        <i class="fa fa-trash-o"></i>
+                        <span text="#{delete}"> </span>
+                    </button>
+                     {% } else { %}
+                    <button class="btn yellow cancel btn-sm">
+                        <i class="fa fa-ban"></i>
+                        <span th:text="#{cancel.upload}"> </span>
+                    </button> {% } %} </td>
+            </tr> {% } %}
+    </script>
+</div>
+
+<div th:remove="tag" th:fragment="fileUploadTemplateScriptGrievanceDetails">
+    <script id="template-upload" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+        {% $(".modal-content:visible").eq(0).find('.modal-footer > button.btn-action').eq(0).attr('disabled','disabled'); %}
+        <tr class="template-upload fade">
+            <td>
+                <span class="preview"></span>
+            </td>
+            <td>
+                <p class="name">{%=file.name%}</p>
+                <strong class="error label label-danger"></strong>
+            </td>
+            <td>
+                <p class="size">Processing...</p>
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                </div>
+            </td>
+            <td> {% if (!i && !o.options.autoUpload) { %}
+                <button class="btn blue start" disabled>
+                                <i class="fa fa-upload"></i>
+                                <span>শুরু করুন</span>
+                            </button> {% } %} {% if (!i) { %}
+                <button class="btn red cancel" onclick="checkNotAllowedFiles($('.modal-content:visible').eq(0).find('form'), $('.modal-content:visible').eq(0).find('.modal-footer > button.btn-action').eq(0));">
+                                <i class="fa fa-ban"></i>
+                                <span>বাতিল</span>
+                            </button> {% } %} </td>
+        </tr> {% } %}
+
+    </script>
+    <script id="template-download" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+        {%
+            $(".modal-content:visible").eq(0).find('.modal-footer > button.btn-action').eq(0).removeAttr('disabled');
+            checkNotAllowedFiles($(".modal-content:visible").eq(0).find("form"), $(".modal-content:visible").eq(0).find(".modal-footer > button.btn-action").eq(0));
+         %}
+        <tr class="template-download fade">
+            <td>
+                <span class="preview"> {% if (file.thumbnailUrl) { %}
+                        <a {%=file.previewerCode%} onclick="javascript:previewFile(this);" href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery>
+                            <img src="{%=file.thumbnailUrl%}">
+                        </a> {% } %} </span>
+            </td>
+            <td>
+                <p class="name"> {% if (file.url) { %}
+                    <a {%=file.previewerCode%} onclick="javascript:previewFile(this);" id="img_{%=file.name%}" href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl? 'data-gallery': ''%}>{%=file.name%}</a> {% } else { %}
+                    <span>{%=file.name%}</span> {% } %}
+                    <input class="form-control" name="fileNameByUser" placeholder="সংযুক্ত ফাইল এর বিবরণ দিন" type="text">
+                    </p> {% if (file.error) { %}
+                <div>
+                    <span class="label label-danger">Error</span> {%=file.error%}</div> {% } %} </td>
+            <td>
+                <span class="size">{%=o.formatFileSize(file.size)%}</span>
+            </td>
+            <td> {% if (file.deleteUrl) { %}
+                <button class="btn red delete btn-sm" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" {% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}' {% } %}>
+                        <i class="fa fa-trash-o"></i>
+                        <span>মুছে দিন</span>
+                    </button>
+                {% } else { %}
+                <button class="btn yellow cancel btn-sm">
+                        <i class="fa fa-ban"></i>
+                        <span>বাতিল</span>
+                    </button> {% } %} </td>
+        </tr> {% } %}
+
+    </script>
+</div>
+
+
+<div th:fragment="fileUploadIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/jquery-file-upload/js/vendor/tmpl.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/vendor/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/vendor/load-image.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/vendor/canvas-to-blob.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/blueimp-gallery/jquery.blueimp-gallery.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-ui.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-process.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-validate.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-image.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-audio.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-video.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/lightbox.min.js" type="text/javascript"></script>
+</div>
+
+<script th:fragment="fileUploadScript" >
+    function checkNotAllowedFiles(){
+        var numberOfDisallowedFiles = $("strong.error.label.label-danger").length;
+        if (numberOfDisallowedFiles == 1 ){
+            $("#submitButton").removeAttr('disabled');
+            $('#cancelButton').removeAttr('disabled');
+        } else {
+            $("#submitButton").attr('disabled','disabled');
+            $('#cancelButton').attr('disabled','disabled');
+        }
+    }
+</script>
+
+

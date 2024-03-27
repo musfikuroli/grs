@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <div th:replace="includes/admin_withoutlogin_htmlhead :: htmlhead"></div>
+    <div th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'IncludeStyle'}"></div>
+</head>
+
+<body class="page-content-white page-sidebar-closed">
+<div class="page-wrapper">
+
+    <div th:replace="includes/header :: header(${menu})">...</div>
+
+    <!--    <div th:replace="includes/admin_header :: header(${name})"></div>-->
+    <div class="clearfix"></div>
+    <div class="page-container">
+        <div th:replace="includes/admin_leftmenu :: leftMenu(${adminMenus},${lang})"></div>
+        <div th:class="${!isMobileLogin ? 'page-content-wrapper' : ''}">
+            <div th:if="${fragmentPath!=null}">
+                <div class="page-content" th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName}"></div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="includes/footer :: footer">...</div>
+
+</div>
+<div th:replace="includes/footer_includes :: footer">...</div>
+<!--<div th:replace="includes/admin_footer_includes :: footer">...</div>-->
+
+<script src="/assets/global/plugins/respond.min.js"></script>
+<script src="/assets/global/plugins/excanvas.min.js"></script>
+<script src="/assets/global/plugins/ie8.fix.min.js"></script>
+<!--<![endif]&ndash;&gt;-->
+<!-- BEGIN CORE PLUGINS -->
+<script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/underscore-min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-sessiontimeout/bootstrap-session-timeout.min.js" type="text/javascript"></script>
+
+<script>
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    String.prototype.toEnglishNumber = function () {
+        var bngNum = this;
+        var engNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        bngNum.split('').forEach(function (digit) {
+            var index = bngDigits.indexOf(digit);
+            engNum += index >= 0 ? index : digit;
+        });
+        return engNum;
+    };
+
+    function blockUI() {
+        var isEnglish = (languageCode == "en");
+        var msg = isEnglish ? "Loading... Just a moment please" : "লোড হচ্ছে... দয়া করে অপেক্ষা করুন" ;
+        $.blockUI({
+            message: '<h1>' + msg + '</h1>'
+        });
+    }
+
+    function unblockUI() {
+        $.unblockUI();
+    }
+</script>
+
+<script src="/assets/global/plugins/bootstrap-datepicker/js/moment-with-locales.js" type="text/javascript" charset="UTF-8"></script>
+<script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker-1.6.4.js" type="text/javascript" charset="UTF-8"></script>
+<script src="/assets/global/plugins/jquery.cookie.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/icheck/icheck.min.js" type="text/javascript"></script>
+
+<script src="/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+<script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
+
+<script src="/assets/layouts/layout/scripts/layout.min.js" type="text/javascript"></script>
+<script src="/assets/layouts/layout/scripts/demo.min.js" type="text/javascript"></script>
+<script src="/assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
+<script src="/assets/layouts/global/scripts/quick-nav.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-summernote/summernote.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-sweetalert/sweetalert.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/easy-autocomplete/jquery.easy-autocomplete.min.js" type="text/javascript"></script>
+
+
+
+
+
+<div th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'IncludeScript'}"></div>
+<script th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'Script'}"></script>
+<!--<script th:if="${fragmentName=='viewGrievancesDetails'}" th:replace="${fragmentPath+'/'+fragmentName} :: ${fragmentName+'TimelineScript'}">-->
+<script th:inline="javascript">
+    var languageCode = $.cookie("lang");
+    var jsLangCodeForLibs = "bn";
+    if (languageCode == "en") {
+        jsLangCodeForLibs = 'en';
+    }
+</script>
+</body>
+</html>

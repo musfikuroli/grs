@@ -1,0 +1,61 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- BEGIN FOOTER -->
+<div class="page-footer" th:fragment="footer">
+    <div class="page-footer-inner"> 2018 &copy; Grievance Redress System
+<!--        <a target="_blank" href="https://quayasia.com/"> by Quay Asia Ltd </a> &nbsp;-->
+<!--        |&nbsp;-->
+<!--        <a href="https://istlbd.com/" target="_blank">  Integrated Software and Technologies Limited (ISTL)</a>-->
+    </div>
+    <input type="hidden" name="enableSessionTimeout" th:value="${isProductionMode && (isMobileLogin == null || isMobileLogin == false)}" th:attr="data-logout-url=${(isProductionMode && !(grsUser || superAdmin)) ? '/ssologout' : ((superAdmin && !isMyGovLogin) ? '/logout' : '/mygovlogout')}">
+    <div class="scroll-to-top">
+        <i class="icon-arrow-up"></i>
+    </div>
+    <div class="modal fade" id="fileViewerModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="grsGROManualModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="btn dark btn-outline" href="/assets/grs_gro_manual.pdf" target="_blank" th:text="#{download}"></a>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body" style="max-height: 800px; overflow-y: scroll; min-height: 800px">
+                    <img data-src="assets/grs_gro_manual/01.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/02.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/03.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/04.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/05.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/06.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/07.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/08.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/09.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/10.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/11.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/12.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/13.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/14.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/15.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/16.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_gro_manual/17.jpg" style="width: 100%;">
+                </div>
+                <div class="modal-footer">
+                    <a class="btn dark btn-outline" href="/assets/grs_gro_manual.pdf" target="_blank" th:text="#{download}"></a>
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END FOOTER -->

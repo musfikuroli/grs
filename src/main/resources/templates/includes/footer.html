@@ -1,0 +1,540 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div class="page-wrapper-row" th:fragment="footer">
+    <div class="page-wrapper-bottom">
+        <!-- BEGIN FOOTER -->
+        <!-- BEGIN PRE-FOOTER -->
+        <div class="page-prefooter">
+            <div class="container">
+                <div class="row">
+                    <div th:if="${!isMobileLogin}" class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h4 th:text="#{index.footer.important.info}"></h4>
+                        <ul class="fa-ul text-left">
+                            <!--<li><a th:text="#{index.footer.conditions}" href="javascript:featureComingSoon();"></a></li>-->
+                            <li><a th:text="#{index.footer.collaboration}" href="#modalOverallCollaborators" data-toggle="modal"></a></li>
+                            <li><a th:text="#{index.footer.contact}" href="#modalContactInformation" data-toggle="modal"></a></li>
+                        </ul>
+                    </div>
+                    <div th:if="${!isMobileLogin}" class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h4 th:text="#{index.footer.important.links}"></h4>
+                        <ul class="fa-ul text-left">
+                            <li><a th:text="#{index.footer.bangladesh.portal}" href="http://bangladesh.gov.bd/" target="_blank"></a></li>
+                            <li><a th:text="#{index.footer.cabinet.division}" href="http://www.cabinet.gov.bd/" target="_blank"></a></li>
+                            <li><a th:text="#{index.footer.access.to.info}" href="http://a2i.pmo.gov.bd/" target="_blank"></a></li>
+                            <li><a th:text="#{index.footer.online.forms}" href="https://eksheba.gov.bd/" target="_blank"></a></li>
+                        </ul>
+                    </div>
+                    <div th:if="${!isMobileLogin}" class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h4 th:text="#{index.footer.social.connection}"></h4>
+                        <a href="javascript:featureComingSoon();" data-original-title="facebook" class="social-icon facebook"> </a>
+                        <a href="javascript:featureComingSoon();" data-original-title="twitter" class="social-icon twitter"> </a>
+                        <a href="javascript:featureComingSoon();" data-original-title="youtube" class="social-icon youtube"> </a>
+                        <a href="javascript:featureComingSoon();" data-original-title="Goole Plus" class="social-icon googleplus"> </a>
+
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h4 th:text="#{index.footer.plan.implementation}"></h4>
+                        <ul class="footer_logos">
+                            <li>
+                                <a href="http://a2i.pmo.gov.bd/" target="_blank">
+                                    <img src="/assets/global/img/a2i.png" height="40">
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://cabinet.gov.bd/" target="_blank">
+                                    <img src="/assets/global/img/bd_gov.png" height="40">
+                                </a>
+                            </li>
+                        </ul>
+                        <div th:if="${!isMobileLogin}" class="cleardiv">&nbsp;</div>
+                        <div class="copy-right-title" th:classappend="${isMobileLogin ? 'pull-left' : ''}">
+                            <p th:utext="#{index.footer.copyright}"></p>
+                            <p th:text="#{index.footer.bangladesh.government}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${!isMobileLogin}" class="scroll-to-top">
+            <i class="icon-arrow-up"></i>
+        </div>
+        <!-- END INNER FOOTER -->
+        <!-- END FOOTER -->
+    </div>
+
+    <div class="modal fade bs-modal-lg" id="modalSelectComplaintType" tabindex="-1" role="basic" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title fontSize20">
+                        <span class="font-purple bold" th:text="#{choose.complaint.type}"></span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="horizontal-form">
+                        <div class="form-body">
+                            <div class="row">
+                                <div th:if="${isGrsUser || !isLoggedIn || isOthersComplainant}" th:class="${isLoggedIn && !isOisfUser ? 'col-md-6' : 'col-md-4'}">
+                                    <div class="portlet portlet-fit light bg-inverse">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <i class="fa fa-users"></i> <span th:text="#{citizen.complaint}"> </span>
+                                            </div>
+                                        </div>
+                                        <div class="portlet-body">
+                                            <span th:text="#{citizen.grievance}"> </span>
+                                        </div>
+                                        <div th:if="${!isLoggedIn}" class="portlet-footer text-align-right">
+                                            <a href="javascript:addPublicGrievanceWithoutLoginButtonEventHandler()" class="btn btn-nagorik">
+                                                <span th:text="#{citizen.complaint}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                        <div th:if="${isLoggedIn && isOthersComplainant}" class="portlet-footer text-align-right">
+                                            <a href="javascript:addPublicGrievanceForOthersButtonEventHandler()" class="btn btn-nagorik">
+                                                <span th:text="#{citizen.complaint}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                        <div th:if="${isLoggedIn && !isOthersComplainant}" class="portlet-footer text-align-right">
+                                            <a href="javascript:addPublicGrievanceButtonEventHandler()" class="btn btn-nagorik">
+                                                <span th:text="#{citizen.complaint}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${isOisfUser || !isLoggedIn}" th:class="${isLoggedIn && !isGrsUser ? 'col-md-6' : 'col-md-4'}">
+                                    <div class="portlet portlet-fit light bg-inverse">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <i class="fa fa-bank"></i> <span th:text="#{staff.grievance}"> </span>
+                                            </div>
+
+                                        </div>
+                                        <div class="portlet-body">
+                                            <span th:text="#{staff.grief}"></span>
+                                        </div>
+                                        <div class="portlet-footer text-align-right">
+                                            <a href="javascript:addStaffGrievanceButtonEventHandler()" class="btn btn-abbhontorin">
+                                                <span th:text="#{staff.complaint}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:class="${isLoggedIn ? 'col-md-6' : 'col-md-4'}">
+                                    <div class="portlet portlet-fit light bg-inverse">
+                                        <div class="portlet-title">
+                                            <div class="caption">
+                                                <i class="fa fa-user-secret"></i> <span th:text="#{anonymous.title}"> </span>
+                                            </div>
+                                        </div>
+                                        <div class="portlet-body">
+                                            <span th:text="#{anonymous.title.description}"></span>
+                                        </div>
+                                        <div class="portlet-footer text-align-right">
+                                            <a href="/anonymousAddGrievance.do" class="btn btn-daptorik">
+                                                <span th:text="#{anonymous.title}"></span>
+                                                <i class="fa fa-caret-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="fontSize14 margin0 text-danger bold" th:text="#{notice.popup.complaints}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="complaintStatusModal" tabindex="-1" role="basic" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <span class="font-lg font-green bold" th:text="#{complaint.status.modal.header}"></span>
+                    <button type="button" class="close" data-dismiss="modal" onclick="javascript:hideComplaintStatusModal()">×</button>
+                </div>
+                <div class="modal-body form">
+                    <form action="#" class="form-horizontal">
+                        <div align="center" class="form-body font-md">
+                            <div class="form-group">
+                                <label class="control-label">
+                                    <span class="font-purple" th:text="#{complaint.status.modal.form.text.correction}"></span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">
+                                    <span th:text="#{mobile.number}"></span>
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="input-group has-success">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-tablet"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="mobileNumber" autocomplete="off"/>
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">
+                                    <span th:text="#{complaint.status.modal.field.tracking.number}"></span>
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="input-group has-success">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-commenting-o"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="trackingNumber" autocomplete="off"/>
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="javascript:getStatus('grievanceStatus', 'mobileNumber', 'trackingNumber')">
+                                    <span th:text="#{complaint.status.modal.button.text}"></span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <table class="table table-hover table-bordered" id="grievanceStatus" style="display: none">
+                                    <thead>
+                                        <tr>
+                                            <td>অভিযোগের তারিখ</td>
+                                            <td>সংশ্লিষ্ট সেবা</td>
+                                            <td>অভিযোগের অবস্থা</td>
+                                            <td>নিষ্পত্তির সম্ভাব্য তারিখ</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <div id="grievanceStatusMore"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="complaintFeedbackModal" tabindex="-1" role="basic" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <span class="font-lg font-green bold" th:text="#{grievance.success.feedback}"></span>
+                    <button type="button" class="close" data-dismiss="modal" onclick="javascript:hideComplaintStatusModal()">×</button>
+                </div>
+                <div class="modal-body form">
+                    <form action="#" class="form-horizontal">
+                        <div align="center" class="form-body font-md">
+                            <div class="form-group">
+                                <label class="">
+                                    <span class="font-purple" th:text="#{complaint.status.modal.form.text.correction}"></span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">
+                                    <span th:text="#{mobile.number}"></span>
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="input-group has-success">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-tablet"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="mobileNumberFeedback" autocomplete="off"/>
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">
+                                    <span th:text="#{complaint.status.modal.field.tracking.number}"></span>
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="input-group has-success">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-commenting-o"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="trackingNumberFeedback" autocomplete="off"/>
+                                        <div class="form-control-focus"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="javascript:getStatus('grievanceFeedback', 'mobileNumberFeedback', 'trackingNumberFeedback')">
+                                    <span th:text="#{complaint.status.modal.button.text}"></span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <table class="table table-hover table-bordered" id="grievanceFeedback" style="display: none">
+                                    <thead>
+                                    <tr>
+                                        <td>অভিযোগের তারিখ</td>
+                                        <td>সংশ্লিষ্ট সেবা</td>
+                                        <td>অভিযোগের অবস্থা</td>
+                                        <td>নিষ্পত্তির সম্ভাব্য তারিখ</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <div id="grievanceFeedbackMore"></div>
+                            </div>
+
+                            <div id="feedback-div" role="document" style="display: none">
+                                <h5 class="modal-title" th:text="#{your.feedback}"></h5>
+                                <form>
+                                    <div class="form-group">
+                                        <label th:text="#{rating}"></label>
+                                        <div class="input-group">
+                                            <input id="rating" type="text" data-bind="value: isRated" class="form-control rating rating-loading" data-size="sm">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label th:text="#{your.comments}"></label>
+                                        <div class="input-group" style="text-align: left !important;">
+                                            <div id="txtaFeedback" class="summernote form-control"></div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{cancel}"></button>
+                                <button type="button" data-bind="enable: isRated" id="feedbackButton" class="btn btn-primary btn-feedback-send" th:text="#{send}" data-dismiss="modal"></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="fileViewerModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="grsGuidelineModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="dark btn-outline" href="/assets/grs_guideline.pdf" target="_blank" th:text="#{download}"></a>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body" style="max-height: 800px; overflow-y: scroll; min-height: 800px">
+                    <img data-src="assets/grs_guideline/01.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/02.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/03.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/04.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/05.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/06.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/07.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/08.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/09.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/10.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/11.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/12.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/13.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/14.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/15.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/16.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/17.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/18.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/19.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/20.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/21.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/22.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/23.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/24.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/25.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/26.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/27.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_guideline/28.jpg" style="width: 100%;">
+                </div>
+                <div class="modal-footer">
+                    <a class="btn dark btn-outline" href="/assets/grs_guideline.pdf" target="_blank" th:text="#{download}"></a>
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="grsUserManualModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="dark btn-outline" href="/assets/grs_user_manual.pdf" target="_blank" th:text="#{download}"></a>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body" style="max-height: 800px; overflow-y: scroll; min-height: 800px">
+                    <img data-src="assets/grs_user_manual/01.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/02.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/03.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/04.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/05.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/06.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/07.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/08.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/09.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/10.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/11.jpg" style="width: 100%;">
+                    <img data-src="assets/grs_user_manual/12.jpg" style="width: 100%;">
+                </div>
+                <div class="modal-footer">
+                    <a class="btn dark btn-outline" href="/assets/grs_user_manual.pdf" target="_blank" th:text="#{download}"></a>
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal-full" id="flowChartModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content" style="padding: 10px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion3" href="#collapse_4_1">
+                                    <span>১. অভিযোগ দাখিল পদ্ধতি:</span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_4_1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <img data-src="assets/flow01.png" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapse_4_2">
+                                    <span>২. অনিক-এর কার্যপদ্ধতি:</span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_4_2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <img data-src="assets/flow02.png" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapse_4_3">
+                                    <span>৩. তদন্ত কার্যক্রম</span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_4_3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <img data-src="assets/flow03.png" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapse_4_4">
+                                    <span>৪. অভিযোগ ও আপিল নিষ্পত্তি:</span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_4_4" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <img data-src="assets/flow04.png" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapse_4_5">
+                                    <span>৫. অভিযোগ ব্যবস্থাপনা সেলের কার্যপদ্ধতি: </span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse_4_5" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <img data-src="assets/flow05.png" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalOverallCollaborators" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title text-center font-lg font-green bold" th:text="#{index.footer.collaboration}"></h4>
+                </div>
+                <div class="modal-body">
+                    <div th:replace="collaborators :: collaborators"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalContactInformation" tabindex="-1" data-backdrop="static" data-keyboard="false" data-attention-animation="false" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title text-center font-lg font-green bold" th:text="#{index.footer.contact}"></h4>
+                </div>
+                <div class="modal-body text-center font-purple">
+                    <div><span th:text="#{email.colon}"></span>&nbsp;<a href="mailto:grs@cabinet.gov.bd"
+                                                                        class="blueLink"
+                                                                        th:text="#{index.footer.contact.helpdesk.email}">grs@cabinet.gov.bd</a>
+                    </div>
+
+                    <div><span th:text="#{mobile.colon}"></span>&nbsp;<a href="tel:+8801768194532"
+                                                                        class="blueLink">+8801768194532, +8801891964464</a>
+                    </div>
+
+                    <th:block
+                              th:include="includes/email_contact_guidance_message">
+                    </th:block>
+
+
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

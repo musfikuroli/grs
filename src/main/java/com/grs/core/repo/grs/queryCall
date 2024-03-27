@@ -1,0 +1,24 @@
+totalSubmitted  countTotalComplaintsByOfficeId(   (not appeal, not rejected, not forwarded to ao, not closed)
+
+
+timeExpiredCount countTimeExpiredGrievancesByOfficeId(
+
+runningGrievanceCount  countRunningGrievancesByOfficeId(  (not appeal, not rejected, not closed, not forwarded)
+
+
+inherited   getGrievanceAscertainCountOfPreviousMonth
+
+resolvedCount	countResolvedGrievancesByOfficeId(  (not appeal, rejected or closed, not forwarded to ao)
+
+sentToOtherOfficeCount  countDeclinedGrievancesByOfficeId( (not appeal, forwarded)
+
+
+//  untouched
+
+
+
+totalnew   countComplaintsByOfficeAndMediumOfSubmission(    (not appeal, medium)
+
+
+
+reportservice getGrievanceMonthlyReport    358 ->>>   318 ->>>>>  145 ->>>>>   97 line

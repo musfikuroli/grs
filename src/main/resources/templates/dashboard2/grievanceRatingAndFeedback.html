@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="grievanceRatingAndFeedback" th:remove="tag">
+    <div class="panel-body" style="background: white;">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover" id="ratingAndFeedbackTable">
+                <thead>
+                <tr>
+                    <th class="text-center">#</th>
+                    <th class="text-center" th:text="#{track.num}"></th>
+                    <th class="text-center" th:text="#{subject}"></th>
+                    <th class="text-center" th:text="#{service.name.table.header}"></th>
+                    <th class="text-center" th:text="#{type}"></th>
+                    <th class="text-center" th:text="#{rating.out.of.five}"></th>
+                    <th class="text-center" th:text="#{feedback}"></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>

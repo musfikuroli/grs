@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-content" th:fragment="viewCitizenCharter">
+    <div class="portlet light portlet-fit full-height-content bordered">
+        <div class="portlet-title" id="officeSelectionOptions">
+            <select id="officeLayers">
+                <option value="" selected style="display: none;" th:text="#{select.x(#{office.type})}"></option>
+                <option value="1" th:text="#{ministry-bivag}"></option>
+                <option value="2" th:text="#{directorate}"></option>
+                <option value="4" th:text="#{division}"></option>
+                <option value="5" th:text="#{district}"></option>
+                <option value="6" th:text="#{upazila}"></option>
+                <option value="7" th:text="#{other}"></option>
+            </select>
+            <select id="firstSelection" style="display: none;"></select>
+            <select id="secondSelection" style="display: none;"></select>
+            <select id="thirdSelection" style="display: none;"></select>
+            <button type="button" class="btn blue" id="viewCitizenChartersList" th:text="#{view.x(#{citizen.charter})}"></button>
+        </div>
+        <div class="portlet-body">
+            <div class="full-height-content-body">
+                <div class="table-responsive">
+                    <table id="listViewTable" class="table table-striped table-bordered table-hover table-checkable order-column">
+                        <thead>
+                            <tr>
+                                <th th:text="#{serial.no}"></th>
+                                <th th:text="#{service.name}"></th>
+                                <th th:text="#{type}"></th>
+                                <th th:text="#{service.procedure}"></th>
+                                <th th:text="#{document.and.location}"></th>
+                                <th th:text="#{service.time}"></th>
+                                <th th:text="#{service.price}"></th>
+                                <th th:text="#{edit}"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display: none;">
+        <div id="message-i18n-NAGORIK" th:attr="data-message=#{citizen}" ></div>
+        <div id="message-i18n-DAPTORIK" th:attr="data-message=#{official}" ></div>
+        <div id="message-i18n-STAFF" th:attr="data-message=#{internal}" ></div>
+    </div>
+</div>
+
+<div th:fragment="viewCitizenCharterIncludeScript" th:remove="tag">
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="assets/global/scripts/printThis.js"></script>
+</div>
+
+<script th:fragment="viewCitizenCharterScript">
+
+    function getLanguageVersion(object) {
+        return (languageCode == "en" ? object.nameEnglish : object.nameBangla);
+    }
+
+    function getFirstLayers(id) {
+        $.getJSON("/api/officelayers/" + id, function (result) {
+            $("#firstSelection").empty();
+            var opt = "";
+            if (languageCode == "en") {
+                opt = new Option("*** Select an Office ***", "");
+            } else {
+                opt = new Option("*** অফিস বাছাই করুন ***", "");
+            }
+
+            opt.setAttribute("style", "display: none;");
+            $("#firstSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#firstSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#firstSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getZilas() {
+        $.getJSON("/api/geo/districts", function (result) {
+            $("#firstSelection").empty();
+            var opt = "";
+            if (languageCode == "en") {
+                opt = new Option("*** Select a District ***", "");
+            } else {
+                opt = new Option("*** জেলা বাছাই করুন ***", "");
+            }
+            opt.setAttribute("style", "display: none;");
+            $("#firstSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#firstSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#firstSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function onGetUpazilaZilaSelectionChange() {
+        $.getJSON("/api/geo/upazilas/" + $("#firstSelection").val(), function (result) {
+            var opt = "";
+            $("#secondSelection").empty().hide();
+            $("#thirdSelection").empty().hide();
+            if (languageCode == "en") {
+                opt = new Option("*** Select an Upazila ***", "");
+            } else {
+                opt = new Option("--উপজেলা বাছাই করুন--", "");
+            }
+            opt.setAttribute("style", "display: none;");
+            $("#secondSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#secondSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#secondSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function GetOfficesByZila() {
+        $.getJSON("/api/officelayers/" + $('#officeLayers').val() + "/" + $("#firstSelection").val(), function (result) {
+            $("#secondSelection").empty();
+            var opt = "";
+            if (languageCode == "en") {
+                opt = new Option("--Select an Office--", "");
+            } else {
+                opt = new Option("--অফিস বাছাই করুন--", "");
+            }
+
+            opt.setAttribute("style", "display: none;");
+            $("#secondSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#secondSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#secondSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function GetOfficesByUpazila() {
+        $.getJSON("/api/officelayers/" + $('#officeLayers').val() + "/" + $("#firstSelection").val() + "/" + $("#secondSelection").val(), function (result) {
+            var opt = "";
+            $("#thirdSelection").empty();
+            if (languageCode == "en") {
+                opt = new Option("--Select an Office--", "");
+            } else {
+                opt = new Option("--অফিস বাছাই করুন--", "");
+            }
+            opt.setAttribute("style", "display: none;");
+            $("#thirdSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#thirdSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#thirdSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getDivisions() {
+        $.getJSON("/api/geo/division", function (result) {
+            var opt = "";
+            $("#firstSelection").empty();
+            if (languageCode == "en") {
+                opt = new Option("--Select a Division--", "");
+            } else {
+                opt = new Option("--বিভাগ বাছাই করুন--", "");
+            }
+            opt.setAttribute("style", "display: none;");
+            $("#firstSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#firstSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#firstSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function GetOfficesByDivision() {
+        $.getJSON("/api/officelayers/division/" + $("#officeLayers").val() + "/" + $("#firstSelection").val(), function (result) {
+            var opt = "";
+            $("#secondSelection").empty();
+            if (languageCode == "en") {
+                opt = new Option("--Select an Office--", "");
+            } else {
+                opt = new Option("--অফিস বাছাই করুন--", "");
+            }
+            opt.setAttribute("style", "display: none;");
+            $("#secondSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#secondSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#secondSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function clearAllSelection() {
+        $("#firstSelection").empty().hide();
+        $("#secondSelection").empty().hide();
+        $("#thirdSelection").empty().hide();
+    }
+
+    function getSelectedOfficeId() {
+        var officeLayerValue = $('#officeLayers').val();
+        var officeId;
+        switch (officeLayerValue) {
+            case "1":
+            case "2":
+            case "6":
+                officeId = $('#firstSelection').val();
+                break;
+            case "3":
+            case "4":
+                officeId = $('#secondSelection').val();
+                break;
+            case "5":
+                officeId = $('#thirdSelection').val();
+                break;
+            default:
+                return null;
+                break;
+        }
+        return officeId;
+    }
+
+    function isOfficeSelectionValid() {
+        var officeId = getSelectedOfficeId();
+        return officeId != null && officeId.length > 0;
+    }
+
+    function bindOfficeLayersChangeActions() {
+        $('#officeLayers').on("change", function () {
+            clearAllSelection();
+            switch (this.value) {
+                case "":
+                    break;
+                case "1":
+                    getFirstLayers("1");
+                    $("#firstSelection").off("change");
+                    break;
+                case "2":
+                    getFirstLayers("2");
+                    $("#firstSelection").off("change");
+                    break;
+                case "3":
+                    getDivisions("3");
+                    $("#firstSelection").off("change").on("change", GetOfficesByDivision);
+                    $("#secondSelection").off("change");
+                    break;
+                case "4":
+                    getZilas();
+                    $("#firstSelection").off("change").on("change", GetOfficesByZila);
+                    $("#secondSelection").off("change");
+                    break;
+                case "5":
+                    getZilas();
+                    $("#firstSelection").off("change").on("change", onGetUpazilaZilaSelectionChange);
+                    $("#secondSelection").off("change").on("change", GetOfficesByUpazila);
+                    break;
+                case "6":
+                    getFirstLayers("6");
+                    $("#firstSelection").off("change");
+                    break;
+            }
+        });
+    }
+
+    function loadCitizenChartersList(id, page) {
+        var currentPage = 1,
+        maxPage = 1,
+        searchSize = 100;
+        $("#ajaxProcessingModal").modal("show");
+        $("#currentPage").val(page);
+        $.ajax({
+            url: "/api/office/" + id +"/citizen-charters",
+            type: "GET",
+            data: {
+                "page": (page - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    toastr.info(languageCode == 'en' ? "Sorry! No data found" : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি", null, {positionClass: 'toast-top-center'});
+                    $(".pagination-panel-total").html(0);
+                    $("#currentPage").val(0);
+                    $(".prev, .next").addClass("disabled");
+                    $('#listViewTable').dataTable().fnClearTable();
+                    $("#ajaxProcessingModal").modal("hide");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $(".pagination-panel-total").html(totalPages);
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+                    $("#listViewTable_info").html(totalElements + " এর মধ্যে " + (number * dataSize + 1) + "-" + (number * dataSize + numberOfElements) + " এর  তথ্য দেখানো হচ্ছে");
+                    $('#listViewTable').dataTable().fnClearTable();
+                    $('#listViewTable').dataTable().fnAddData(response.content);
+                    $("#ajaxProcessingModal").modal("hide");
+                }
+            }
+        });
+    }
+
+    function initializeCitizenCharterList() {
+        var columnNameSuffix = languageCode == "en" ? "English" : "Bangla";
+        var columnConfigs = [{
+            data: "id"
+        }, {
+            data: "serviceName" + columnNameSuffix
+        }, {
+            data: function (row) {
+                return $("#message-i18n-" + row.serviceType).attr("data-message");
+            }
+        }, {
+            data: "serviceProcedure" + columnNameSuffix
+        }, {
+            data: "documentAndLocation" + columnNameSuffix
+        }, {
+            data: function (row) {
+                var serviceTime = row.serviceTime ?  ("" + row.serviceTime) : "0";
+                return (languageCode == "en" ? (serviceTime + " workdays") : (serviceTime.toBanglaNumber() + " কর্মদিবস"));
+            }
+        }, {
+            data: "paymentMethod" + columnNameSuffix
+        }, {
+            data: function(row) {
+                return "<a href='editCitizenCharter.do?id=" + row.id + "' class='fa fa-edit btn btn-circle btn-xs btn-primary'></a>";
+            }
+        }];
+        $("#listViewTable").dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": languageCode == 'en' ? "Sorry! No data found" : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": languageCode == 'en' ? "Filter: " : "ফিল্টার: ",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bPaginate": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": true,
+            "columnDefs": [{
+                'orderable': false,
+                'targets': [7]
+            }, {
+                "searchable": false,
+                "targets": [0, 7]
+            }, {
+                targets: [0],
+                orderData: [0]
+            }],
+            columns: columnConfigs,
+            "order": [
+                [0, "asc"]
+            ]
+        });
+    }
+
+    function enableDisableListViewButton() {
+        $("#viewCitizenChartersList").attr("disabled", "disabled");
+        $("#officeSelectionOptions").on("change", "select", function() {
+            if(isOfficeSelectionValid()) {
+                $("#viewCitizenChartersList").removeAttr("disabled");
+            } else {
+                $("#viewCitizenChartersList").attr("disabled", "disabled");
+            }
+        });
+    }
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    $(document).ready(function () {
+        bindOfficeLayersChangeActions();
+        enableDisableListViewButton();
+        initializeCitizenCharterList();
+        $("#viewCitizenChartersList").on("click", function() {
+            if(!isOfficeSelectionValid()) {
+                toastr.error("Invalid Office Selection", null, {positionClass: 'toast-top-center'});
+            } else {
+                loadCitizenChartersList(getSelectedOfficeId(), 1);
+            }
+        });
+    });
+</script>

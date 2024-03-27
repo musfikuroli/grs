@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="addOfficialGrievancesIncludeStyle" th:remove="tag">
+    <div th:replace="fileUpload :: fileUploadIncludeStyle"> </div>
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/css/bootstrap-toggle.min.css" rel="stylesheet">
+</div>
+
+
+<div class="page-content" th:fragment="addOfflineGrievances">
+    <h3 class="page-title" id="addGrievanceTitle" th:text="#{grievance.submission.form.offline}"></h3>
+
+    <a href="/registrationFromUpload.do" class="btn btn-lg default">নাগরিক অভিযোগ আপলোড <i class="fa fa-users"></i></a>
+    <a href="/addAnonymousGrievanceGRO.do" class="btn btn-lg red">অজ্ঞাতনামা হিসেবে নাগরিক অভিযোগ আপলোড <i class="fa fa-user-secret"></i></a>
+
+</div>
+
+<div th:fragment="addOfflineGrievancesIncludeScript" th:remove="tag">
+    <script src="/assets/pages/scripts/form-fileupload.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-summernote/summernote.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/bootstrap-toggle.min.js"></script>
+    <script src="assets/global/scripts/printThis.js"></script>
+</div>
+
+<script th:fragment="addOfflineGrievancesScript">
+
+        $(document).ready(function() {
+
+        });
+</script>

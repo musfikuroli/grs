@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="fieldLevelCoordinator" th:remove="tag">
+    <input type="hidden" name="isDivisionLevelFC" th:value="${isDivisionLevelFC}">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="lg-rectbox">
+                <div class="lg-rectbox-header-blue2">
+                </div>
+                <div class="lg-rectbox-body">
+                    <h3 class="text-center lg-rectbox-heading" style="color:#5653ba"><span th:text="${currentMonthYear}" th:remove="tag"></span> মাসের <span th:text="${isDivisionLevelFC ? 'বিভাগীয়' : 'জেলা'}" th:remove="tag"></span> দপ্তরসমূহের অভিযোগ নিষ্পত্তির চিত্র</h3>
+                    <div class="row">
+                        <div class="col-12 py-2" th:classappend="${isDistrictLevelFC ? 'col-sm-6' : 'col-sm-4'}">
+                            <div class="md-rectbox border-dark-blue">
+                                <h3 class="text-center md-heading">প্রাপ্ত অভিযোগের অবস্থা</h3>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 py-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">মোট প্রাপ্ত অভিযোগ</h3>
+                                            <button type="button" id="fieldCoordinatorTotalGrievance" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5 py-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">সময় অতিক্রান্ত</h3>
+                                            <button type="button" id="fieldCoordinatorTimeExpiredGrievance" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="sm-box-1 h-100 py-2 text-center sm-min-height2">
+                                            <h3 class="text-center sm-heading">নিষ্পত্তিকৃত অভিযোগ</h3>
+                                            <button type="button" id="fieldCoordinatorResolvedGrievance" class="btn btn-type3">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${isDivisionLevelFC}" class="col-sm-4 col-12 py-2">
+                            <div class="md-rectbox border-dark-blue">
+                                <h3 class="text-center md-heading">প্রাপ্ত আপিলের অবস্থা</h3>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-right-5 py-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">মোট আপিল</h3>
+                                            <button type="button" id="fieldCoordinatorTotalAppeal" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-12  text-center padding-left-5 py-2">
+                                        <div class="sm-box-1 h-100">
+                                            <h3 class="text-center sm-heading">সময় অতিক্রান্ত</h3>
+                                            <button type="button" id="fieldCoordinatorTimeExpiredAppeal" class="btn">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="sm-box-1 h-100 py-2 text-center sm-min-height2">
+                                            <h3 class="text-center sm-heading">নিষ্পত্তিকৃত আপিল</h3>
+                                            <button type="button" id="fieldCoordinatorResolvedAppeal" class="btn btn-type3">০</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 py-2" th:classappend="${isDistrictLevelFC ? 'col-sm-6' : 'col-sm-4'}">
+                            <div class="md-rectbox2 border-assh py-2">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-12">
+                                        <div class="list-group right-list-group">
+                                            <div class="list-group-item">
+                                                <span class="list-icon"><img src="/assets/global/img/dashboard/grievance-resolve-rate.png"></span>অভিযোগ নিষ্পত্তির হার<span class="item-count">(<span id="fieldCoordinatorGrievanceResolveRate">০.০</span>%)</span>
+                                            </div>
+                                            <div th:if="${isDivisionLevelFC}" class="list-group-item">
+                                                <span class="list-icon"><img src="/assets/global/img/dashboard/grievance-appeal-rate.png"></span>আপিল নিষ্পত্তির হার<span class="item-count">(<span id="fieldCoordinatorAppealResolveRate">০.০</span>%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="font-lg text-center"><span th:text="${currentMonthYear}" th:remove="tag"></span> মাসের <span th:text="${isDivisionLevelFC ? 'বিভাগীয়' : 'জেলা'}" th:remove="tag"></span> দপ্তরসমূহের তালিকা</div>
+    <br>
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body">
+            <div class="table-scrollable">
+                <table class="table table-bordered table-striped table-hover" id="fieldCoordinatorDataTable">
+                    <thead>
+                    <tr>
+                        <th class="text-center">ক্রমিক</th>
+                        <th class="text-center">জেলা/বিভাগের দপ্তরের নাম</th>
+                        <th class="text-center">মোট অভিযোগ</th>
+                        <th class="text-center">অভিযোগ নিষ্পত্তির হার</th>
+                        <th class="text-center">সময় অতিক্রান্ত অভিযোগ</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td colspan="5" class="text-center">কোনো তথ্য নেই</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

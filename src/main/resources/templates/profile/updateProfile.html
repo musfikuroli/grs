@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="updateProfileIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="/assets/global/css/lightbox.css" rel="stylesheet" type="text/css" />
+</div>
+
+
+<div class="page-content" th:fragment="updateProfile">
+    <buttton id="enabler" href="#" onclick="javascript:makeFormEditable(); " class="btn green pull-right"></buttton>
+    <h3 class="page-title" id="addGrievanceTitle" th:text="#{my.profile}"></h3>
+    <div class="portlet-body form">
+        <form action="#" class="form-horizontal" id="registrationForm" method="POST" accept-charset="UTF-8">
+            <div class="form-wizard">
+                <div class="form-body">
+
+                    <div class="form-group">
+                        <label class="control-label col-md-4" id="phoneNumberLabel"> <span th:text="#{registration.form.mobile}"></span><span class="required" aria-required="true">*</span></label>
+                        <div class="col-md-4">
+                            <input class="form-control" id="phoneNumber" name="phoneNumber" type="text">
+                        </div>
+                    </div>
+
+                    <div id="divRest">
+                        <div class="form-group">
+                            <label class="control-label col-md-4" id="nameLabel"> <span th:text="#{registration.form.fullname}"></span><span class="required" aria-required="true">*</span></label>
+                            <div class="col-md-4">
+                                <input class="form-control" id="name" name="name" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" th:text="#{registration.form.nationality}"></label>
+                            <div class="col-md-8">
+                                <select id="nationality" name="nationality" class="select2 form-control input-inline select2-hidden-accessible" tabindex="-1" aria-hidden="true"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-4" style="text-align: right;">
+                                <select disabled="disabled" name="identificationType" class="form-control display-inline-block width" style="width: 160px" id="identificationSelect" tabindex="-1" aria-hidden="true">
+                                    <option value="NID" th:text="#{registration.form.nid}" selected></option>
+                                    <option value="BCN" th:text="#{registration.form.birthcertificate}"></option>
+                                    <option value="PASSPORT" th:text="#{registration.form.passport}"></option>
+                                </select><span class="required" aria-required="true">*</span>
+                            </div>
+                            <div class="col-md-4">
+                                <input class="form-control" id="identificationValue" name="identificationValue" type="text" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4" id="emailLabel"> <span th:text="#{registration.form.email}"></span><span class="required" id="emailRequired" aria-required="true">*</span></label>
+                            <div class="col-md-4">
+                                <input class="form-control" id="email" name="email" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4" id="birthdateLabel" th:text="#{registration.form.birthdate}"></label>
+                            <div class="col-md-4">
+                                <div class="input-group date" id="birthdate">
+                                    <input class="form-control" data-date-end-date="0d" name="birthDate" type="text">
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-calendar"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4" id="occupationLabel" th:text="#{registration.form.occupation}"></label>
+                            <div class="col-md-4">
+                                <select class="select2 form-control input-inline select2-hidden-accessible" id="occupation" name="occupation" tabindex="-1" aria-hidden="true">
+                                    <option selected="" style="display: none;" value="" th:text="#{choose.occupation.type}"></option>
+                                    <option th:value="#{occupation.type.business}" th:text="#{occupation.type.business}"></option>
+                                    <option th:value="#{occupation.type.govt.service}" th:text="#{occupation.type.govt.service}"></option>
+                                    <option th:value="#{occupation.type.private.service}" th:text="#{occupation.type.private.service}"></option>
+                                    <option th:value="#{occupation.type.retired}" th:text="#{occupation.type.retired}"></option>
+                                    <option th:value="#{occupation.type.housewife}" th:text="#{occupation.type.housewife}"></option>
+                                    <option th:value="#{occupation.type.student}" th:text="#{occupation.type.student}"></option>
+                                    <option th:value="#{occupation.type.others}" th:text="#{occupation.type.others}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4" id="educationLabel" th:text="#{registration.form.education}"></label>
+                            <div class="col-md-4">
+                                <select class="select2 form-control input-inline select2-hidden-accessible" id="education" name="education" tabindex="-1" aria-hidden="true">
+                                    <option selected="" style="display: none;" value="" th:text="#{choose.education.level}"></option>
+                                    <option th:value="#{education.type.illiterate}" th:text="#{education.type.illiterate}"></option>
+                                    <option th:value="#{education.type.literate}" th:text="#{education.type.literate}"></option>
+                                    <option th:value="#{education.type.pec}" th:text="#{education.type.pec}"></option>
+                                    <option th:value="#{education.type.jsc}" th:text="#{education.type.jsc}"></option>
+                                    <option th:value="#{education.type.ssc}" th:text="#{education.type.ssc}"></option>
+                                    <option th:value="#{education.type.hsc}" th:text="#{education.type.hsc}"></option>
+                                    <option th:value="#{education.type.honors}" th:text="#{education.type.honors}"></option>
+                                    <option th:value="#{education.type.masters}" th:text="#{education.type.masters}"></option>
+                                    <option th:value="#{education.type.phd}" th:text="#{education.type.phd}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4" id="genderLabel" th:text="#{registration.form.gender}"></label>
+                            <div class="col-md-4">
+                                <div class="mt-radio-inline">
+                                    <label class="mt-radio">
+                                        <input name="gender" value="FEMALE" type="radio" th:text="#{registration.form.gender.female}">
+                                        <span></span>
+                                    </label>
+                                    <label class="mt-radio">
+                                        <input name="gender" value="MALE" type="radio" th:text="#{registration.form.gender.male}">
+                                        <span></span>
+                                    </label>
+                                    <label class="mt-radio">
+                                        <input name="gender" value="OTHERS" type="radio" th:text="#{registration.form.gender.others}">
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="divPinNumber" class="form-group">
+                            <div class="form-group" id="changePassLabel" style="display: none">
+                                <a class="change-password col-md-8" href="javascript:;" onclick="changeVisibility('passwordChangeDiv')" id="change-password" th:text="#{registration.form.change.pin}" style="text-align: center"></a>
+                            </div>
+                            <div id="passwordChangeDiv" style="display: none">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4"><span >বর্তমান পাসওয়ার্ড</span></label>
+                                    <div class="col-md-4">
+                                        <input class="form-control" id="pinNumber" name="oldPassword" type="password">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4"><span >নতুন পাসওয়ার্ড</span></label>
+                                    <div class="col-md-4">
+                                        <input class="form-control" id="newPinNumber" name="newPassword" type="password">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <h3 class="page-title" id="permanentAddressLabel" th:text="#{registration.form.permanent.address.title}"></h3>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label"><th:block th:text="#{country}"></th:block></label>
+                            <div class="col-md-8">
+                                <select id="permanentAddressCountry" name="permanentAddressCountryId" class="select2 form-control input-inline select2-hidden-accessible" tabindex="-1" aria-hidden="true"></select>
+                            </div>
+                        </div>
+
+                        <div id="foreignPermanentAddress">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label" id="foreignPermanentAddressLine1Label"> <th:block th:text="#{address.single.line}"></th:block><span class="required" aria-required="true">*</span></label>
+                                <div class="col-md-8">
+                                    <input class="form-control" id="foreignPermanentAddressLine1" name="foreignPermanentAddressLine1" type="text">
+                                </div>
+                                <span style="color: red;clear:both;"></span>
+                                <br />
+                                <br />
+                                <label class="col-md-3 control-label hide" id="foreignPermanentAddressLine2Label"><th:block th:text="#{address.single.line}"></th:block><span class="required" aria-required="true">*</span></label>
+                                <div class="col-md-8 col-md-offset-3">
+                                    <input class="form-control" id="foreignPermanentAddressLine2" name="foreignPermanentAddressLine2" type="text">
+                                </div>
+                                <span style="color: red;"></span>
+                            </div>
+                        </div>
+
+                        <div id="bdPermanentAddress">
+                            <div class="form-group">
+                                <label class="col-md-4 control-label" id="permanentAddressHouseLabel"><span class="required" aria-required="true">*</span></label>
+                                <div class="col-md-8">
+                                    <input class="form-control" id="permanentAddressHouse" name="permanentAddressHouse" type="text">
+                                </div>
+                                <span style="color: red;clear:both;"></span>
+                                <br />
+                                <br />
+                                <label class="col-md-4 control-label hide" id="permanentAddressStreetLabel"><span class="required" aria-required="true">*</span></label>
+                                <div class="col-md-8 col-md-offset-4">
+                                    <input class="form-control" id="permanentAddressStreet" name="permanentAddressStreet" type="text">
+                                </div>
+                                <span style="color: red;"></span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="form-actions" id="btnRegister">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="pull-right">
+                                <buttton class="btn green" href="#" onclick="javascript:updateComplainant(); " th:text="#{update}"></buttton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="updateProfileIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/additional-methods.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js" type="text/javascript"></script>
+</div>
+
+<script th:fragment="updateProfileScript" th:inline="javascript">
+
+    var isFormSubmitted = false;
+    var banglaToEnglishDigitMapping = {
+        '০': 0,
+        '১': 1,
+        '২': 2,
+        '৩': 3,
+        '৪': 4,
+        '৫': 5,
+        '৬': 6,
+        '৭': 7,
+        '৮': 8,
+        '৯': 9
+    };
+
+    function ajaxPut(url, accept, send, postData, onSuccess) {
+        $.ajax({
+            type: "PUT",
+            url: url,
+            dataType: accept,
+            contentType: send,
+            data: postData,
+            success: onSuccess
+        });
+    }
+
+    function changeVisibility(id) {
+        $("#" + id).show();
+    }
+
+
+    function convertFromBanglaNumToEnglish(input) {
+        var output = [];
+        for (var i = 0; i < input.length; ++i) {
+            if (banglaToEnglishDigitMapping.hasOwnProperty(input[i])) {
+                output.push(banglaToEnglishDigitMapping[input[i]]);
+            } else {
+                output.push(input[i]);
+            }
+        }
+        return output.join('');
+    }
+
+
+
+    function showMessageHandler(result) {
+        closeLoading();
+        if (result.success) {
+            showSuccess(result.message);
+        } else {
+            showError(result.message);
+        }
+    }
+
+    function getComplainantDTO() {
+        var array = $('#registrationForm :input').serializeArray();
+        var user = {};
+        $.each(array, function() {
+            user[this.name] = this.value || '';
+        });
+
+        if (user['permanentAddressCountryId'] == '15') {
+
+            user['foreignPermanentAddressLine1'] = null;
+            user['foreignPermanentAddressLine2'] = null;
+        } else {
+
+            user['permanentAddressTypeValue'] = null;
+            user['permanentAddressHouse'] = null;
+            user['permanentAddressStreet'] = null;
+            user['Id'] = null;
+            user[''] = null;
+            user[''] = null;
+
+            user['Id'] = null;
+            user[''] = null;
+            user[''] = null;
+
+        }
+
+        var user = JSON.stringify(user);
+        return user;
+    }
+
+    function onRegistrationSuccess(result) {
+        closeLoading();
+        isFormSubmitted = true;
+        swal({
+            title: "",
+            text: result.message,
+            type: result.success == true ? "info" : "error",
+            showCancelButton: true,
+            confirmButtonClass: "btn-success",
+            confirmButtonText: "অন্য পৃষ্ঠায় যান",
+            cancelButtonText: "বাতিল",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm) {
+            if (isConfirm) {
+                window.location.href = "/viewGrievances.do";
+            } else {
+                swal.close();
+                window.location.reload();
+            }
+        });
+        /*showSuccess(result.message);
+        window.setTimeout(function() {
+            window.history.go(-1);
+        }, 1000);*/
+    }
+
+    function populateNationalityCountry(data) {
+        getJson("/api/geo/countries", function(result) {
+            $("#nationality").empty();
+            $("#permanentAddressCountry").empty();
+
+            $.each(result, function(i, field) {
+                if (jsLangCodeForLibs == "en") {
+                    $("#nationality").append(new Option(field.nationalityEng, field.id));
+                    $("#permanentAddressCountry").append(new Option(field.countryNameEng, field.id));
+                } else {
+                    $("#nationality").append(new Option(field.nationalityBng, field.id));
+                    $("#permanentAddressCountry").append(new Option(field.countryNameBng, field.id));
+                }
+            });
+
+            $("#nationality").val(data.nationality);
+            $("#permanentAddressCountry").val(data.permanentAddressCountryId);
+
+            $("#nationality").trigger('change');
+
+            $("#permanentAddressCountry").trigger('change');
+        });
+    }
+
+    function populateOccupationsList(data) {
+        getJson("/api/occupations", function(result) {
+            $("#occupation").empty();
+            if (jsLangCodeForLibs == "en") {
+                $("#occupation").append(new Option("--Choose your occupation--", ""));
+            } else {
+                $("#occupation").append(new Option("--পেশা বাছাই করুন--", ""));
+            }
+
+            $.each(result, function(i, field) {
+                if (jsLangCodeForLibs == "en") {
+                    $("#occupation").append(new Option(field.occupationEnglish, field.occupationEnglish));
+                } else {
+                    $("#occupation").append(new Option(field.occupationBangla, field.occupationBangla));
+                }
+            });
+            $("#occupation").val(data.occupation)
+            $("#occupation").trigger('change');
+        });
+    }
+
+    function populateEducationalQualificationsList(data) {
+        getJson("/api/educations", function(result) {
+            $("#education").empty();
+            if (jsLangCodeForLibs == "en") {
+                $("#education").append(new Option("--Choose your education level--", ""));
+            } else {
+                $("#education").append(new Option("--শিক্ষাগত যোগ্যতা বাছাই করুন--", ""));
+            }
+
+            $.each(result, function(i, field) {
+                if (jsLangCodeForLibs == "en") {
+                    $("#education").append(new Option(field.educationEnglish, field.educationEnglish));
+                } else {
+                    $("#education").append(new Option(field.educationBangla, field.educationBangla));
+                }
+            });
+            $("#education").val(data.education);
+            $("#education").trigger('change');
+        });
+
+    }
+
+    function init() {
+        $('#permanentAddressCountry').select2({
+            width: '267px',
+            placeholder: "Select Country",
+            language: jsLangCodeForLibs
+        });
+
+        $('#nationality').select2({
+            width: '267px',
+            placeholder: "Select Nationality",
+            language: jsLangCodeForLibs
+        });
+
+        $("#birthdate").datepicker({
+            format: "dd/mm/yyyy",
+            startView: 2,
+            autoclose: true,
+            language: jsLangCodeForLibs,
+            endDate: "-4745d",
+            beforeShowDay: function(date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getDate()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowYear: function(date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowDecade: function(date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowCentury: function(date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            }
+        });
+
+        $('.summernote').summernote({
+            height: 100,
+            toolbar: [
+                ['style', ['bold', 'italic', 'underline', 'clear', 'fontname']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['Insert', ['table', 'hr']],
+                ['Misc', ['undo', 'redo']]
+            ]
+        });
+
+        $('.select2').select2({
+            width: '267px',
+            language: jsLangCodeForLibs
+        });
+
+        $('#nationality').on('change', function() {
+            $("#identificationSelect").empty();
+            if ($('#nationality').val() == '15') {
+                if (jsLangCodeForLibs == "bn") {
+                    $("#identificationSelect").append(new Option("জাতীয় পরিচয়পত্র নম্বর", "NID"));
+                    $("#identificationSelect").append(new Option("জন্মনিবন্ধন সনদ নম্বর", "BCN"));
+                    $("#identificationSelect").append(new Option("পাসপোর্ট নম্বর", "PASSPORT"));
+                } else {
+                    $("#identificationSelect").append(new Option("National ID", "NID"));
+                    $("#identificationSelect").append(new Option("Birth certificate number", "BCN"));
+                    $("#identificationSelect").append(new Option("Passport number", "PASSPORT"));
+                }
+                $("#emailRequired").hide();
+            } else {
+                if (jsLangCodeForLibs == "bn") {
+                    $("#identificationSelect").append(new Option("পাসপোর্ট নম্বর", "PASSPORT"));
+                } else {
+                    $("#identificationSelect").append(new Option("Passport number", "PASSPORT"));
+                }
+                $("#emailRequired").show();
+            }
+
+        });
+
+        $("#permanentAddressCountry").on('change', function() {
+            if (this.value == '15') {
+                $('#bdPermanentAddress').show();
+                $('#foreignPermanentAddress').hide();
+            } else {
+                $('#bdPermanentAddress').hide();
+                $('#foreignPermanentAddress').show();
+            }
+        });
+    }
+
+    function hideAddressDiv() {
+        $("#bdPermanentAddress").hide();
+        $("#foreignPermanentAddress").hide();
+    }
+
+
+    function doProcess() {
+
+
+    };
+
+    function ajaxPost(url, accept, send, postData, onSuccess) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: accept,
+            contentType: send,
+            data: postData,
+            success: onSuccess,
+            error: function(jqXHR, exception) {
+                showError("Sorry, Something Went Wrong. Try again later.");
+                console.log(jqXHR);
+                console.log(exception);
+            }
+        });
+    }
+
+
+
+    function getJson(url, onGettingJson) {
+        $.getJSON(url, onGettingJson);
+    }
+
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function showSuccess(msg) {
+        toastr.success(msg);
+    }
+
+    function showError(msg) {
+        toastr.error(msg);
+    }
+
+    function showLoading() {
+        $("#ajaxProcessingModal").modal('show');
+    }
+
+    function closeLoading() {
+        $("#ajaxProcessingModal").modal('hide');
+    }
+
+
+    function validateForm(isEmailRequired) {
+        var form = $('#registrationForm');
+        var error = $('.alert-danger', form);
+        var success = $('.alert-success', form);
+        var requiredText = "";
+        var min = 0;
+        var max = 0;
+        var nidBCPass = $("#identificationSelect").val();
+
+        if (languageCode == "en") {
+            requiredText = "This field is required";
+        } else {
+            requiredText = "এই তথ্যটি প্রদান করা আবশ্যক";
+        }
+
+        if (nidBCPass == "PASSPORT") {
+            min = 9;
+            max = 9;
+        } else if (nidBCPass == "BCN") {
+            min = 17;
+            max = 17;
+        } else if (nidBCPass == "NID") {
+            min = 10;
+            max = 17;
+        }
+
+        var minBng = (min + "").toBanglaNumber();
+        var maxBng = (max + "").toBanglaNumber();
+
+        form.validate().destroy();
+        jQuery.validator.addMethod("regex", function(value, element, regexPattern) {
+            if (element.id == "phoneNumber") {
+                value = convertFromBanglaNumToEnglish(value);
+            }
+            return this.optional(element) || regexPattern.test(value);
+        }, 'অনুগ্রহ করে যথাযথ ভ্যালু সরবরাহ করুন');
+
+        form.validate({
+            doNotHideMessage: true,
+            errorElement: 'span',
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false,
+            rules: {
+                phoneNumber: {
+                    minlength: 11,
+                    maxlength: 11,
+                    required: true,
+                    regex: /^[0][1][5-9]\d{8}$/
+                },
+                pinNumber: {
+                    minlength: 6,
+                    required: true
+                },
+                name: {
+                    minlength: 3,
+                    required: true
+                },
+                identificationValue: {
+                    minlength: min,
+                    maxlength: max,
+                    required: true,
+                    regex: /([a-zA-Z]{2}\d{7})|(\d{17})|(\d{10})|(\d{13})|([০-৯]{17})|([০-৯]{10})|([০-৯]{13})|([a-zA-Z]{2}[0-9০-৯]{7})$/
+                },
+                nidOrBcn: {
+                    required: true
+                },
+                permanentAddressHouse: {
+                    required: true
+                },
+                foreignPermanentAddressLine1: {
+                    required: true
+                },
+                email: {
+                    required: isEmailRequired,
+                    email: true
+                }
+            },
+
+            messages: {
+                phoneNumber: {
+                    minlength: jQuery.validator.format("কমপক্ষে ১১ সংখ্যা প্রয়োজন"),
+                    maxlength: jQuery.validator.format("সর্বোচ্চ ১১ সংখ্যা প্রদান করুন"),
+                    required: requiredText,
+                    regex: "অনুগ্রহ করে সঠিক ফোন নম্বর প্রদান করুন"
+                },
+                pinNumber: {
+                    required: requiredText
+                },
+                name: {
+                    required: requiredText
+                },
+                identificationValue: {
+                    minlength: jQuery.validator.format("কমপক্ষে " + minBng + " অক্ষর/সংখ্যা প্রয়োজন"),
+                    maxlength: jQuery.validator.format("সর্বোচ্চ " + maxBng + " অক্ষর/সংখ্যা প্রদান করুন"),
+                    required: requiredText
+                },
+                nidOrBcn: {
+                    required: requiredText
+                },
+                permanentAddressHouse: {
+                    required: requiredText
+                },
+                foreignPermanentAddressLine1: {
+                    required: requiredText
+                },
+                email: {
+                    required: requiredText
+                }
+            },
+
+            errorPlacement: function(error, element) {
+                if (element.attr("name") == "permanentAddressTypeValue") {
+                    error.insertAfter("#permanentAddressTypeValueDiv");
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+
+            invalidHandler: function(event, validator) {
+                success.hide();
+                error.show();
+                App.scrollTo(error, -200);
+            },
+
+            highlight: function(element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+
+            unhighlight: function(element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+
+            success: function(label) {
+                label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+            },
+
+            submitHandler: function(form) {
+                success.show();
+                error.hide();
+            }
+        });
+        return form;
+    }
+
+    function loadProfile() {
+        var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন" ;
+        $.blockUI({
+            message: '<h1><img src="/assets/global/img/loading-spinner-grey.gif" />  ' + msg + '</h1>'
+        });
+
+        $.ajax({
+            url: "/api/complainant",
+            type: 'GET',
+            success: function(res) {
+                doAutopopulate(res);
+                $.unblockUI();
+            },
+            error: function(res) {
+                $.unblockUI();
+            }
+        });
+
+    }
+
+    function doAutopopulate(data) {
+        $.each(data, function(name, value) {
+            $('input[type=text][name=' + name + ']').val(value);
+        });
+        var gender =  data['gender'];
+        if(gender){
+            $("input[name=gender][value=" + data['gender'] + "]").prop('checked', true);
+        }
+        $("input[name=nationality][value=" + data['nationality'] + "]").prop('checked', true);
+
+
+        populateOccupationsList(data);
+        populateEducationalQualificationsList(data);
+
+        populateNationalityCountry(data);
+
+    }
+
+    function bindMyEvents() {
+        $("#identificationValue").blur(function(e) {
+            e.preventDefault();
+            $(this).closest('.form-group').removeClass("has-error");
+            $("#identificationValue-error").remove();
+            if ($("#identificationSelect").val() == "NID") {
+                if ($(this).val().trim().length != 10 && $(this).val().trim().length != 13 && $(this).val().trim().length != 17) {
+                    $(this).closest('.form-group').addClass("has-error");
+                    if (jsLangCodeForLibs == "en") {
+                        $(this).after('<span id="identificationValue-error" class="help-block help-block-error" style="display: block;">National ID must be either 10, 13 or 17 digits</span>');
+                    } else {
+                        $(this).after('<span id="identificationValue-error" class="help-block help-block-error" style="display: block;">জাতীয় পরিচয়পত্র নম্বর ১০, ১৩ অথবা ১৭ অংকের সংখ্যা হতে হবে</span>');
+                    }
+                }
+            } else if ($("#identificationSelect").val() == "BCN") {
+                if ($(this).val().trim().length != 17) {
+                    $(this).closest('.form-group').addClass("has-error");
+                    if (jsLangCodeForLibs == "en") {
+                        $(this).after('<span id="identificationValue-error" class="help-block help-block-error" style="display: block;">Birth certificate number must be 17 digits</span>');
+                    } else {
+                        $(this).after('<span id="identificationValue-error" class="help-block help-block-error" style="display: block;">জন্মনিবন্ধন সনদ নম্বর ১৭ অংকের সংখ্যা হতে হবে</span>');
+                    }
+                }
+            } else {
+                if ($(this).val().trim().length != 9) {
+                    $(this).closest('.form-group').addClass("has-error");
+                    if (jsLangCodeForLibs == "en") {
+                        $(this).after('<span id="identificationValue-error" class="help-block help-block-error" style="display: block;">Passport number must be 9 characters</span>');
+                    } else {
+                        $(this).after('<span id="identificationValue-error" class="help-block help-block-error" style="display: block;">পাসপোর্ট নম্বর ৯ অক্ষর হতে হবে</span>');
+                    }
+                }
+            }
+        });
+    }
+
+
+
+
+    function updateComplainant() {
+        $("#btnRegister").hide(function() {
+            var form = validateForm(($('#nationality').val() != '15'));
+            if (form.valid() == false) {
+                $("#btnRegister").show();
+                return;
+            } else {
+
+            }
+            window.onbeforeunload = null;
+            var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+            $.blockUI({
+                message: '<h1><img src="/assets/global/img/loading-spinner-grey.gif" />  ' + msg + '</h1>'
+            });
+            var user = getComplainantDTO();
+            ajaxPut("/api/profile", "json", "application/json", user, onRegistrationSuccess);
+        });
+    }
+
+    function makeFormEditable() {
+        $("select").prop('disabled', false);
+        $("input").prop('disabled', false);
+        $("#enabler").hide();
+        $("#btnRegister").show();
+        changeVisibility("changePassLabel");
+        bindMyEvents();
+    }
+
+    $(document).ready(function() {
+        init();
+        hideAddressDiv();
+        loadProfile();
+        doProcess();
+        $("#btnRegister").hide();
+        window.onbeforeunload = function() {
+            return true;
+        };
+        $("select").prop('disabled', true);
+        $("input").prop('disabled', true);
+        $("#enabler").text(languageCode == "en" ? "Edit" : "সম্পাদনা");
+    });
+</script>

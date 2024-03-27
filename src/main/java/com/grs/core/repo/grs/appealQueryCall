@@ -1,0 +1,22 @@
+
+ascertain  getAppealsAscertainCountOfPreviousMonth
+
+totalSubmitted  countTotalAppealsByOfficeId
+
+
+
+
+
+timeexpired  countTimeExpiredAppealsByOfficeId
+
+running countRunningAppealsByOfficeId
+
+medium countAppealsByOfficeAndMediumOfSubmission
+
+
+// untouched
+
+
+resolvedCount  countResolvedAppealsByOfficeId
+
+

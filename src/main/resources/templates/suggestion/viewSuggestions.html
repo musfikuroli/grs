@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-content" th:fragment="viewSuggestions">
+    <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="icon-bubbles "></i>
+                <span class="modulename modulename-hide-on-mobile caption-subject bold" th:text="${officeName}"></span>
+                <span class="modulename modulename-hide-on-mobile caption-helper" th:text="#{suggestion.list}"></span>
+            </div>
+            <input type="hidden" name="officeId" th:value="${officeId}">
+            <input type="hidden" name="officeName" th:value="${officeName}">
+            <input type="hidden" name="isDrilledDown" th:value="${isDrilledDown}">
+            <div class="actions">
+               <a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;" data-original-title="" title=""> </a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="subordinate-office-selection">
+                    <label class="control-label col-md-4 font-lg">
+                        <span class="pull-right">আওতাধীন দপ্তরসমূহের পরামর্শের তালিকা দেখতে দপ্তর বাছাই করুন</span>
+                    </label>
+                    <div class="col-md-3">
+                        <select name="subOfficeId" class="select2 form-control input-inline" data-width="300px"></select>
+                    </div>
+                </div>
+                <div class="btn-toolbar">
+                    <a class="btn btn-outline btn-info" id="viewSubOfficesSuggestions">
+                        <i class="fa fa-list"></i>&nbsp;
+                        <span>পরামর্শের তালিকা দেখুন</span>
+                    </a>
+                    <a th:if="${isDrilledDown}" class="btn btn-outline btn-danger" onclick="window.history.go(-1)">
+                        <i class="fa fa-mail-reply-all"></i>&nbsp;
+                        <span>পূর্ববর্তী পেইজ</span>
+                    </a>
+                    <a th:if="${isDrilledDown}" class="btn btn-outline btn-success" href="/viewSuggestions.do">
+                        <i class="fa fa-home"></i>&nbsp;
+                        <span>নিজস্ব দপ্তরের পরামর্শের তালিকা</span>
+                    </a>
+                </div>
+            </div>
+            <div class="full-height-content-body">
+                <table class="table table-striped table-bordered table-hover " id="tblListView1">
+                    <thead>
+                    <tr>
+                        <th th:text="#{serial}"> </th>
+                        <th th:text="#{date.of.suggestion}"> </th>
+                        <th th:text="#{office.name}"></th>
+                        <th th:text="#{service.name}"></th>
+                        <th th:text="#{suggestion.subject}"></th>
+                        <th th:text="#{suggestion.current.status}"></th>
+                        <th th:text="#{suggestion}"></th>
+                        <th th:text="#{effect.on.improvement}"></th>
+                    </tr>
+                    </thead>
+                    <tbody style="cursor:pointer" ></tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-5 col-md-5">
+                        <div class="dataTables_info" id="tblListView1_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                    </div>
+                    <div class="col-md-7 col-sm-7">
+                        <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                            <div class="pagination-panel pull-right">
+                                <span th:text="#{page}"></span>
+                                <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                                <span th:text="#{of}"></span>
+                                <a href="javascript:;" class="btn btn-sm default prev disabled">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+                                <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPage" value="০" type="text">
+                                <a href="javascript:;" class="btn btn-sm default next disabled">
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                                <span th:text="#{page.shown}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"> &nbsp;&nbsp; </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade bs-modal-lg" id="modalSuggestionDetails" tabindex="-1" role="basic" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title text-center font-purple" th:text="#{detailed.suggestion}"></h4>
+                </div>
+                <div class="modal-body">
+                    <table class="suggestion-details table table-hover table-bordered">
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{date.of.suggestion}"></td>
+                            <td class="col-md-8 value date-of-suggestion"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{office.name}"></td>
+                            <td class="col-md-8 value office-name"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{service.name}"></td>
+                            <td class="col-md-8 value service-name"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{suggestion.subject}"></td>
+                            <td class="col-md-8 value suggestion-subject"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{suggestion.current.status}"></td>
+                            <td class="col-md-8 value suggestion-current-status"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{suggestion}"></td>
+                            <td class="col-md-8 value suggestion"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{effect.on.improvement}"></td>
+                            <td class="col-md-8 value effect-on-improvement"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{suggestion.provider.name}"></td>
+                            <td class="col-md-8 value opinion-giver-name"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{phone}"></td>
+                            <td class="col-md-8 value opinion-giver-phone"></td>
+                        </tr>
+                        <tr class="row static-info">
+                            <td class="col-md-4 name" th:text="#{email}"></td>
+                            <td class="col-md-8 value opinion-giver-email"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn dark btn-outline" data-dismiss="modal" th:text="#{close}"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="viewSuggestionsIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+</div>
+
+<div th:fragment="viewSuggestionsIncludeScript" th:remove="tag">
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+</div>
+
+<script type="text/javascript" th:fragment="viewSuggestionsScript">
+    var currentPage = 1, maxPage = 1, searchSize = 10;
+
+    function initSuggestionsTable() {
+        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        var emptyTxt = (languageCode == 'en' ? "Sorry! No suggestions found." : "দুঃখিত, কোনো পরামর্শ পাওয়া যায়নি ");
+
+        $(".dropdown-more > a").addClass("active");
+        $(".dropdown-more li:first").addClass("active");
+
+        var table1 = $('#tblListView1');
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": emptyTxt,
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bAutoWidth": true,
+            "columnDefs": [{
+                targets: [0, 1, 4, 7],
+                className: 'text-center'
+            }, {
+                targets: [0, 1, 2, 3, 4, 5, 6, 7],
+                'orderable': false
+            }, {
+                "searchable": false,
+                "targets": [0, 4]
+            }, {
+                targets: [0],
+                orderData: [2]
+            }],
+            "createdRow": function( row, data, dataIndex ) {
+                var currentRow = $(row);
+                currentRow.attr("data-toggle", "tooltip");
+                currentRow.attr("title", rowTitle);
+            },
+            columns: [{
+                data: "id",
+                render: function (data, type, row, meta) {
+                    var serialNumber = (((currentPage - 1) * searchSize) + meta.row + 1);
+                    return (languageCode == "en") ? serialNumber : ("" + serialNumber).toBanglaNumber();
+                }
+            },{
+                data: "submissionDate"
+            }, {
+                data: "officeName"
+            }, {
+                data: "serviceName"
+            }, {
+                data: "subject"
+            }, {
+                data: "description"
+            }, {
+                data: "suggestion"
+            }, {
+                data: "possibleEffect"
+            }]
+        });
+
+        $('#tblListView1 tbody').on('click', 'tr', function () {
+            if($(this).find("td").hasClass("dataTables_empty")) {
+                return;
+            } else {
+                var table = $('#tblListView1').DataTable();
+                var data = table.row(this).data();
+                viewSuggestionDetails(data);
+            }
+        });
+
+        $(".next").click(function(e) {
+            currentPage = currentPage + 1;
+            $(".prev").removeClass("disabled");
+            if (currentPage == maxPage) {
+                $(".next").addClass("disabled");
+            }
+            if (currentPage > maxPage) {
+                currentPage = maxPage;
+            }
+            loadSuggestionsList(currentPage);
+        });
+
+        $(".prev").click(function(e) {
+            currentPage = currentPage - 1;
+            $(".next").removeClass("disabled");
+            if (currentPage == 1) {
+                $(".prev").addClass("disabled");
+            }
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+            loadSuggestionsList(currentPage);
+        });
+
+        $("#currentPage").blur(function(e) {
+            e.preventDefault();
+            var curValue = $("#currentPage").val();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPage) {
+                    currentPage = curValue;
+                    if (currentPage == 1) {
+                        $(".prev").addClass("disabled");
+                    } else {
+                        $(".prev").removeClass("disabled");
+                    }
+                    if (currentPage == maxPage) {
+                        $(".next").addClass("disabled");
+                    } else {
+                        $(".next").removeClass("disabled");
+                    }
+                    loadSuggestionsList(currentPage);
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPage").val(currentPage);
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPage").val(currentPage);
+            }
+        });
+
+        if (isGrsUser) {
+            $(".nav-item").hide();
+        }
+    }
+
+    function viewSuggestionDetails(data) {
+        blockUI();
+        $.getJSON("/api/suggestion/" + data.id, function(result) {
+            var modal = $("#modalSuggestionDetails");
+            modal.find(".date-of-suggestion").text(result.submissionDate ? result.submissionDate : "-");
+            modal.find(".office-name").text(result.officeName ? result.officeName : "-");
+            modal.find(".service-name").text(result.officeServiceName ? result.officeServiceName : "-");
+            modal.find(".suggestion-subject").text(result.typeOfSuggestionForImprovement ? result.typeOfSuggestionForImprovement : "-");
+            modal.find(".suggestion-current-status").text(result.description ? result.description : "-");
+            modal.find(".suggestion").text(result.suggestion ? result.suggestion : "-");
+            modal.find(".effect-on-improvement").text(result.effectTowardsSolution ? result.effectTowardsSolution : "-");
+            modal.find(".opinion-giver-name").text(result.name ? result.name : "-");
+            modal.find(".opinion-giver-phone").text(result.phone ? result.phone : "-");
+            modal.find(".opinion-giver-email").text(result.email ? result.email : "-");
+            modal.modal("show");
+        }).fail(function () {
+            toastr.error("দুঃখিত! পরামর্শের বিস্তারিত দেখানো সম্ভব হচ্ছেনা", null, {positionClass: 'toast-top-center'});
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function loadSuggestionsList(page) {
+        $("#ajaxProcessingModal").modal("show");
+        $("#currentPage").val(page);
+        var officeId = $("[name='officeId']").val();
+        $.ajax({
+            url: "/api/offices/" + officeId + "/suggestions",
+            type: "get",
+            data: {
+                "page": (page - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    $(".pagination-panel-total").html(0);
+                    $("#currentPage").val(0);
+                    $(".prev, .next").addClass("disabled");
+                    $("#ajaxProcessingModal").modal("hide");
+                } else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+                    var sort = response.sort;
+                    var isFirst = response.isFirst;
+                    var isLast = response.isLast;
+
+                    $(".pagination-panel-total").html(totalPages);
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+                    $("#tblListView1_info").html(totalElements + " এর মধ্যে " + (number * dataSize + 1) + "-" + (number * dataSize + numberOfElements) + " এর  তথ্য দেখানো হচ্ছে");
+                    $('#tblListView1').dataTable().fnClearTable();
+                    $('#tblListView1').dataTable().fnAddData(response.content);
+                    $('#tblListView1').find("[data-toggle='tooltip']").tooltip();
+                    $("#ajaxProcessingModal").modal("hide");
+                }
+            }
+        });
+    }
+
+    function sortObjectsByProperty(objectList, propName) {
+        return objectList.sort(function(a,b) {
+            return a[propName].trim().replace(" ", "") > b[propName].trim().replace(" ", "") ? 1 : -1;
+        });
+    }
+
+    function encodeOfficeIdOnDrillDown(param) {
+        var encodedPrefix = btoa("" + (Math.pow(10,10) * Math.random())).substr(0,20).split("").reverse().join("");
+        var encodedParams = btoa("" + param);
+        return encodedPrefix + encodedParams;
+    }
+
+    function loadSubordinateOffices() {
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/grs-enabled-child-offices", function (result) {
+            var officeSelection = $("[name='subOfficeId']");
+            if(result.length > 0) {
+                var isEnglish = (languageCode == "en"),
+                    defaultText = isEnglish ? "Please Select Subordinate Office" : "আওতাধীন দপ্তর বাছাই করুন",
+                    noDataText = isEnglish ? "No Data Found" : "কোনো তথ্য পাওয়া যায়নি",
+                    placeholder = (!result || result.length == 0) ? noDataText : defaultText;
+
+                sortObjectsByProperty(result, "name");
+                officeSelection.empty();
+                officeSelection.append("<option value='null' selected disabled>" + placeholder + "</option>");
+                $.each(result, function (i, field) {
+                    officeSelection.append("<option value='" + field.id + "'>" + field['name'] + "</option>");
+                });
+                officeSelection.on("change", function () {
+                    $("#viewSubOfficesSuggestions").removeAttr("disabled");
+                });
+                officeSelection.select2();
+            } else {
+                officeSelection.closest(".subordinate-office-selection").remove();
+                $("#viewSubOfficesSuggestions").remove();
+            }
+        });
+    }
+
+    function bindDrillDownToSubordinateOffices() {
+        $("#viewSubOfficesSuggestions").on("click", function () {
+            var officeId = $("[name='subOfficeId']").val();
+            if(officeId) {
+                window.location.href = "/viewSuggestions.do?params=" + encodeOfficeIdOnDrillDown(officeId);
+            } else {
+                toastr.error("দপ্তর নির্বাচন সঠিক নয়", null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        initSuggestionsTable();
+        loadSubordinateOffices();
+        loadSuggestionsList(currentPage);
+        bindDrillDownToSubordinateOffices();
+    });
+</script>

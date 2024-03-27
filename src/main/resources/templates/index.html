@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="includes/htmlhead :: htmlhead"></div>
+</head>
+<body class="page-container-bg-solid">
+<div class="page-wrapper">
+    <div th:replace="includes/header :: header(${menu})">...</div>
+    <div class="page-wrapper-row full-height">
+        <div class="page-wrapper-middle">
+            <div class="page-container">
+                <div class="page-content-wrapper">
+                    <div class="page-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="portlet light bordered text-align-justify homepage-first-block">
+                                        <div class="portlet-body">
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                                                    <p class="fontSize16" th:classappend="${isMobileLogin? 'collapsed-texts' : ''}">
+                                                        <span th:utext="#{index.body.text.part1}"></span>
+                                                        <span class="more-text" th:style="${isMobileLogin? 'display:none;' : ''}">
+                                                            <span th:utext="#{index.body.text.part2}"></span>
+                                                            <a href="#modalUserManual" class="media-embed" data-toggle="modal">
+                                                                <span class="blueLink" th:text="#{index.click.here}"></span>...
+                                                            </a>
+                                                            <a th:if="${isMobileLogin}" class="less-text" onclick="javascript:squeezeMore(this, event);">
+                                                                <i class="fa fa-chevron-circle-up text-danger"></i>
+                                                            </a>
+                                                        </span>
+                                                        <span th:if="${isMobileLogin}" class="show-text" onclick="javascript:seeMore(this, event);">
+                                                            ...<span th:text="#{see.more}" class="blueLink"></span>
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                                                    <div class="text-align-center">
+<!--                                                        <a data-toggle="modal" href="#modalSelectComplaintType" class="">-->
+<!--                                                            <img src="/assets/layouts/layout3/img/ovijog_dakhil_up.png" id="btn_obhijog_dakhil" onmouseenter="loadHoverState(this)" onmouseleave="loadNormalState(this)" />-->
+<!--                                                        </a>-->
+                                                            <a th:if="${!isLoggedIn}" href="javascript:addPublicGrievanceWithoutLoginButtonEventHandler()" class="">
+                                                                <img src="/assets/layouts/layout3/img/ovijog_dakhil_up.png" class="btn_obhijog_dakhil" onmouseenter="loadHoverState(this)" onmouseleave="loadNormalState(this)" />
+                                                            </a>
+                                                            <a th:if="${isLoggedIn && !isOthersComplainant && !isOisfUser}" href="javascript: addPublicGrievanceButtonEventHandler()" class="">
+                                                                <img src="/assets/layouts/layout3/img/ovijog_dakhil_up.png" class="btn_obhijog_dakhil" onmouseenter="loadHoverState(this)" onmouseleave="loadNormalState(this)" />
+                                                            </a>
+                                                            <a th:if="${isLoggedIn && !isOthersComplainant && isOisfUser}" href="javascript: addPublicGrievanceForOthersButtonEventHandler()" class="">
+                                                                <img src="/assets/layouts/layout3/img/ovijog_dakhil_up.png" class="btn_obhijog_dakhil" onmouseenter="loadHoverState(this)" onmouseleave="loadNormalState(this)" />
+                                                            </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row middle-part">
+                                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                    <a class="mt-widget-link" href="#modalFrequentlyAskedQuestions" data-toggle="modal">
+                                        <div class="mt-widget-1">
+                                            <div class="mt-img mt-img-2">
+                                                &nbsp;
+                                            </div>
+                                            <div class="mt-body">
+                                                <h3 class="mt-username" th:utext="#{index.footer.faq}"></h3>
+                                                <p th:class="${isMobileLogin? 'fontSize14' : 'mt-user-title'}" th:utext="#{index.footer.faq.desc}"></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                    <a class="mt-widget-link" href="javascript:showComplaintFeedbackModal()">
+                                        <div class="mt-widget-1">
+                                            <div class="mt-img mt-img-4">
+                                                &nbsp;
+                                            </div>
+                                            <div class="mt-body">
+                                                <h3 class="mt-username" th:utext="#{grievance.success.feedback}"></h3>
+                                                <p th:class="${isMobileLogin? 'fontSize14' : 'mt-user-title'}" th:utext="#{grievance.success.feedback.desc}"></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div th:if="${!isMobileLogin}" class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                    <a class="mt-widget-link" href="login?a=0">
+                                        <div class="mt-widget-1">
+                                            <div class="mt-img mt-img-3">
+                                                &nbsp;
+                                            </div>
+                                            <div class="mt-body">
+                                                <h3 class="mt-username" th:utext="#{appeal.request}"></h3>
+                                                <p class="mt-user-title" th:utext="#{citizen.appeal.button.description}"></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div th:if="${!isMobileLogin}" class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                                    <a th:href="@{suggestion.do}" class="mt-widget-link">
+                                        <div class="mt-widget-1">
+                                            <div class="mt-img mt-img-1">
+                                                &nbsp;
+                                            </div>
+                                            <div class="mt-body x">
+                                                <h3 class="mt-username" th:utext="#{suggestion.for.improvement}"></h3>
+                                                <p class="mt-user-title" th:utext="#{index.button.services.suggestion}"></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row bottom-part">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="portlet light ">
+                                        <div class="portlet-body">
+                                            <div class="row">
+                                                <div th:if="${!isMobileLogin}" class="col-md-2 col-sm-12 col-xs-12">
+                                                    <a href="/assets/grs_user_manual.pdf" onclick="javascript:previewGrsUserManual(this, event);" class="media-embed" data-asset="false">
+                                                        <div class="mt-widget-1">
+                                                            <div class="mt-img">
+                                                                <img src="/assets/layouts/layout3/img/user_manual.png">
+                                                            </div>
+                                                            <div class="mt-body">
+                                                                <p class="mt-user-title" th:utext="#{user.manual.description}"></p>
+                                                                <div class="mt-stats">
+                                                                    <div class="btn-group btn-group-justified">
+                                                                        <button class="btn a2ipurple">
+                                                                            <span th:text="#{index.manual.text}"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div th:if="${!isMobileLogin}" class="col-md-2 col-sm-12 col-xs-12">
+                                                    <a onclick="javascript:showFlowchartModal();" class="media-embed" data-asset="false">
+                                                        <div class="mt-widget-1">
+                                                            <div class="mt-img">
+                                                                <img src="/assets/layouts/layout3/img/flowchart.png">
+                                                            </div>
+                                                            <div class="mt-body">
+                                                                <p class="mt-user-title" th:utext="#{complaint.process.flow.description}"></p>
+                                                                <div class="mt-stats">
+                                                                    <div class="btn-group btn-group-justified">
+                                                                        <button class="btn a2igreen">
+                                                                            <span th:text="#{index.button.process.flows.text}"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div class="col-md-2 col-sm-12 col-xs-12">
+                                                    <a href="/services.do" class="">
+                                                        <div class="mt-widget-1">
+                                                            <div class="mt-img">
+                                                                <img src="/assets/layouts/layout3/img/citizen_charter.png">
+                                                            </div>
+                                                            <div class="mt-body">
+                                                                <p th:class="${!isMobileLogin? 'mt-user-title' : 'fontSize14'}" th:utext="#{citizen.charter.description}"></p>
+                                                                <div class="mt-stats">
+                                                                    <div class="btn-group btn-group-justified">
+                                                                        <button class="btn a2ipurple">
+                                                                            <span th:text="#{index.button.services.delivery.commitment}"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div th:if="${!isMobileLogin}" class="col-md-2 col-sm-12 col-xs-12">
+                                                    <a href="#grievanceFormsList" data-toggle="modal">
+                                                        <div class="mt-widget-1">
+                                                            <div class="mt-img">
+                                                                <img src="/assets/layouts/layout3/img/forms.png">
+                                                            </div>
+                                                            <div class="mt-body">
+                                                                <p class="mt-user-title" th:utext="#{grievance.related.forms}"></p>
+                                                                <div class="mt-stats">
+                                                                    <div class="btn-group btn-group-justified">
+                                                                        <button class="btn a2igreen">
+                                                                            <span th:text="#{index.button.required.forms}"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+
+                                                <div th:if="${!isMobileLogin}" class="col-md-2 col-sm-12 col-xs-12">
+                                                    <a href="/assets/grs_guideline.pdf" onclick="javascript:previewGrsGuideline(this, event);" class="media-embed" data-asset="false">
+                                                        <div class="mt-widget-1">
+                                                            <div class="mt-img">
+                                                                <img src="/assets/layouts/layout3/img/guidline.png">
+                                                            </div>
+                                                            <div class="mt-body">
+                                                                <p class="mt-user-title" th:utext="#{grievance.redress.manual}"></p>
+                                                                <div class="mt-stats">
+                                                                    <div class="btn-group btn-group-justified">
+                                                                        <button class="btn a2ipurple">
+                                                                            <span th:text="#{index.button.complaint.resolution.manual.text}"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                                <div th:if="${!isMobileLogin}" class="col-md-2 col-sm-12 col-xs-12">
+                                                    <a href="#modalContactInformation" data-toggle="modal">
+                                                        <div class="mt-widget-1">
+                                                            <div class="mt-img">
+                                                                <img src="/assets/layouts/layout3/img/contact.png">
+                                                            </div>
+                                                            <div class="mt-body">
+                                                                <p class="mt-user-title" th:utext="#{index.footer.contact.desc}"></p>
+                                                                <div class="mt-stats">
+                                                                    <div class="btn-group btn-group-justified">
+                                                                        <button class="btn a2igreen">
+                                                                            <span th:text="#{index.footer.contact}"></span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="includes/footer :: footer">...</div>
+</div>
+
+<div class="modal fade" id="grievanceFormsList" tabindex="-1" role="basic" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" class="close" data-dismiss="modal" type="button"></button>
+                <h4 class="modal-title text-center font-lg font-green bold" th:text="#{grievance.forms.list.header}"></h4>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        <span><i class="fa fa-arrow-circle-o-down"></i></span>
+                        <a target="_blank" class="media-embed" href="/assets/grievance_submission_form.pdf" data-asset="false">
+                            <span class="blueLink" th:text="#{grievance.submission.form}"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <span><i class="fa fa-arrow-circle-o-down"></i></span>
+                        <a target="_blank" class="media-embed" href="/assets/appeal_submission_form.pdf" data-asset="false">
+                            <span class="blueLink" th:text="#{appeal.submission.form}"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <span><i class="fa fa-arrow-circle-o-down"></i></span>
+                        <a target="_blank" class="media-embed" href="/assets/cell_grievance_submission_form.pdf" data-asset="false">
+                            <span class="blueLink" th:text="#{cell.grievance.submission.form}"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <span><i class="fa fa-arrow-circle-o-down"></i></span>
+                        <a target="_blank" class="media-embed" href="/assets/cell_appeal_submission_form.pdf" data-asset="false">
+                            <span class="blueLink" th:text="#{cell.appeal.submission.form}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn dark btn-outline" data-dismiss="modal"><span th:text="#{close}"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalFrequentlyAskedQuestions" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title text-center font-lg font-green bold" th:text="#{index.footer.faq}"></h4>
+            </div>
+            <div class="modal-body">
+                <div th:replace="faq :: faq"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalUserManual" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title text-center font-lg font-green bold" th:text="#{index.manual.text}"></h4>
+            </div>
+            <div class="modal-body">
+                <div th:replace="userManual :: userManual"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn dark btn-outline" data-dismiss="modal" type="button" th:text="#{close}"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="includes/footer_includes :: footer"> </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        if (languageCode == "en") {
+            $(".btn_obhijog_dakhil").attr("src", "/assets/layouts/layout3/img/Submit-Grievance.png");
+        } else {
+            $(".btn_obhijog_dakhil").attr("src", "/assets/layouts/layout3/img/ovijog_dakhil_up.png");
+        }
+    });
+
+    function loadHoverState(obj) {
+        if (languageCode == "en") {
+            obj.src = "/assets/layouts/layout3/img/Submit-Grievance-pressed.png";
+        } else {
+            obj.src = "/assets/layouts/layout3/img/ovijog_dakhil_down.png";
+        }
+    }
+
+    function loadNormalState(obj) {
+        if (languageCode == "en") {
+            obj.src = "/assets/layouts/layout3/img/Submit-Grievance.png";
+        } else {
+            obj.src = "/assets/layouts/layout3/img/ovijog_dakhil_up.png";
+        }
+    }
+
+    function appealButtonClickEventHandler(){
+        var authToken = $.cookie("Authorization")
+        if ( authToken!=null ){
+            $(location).attr('href', '/viewGrievances.do');
+        } else {
+            $(location).attr('href', '/login?a=0');
+        }
+    }
+
+
+
+</script>
+</body>
+</html>

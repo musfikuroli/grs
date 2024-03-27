@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="includes/htmlhead :: htmlhead">...</head>
+
+<body class="page-container-bg-solid">
+<div class="page-wrapper">
+    <div th:replace="includes/header :: header(${menu})">...</div>
+    <div class="page-wrapper-row full-height">
+        <div class="page-wrapper-middle">
+            <!-- BEGIN CONTAINER -->
+            <div class="page-container">
+                <!-- BEGIN CONTENT -->
+                <div class="page-content-wrapper">
+                    <!-- BEGIN CONTENT BODY -->
+                    <!-- BEGIN PAGE HEAD-->
+                    <div class="page-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 a">
+                                    <div class="main-box-div">
+                                        <div class="title-div" th:text="#{info.about.gro}"></div>
+                                        <p th:text="#{choose.office.for.gro.info}"></p>
+                                        <div class="page-content" th:replace="layeredOfficeSelectionGRO :: layeredOfficeSelectionGRO"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END PAGE HEAD-->
+                    <!-- BEGIN PAGE CONTENT BODY -->
+                    <!-- END PAGE CONTENT BODY -->
+                    <!-- END CONTENT BODY -->
+                </div>
+                <!-- END CONTENT -->
+            </div>
+            <!-- END CONTAINER -->
+        </div>
+    </div>
+    <div th:replace="includes/footer :: footer">...</div>
+</div>
+<div th:replace="includes/footer_includes :: footer">...</div>
+<script th:replace="layeredOfficeSelectionGRO :: layeredOfficeSelectionGROIncludeScript"></script>
+<link href="assets/global/plugins/easy-autocomplete/easy-autocomplete.css" rel="stylesheet" type="text/css"/>
+<th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+<script th:replace="layeredOfficeSelectionGRO :: layeredOfficeSelectionGROScript"></script>
+</body>
+</html>

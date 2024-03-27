@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="locationBasedReport" th:remove="tag">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body" id="locationBasedReport">
+            <div class="font-lg bold text-center margin-bottom-20">অভিযোগ প্রতিকার-সংক্রান্ত ভৌগোলিক অবস্থান ভিত্তিক প্রতিবেদন</div>
+            <div class="portlet-title remove-on-print" style="margin: 0px 20px;">
+                <div class="row margin-bottom-20">
+                    <select id="divisionSelect" class="select2 form-control input-inline"></select>
+                    <select id="districtSelect" class="select2 form-control input-inline" style="display: none;"></select>
+                    <select id="upazillaSelect" class="select2 form-control input-inline" style="display: none;"></select>
+                </div>
+                <div class="row">
+                    <label class="control-label col-sm-1 font-lg text-center">
+                        <span>মাস</span>
+                    </label>
+                    <div class="col-sm-3">
+                        <div class='input-group date' id="locationBasedReportFrom">
+                            <input class="form-control" style="font-size: 14px!important;" type="text" readonly>
+                            <span class="input-group-addon" style="width: auto;">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        </div>
+                    </div>
+                    <label class="control-label col-sm-1 font-lg text-center">
+                        <span>থেকে</span>
+                    </label>
+                    <div class="col-sm-3">
+                        <div class='input-group date' id="locationBasedReportTo">
+                            <input class="form-control" style="font-size: 14px!important;" type="text" readonly>
+                            <span class="input-group-addon" style="width: auto;">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        </div>
+                    </div>
+                    <a class="btn btn-outline btn-info col-sm-2 view-report" style="cursor: pointer; color: #ffffff;">
+                        <i class="fa fa-area-chart"></i>&nbsp;
+                        <span>প্রতিবেদন দেখুন</span>
+                    </a>
+                    <a class="btn btn-outline btn-success col-md-1 print-report pull-right" style="cursor: pointer; color: #ffffff;">
+                        <i class="fa fa-print"></i>&nbsp;
+                        <span th:text="#{print}"></span>
+                    </a>
+                </div>
+            </div>
+            <h4 class="row text-center margin-top-20">
+                <div class="font-lg bold office-name-selected"></div>
+                <!--<div class="font-lg">অভিযোগ প্রতিকার-সংক্রান্ত মাসিক প্রতিবেদন</div>-->
+                <div class="font-md">
+                    <span class="month-name-from"></span> - <span class="month-name-to"></span>
+                </div>
+            </h4>
+            <div class="row">
+                <div class="panel-group accordion" id="accordionLocationBasedReports">
+                    <div class="panel panel-default margin-top-10">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle caption-subject text-center font-purple bold">অভিযোগ প্রতিকারের সারসংক্ষেপ</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in" id="locationBasedReportCollapse_1_1">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="grievanceLocationBasedReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">অফিসের নাম</th>
+                                            <th colspan="3" class="text-center">বিবেচ্য মাসে প্রাপ্ত অভিযোগের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center">মোট অভিযোগ</th>
+                                            <th rowspan="2" class="text-center">অন্য দপ্তরে প্রেরিত</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে নিষ্পত্তিকৃত অভিযোগ</th>
+                                            <th colspan="2" class="text-center">চলমান অভিযোগ</th>
+                                            <th rowspan="2" class="text-center">অভিযোগ নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">ওয়েবসাইটের মাধ্যমে</th>
+                                            <th class="text-center">প্রচলিত পদ্ধতিতে</th>
+                                            <th class="text-center">স্বপ্রণোদিতভাবে গৃহীত</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়নি</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়েছে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='11' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default margin-top-20">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="accordion-toggle caption-subject text-center font-purple bold">আপিল নিষ্পত্তির সারসংক্ষেপ</a>
+                            </h4>
+                        </div>
+                        <div class="panel-collapse in" id="locationBasedReportCollapse_1_2">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-advance table-striped table-hover" id="appealLocationBasedReportTable">
+                                        <thead>
+                                        <tr>
+                                            <th rowspan="2" class="text-center">অফিসের নাম</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে প্রাপ্ত আপিলের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">পূর্ববর্তী মাসের জের</th>
+                                            <th rowspan="2" class="text-center">মোট আপিল</th>
+                                            <th rowspan="2" class="text-center">বিবেচ্য মাসে নিষ্পত্তিকৃত আপিলের সংখ্যা</th>
+                                            <th colspan="2" class="text-center">চলমান আপিলের সংখ্যা</th>
+                                            <th rowspan="2" class="text-center">আপিল নিষ্পত্তির হার (%)</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়নি</th>
+                                            <th class="text-center">নির্ধারিত সময় অতিক্রান্ত হয়েছে</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td colspan='8' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="locationBasedReportScript">
+
+    var ministries = [];
+
+    function bindlocationBasedInputFieldChangeEvents() {
+        var dateFieldFrom = $("#locationBasedReportFrom");
+        var dateFieldTo = $("#locationBasedReportTo");
+        dateFieldFrom.datepicker().on("changeDate", function(event) {
+            $("#locationBasedReport .month-name-from").text(dateFieldFrom.find("input").val());
+        });
+        dateFieldTo.datepicker().on("changeDate", function(event) {
+            $("#locationBasedReport .month-name-to").text(dateFieldTo.find("input").val());
+        });
+        $("#locationBasedReport .office-selection").on("change", "select", function (event) {
+            event.stopPropagation();
+            var officeId = $("#secondSelection").val();
+            if(officeId && !isNaN(parseInt(officeId))) {
+                var officeName = $("#secondSelection option:selected").text();
+                $("#locationBasedReport .office-name-selected").text(officeName);
+            } else {
+                $("#locationBasedReport .office-name-selected").text("");
+            }
+        })
+
+    }
+
+    function bindlocationBasedReportViewAction() {
+        $("#locationBasedReport .view-report").on("click", function () {
+            var division = $("#divisionSelect").val();
+            var district = $("#districtSelect").val();
+            var upazilla = $("#upazillaSelect").val();
+            var dateFrom = $("#locationBasedReportFrom").datepicker("getDate");
+            var dateTo = $("#locationBasedReportTo").datepicker("getDate");
+            division = division == null ? 0 : division;
+            district = district == null ? 0 : district;
+            upazilla = upazilla == null ? 0 : upazilla;
+            var officeLevel = $("input[name=officeLevel]").val();
+            if(officeLevel != null && officeLevel ==5){
+                if(district == 0){
+                    toastr.error("অনুগ্রহ করে জেলা বাছাই করুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+
+            if(officeLevel != null && officeLevel ==6){
+                if(district == 0 || upazilla == 0){
+                    toastr.error("অনুগ্রহ করে জেলা এবং উপজেলা বাছাই করুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+
+            if(!division || isNaN(parseInt(division))) {
+                toastr.error("দপ্তর নির্বাচন সঠিক নয়", null, {positionClass: 'toast-top-center'});
+            } else if(!dateFrom || !dateTo) {
+                toastr.error("দয়া করে সঠিক মাস ও বছর নির্বাচন করুন", null, {positionClass: 'toast-top-center'});
+            } else if(dateFrom > dateTo) {
+                toastr.error("মাস ও বছরের সীমা নির্বাচন সঠিক নয়", null, {positionClass: 'toast-top-center'});
+            } else {
+                var url = "/api/locationBased/division/" + division + "/district/" + district + "/upazilla/" + upazilla + "/reports/from/" + dateFrom.getFullYear() + "/" + (dateFrom.getMonth() + 1) + "/to/" + dateTo.getFullYear() + "/" + (dateTo.getMonth() + 1);
+//                loadlocationBasedReportData(division, district, upazilla, dateFrom, dateTo);
+                loadAdditionalReportData(url, "grievanceLocationBasedReportTable", "appealLocationBasedReportTable");
+            }
+            return;
+        });
+
+    }
+
+    function printlocationBasedReport() {
+        $("#locationBasedReport .print-report").on("click", function () {
+            var mywindow = window.open('', 'PRINT', "width="+screen.availWidth+",height="+screen.availHeight);
+            mywindow.document.write('<html><head>');
+            mywindow.document.write('<style> @media screen { body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } @media print{ body{ font-family: "kalpurushregular" !important;font-size: 8px; box-sizing: border-box; width:98%; height: 98%; margin: 0px; padding: 0px; font-weight: 300; }h1, h2, h3, h4, h5, h6 {font-family: "kalpurushregular" !important;font-size: 8px;}.text-center {text-align: center;} input{ font-size: 8px !important; } .double-line{ width:100%; height: 4.6%; } .single-line{ box-sizing: border-box; width:100%; height: 2.3%; padding-bottom: .2%; } .double-line input{ height: 100%; width: 75%; box-sizing: border-box; float:left; border: thin solid black; padding-left:1%; } .single-line input{ height: 100%; width: 75%; display: inline-block; box-sizing: border-box; float: left; border: thin solid black ; border-width: thin; padding-left:1%; } .input{ height: 100%; width: 63%; display: inline-block; box-sizing: border-box; float: left; } .fee-input{ height: 20%; width: 16%; display: inline-block; float: left; box-sizing: border-box; } .label{ box-sizing: border-box; width: 23%; height: 100%; vertical-align: top; display: inline-block; float: left; margin-right: 2%; padding: .7%; } .label-independent{ box-sizing: border-box; width: 100%; height: 1%; vertical-align: top; display: inline-block; float: left; margin-right: 0%; } .element{ box-sizing: border-box; width: 60% } .left_top{ height: 50%; text-align: left; } .right_bottom{ height: 50%; text-align: right; } .left_bottom{ height: 50%; text-align: left; } table, th, td, tr { font-family: "kalpurushregular"; box-sizing: border-box; border: .5px solid black; border-collapse: collapse; padding: 1px; } .table{ font-family: "kalpurushregular" width: 100%; height: 15%; font-size: 8.6px; } .photo{ box-sizing: border-box; width:100%; height: 13%; } .photo-tabel{ width: 45%; height: 100%; font-size: 8.6px; } .page-break{ page-break-after: always; } .body-border{ border: 1px solid black; padding: 2%;; } .attachements{ width:100%; height: 8%; } td img{ display: block; width:100%; } } </style>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1 class="text-center">' + document.title  + '</h1>');
+            mywindow.document.write($("#locationBasedReport").clone().find('.remove-on-print').remove().end().html());
+            mywindow.document.write('</body></html>');
+            mywindow.print();
+            mywindow.close();
+            /*$("#locationBasedReport").clone()
+                .css("padding-top", "50px")
+                .find(".remove-on-print")
+                .remove()
+                .end()
+                .printThis({
+                    importStyle: true,
+                    importCSS: true,
+                    formValues: false
+                });*/
+        });
+    }
+
+    function loadlocationBasedReportData(division, district, upazilla, dateFrom, dateTo) {
+        var url = "/api/locationBased/division/" + division + "/district/" + district + "/upazilla/" + upazilla + "/reports/from/" + dateFrom.getFullYear() + "/" + (dateFrom.getMonth() + 1) + "/to/" + dateTo.getFullYear() + "/" + (dateTo.getMonth() + 1);
+        blockUI();
+        $.getJSON(url, function (response) {
+            var grievanceReportBody = "<tr class='text-center'><td></td><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td><td>(ঞ)</td></tr>";
+            var appealReportBody = "<tr class='text-center'><td></td><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td></tr>";
+            var hasAppealReportFlag = false;
+            response.forEach(function (item, index) {
+                var monthlyGrievanceReport = item.monthlyGrievanceReport;
+                var monthlyAppealReport = item.monthlyAppealReport;
+                if(monthlyGrievanceReport) {
+                    grievanceReportBody += "<tr class='text-center'>" +
+                        "<td>" + item.officeName + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["selfMotivatedAccusationCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyGrievanceReport["rate"]).toBanglaNumber() + "</td>" +
+                        "</tr>";
+                } else {
+                    grievanceReportBody += "<tr class='text-center'>" +
+                        "<td>" + item.officeName + "</td>" +
+                        "<td colspan='10'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
+                        "</tr>";
+                }
+                if(monthlyAppealReport) {
+                    appealReportBody += "<tr class='text-center'>" +
+                        "<td>" + item.officeName + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                        "<td>" + ("" + monthlyAppealReport["rate"]).toBanglaNumber() + "</td>" +
+                        "</tr>";
+                    hasAppealReportFlag = true;
+                } else {
+                    appealReportBody += "<tr class='text-center'>" +
+                        "<td>" + item.officeName + "</td>" +
+                        "<td colspan='7'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
+                        "</tr>";
+                }
+            });
+            $("#grievanceLocationBasedReportTable tbody").empty().html(grievanceReportBody);
+            if(hasAppealReportFlag) {
+                $("#appealLocationBasedReportTable tbody").empty().html(appealReportBody);
+                $("#appealLocationBasedReportTable").closest(".panel").show();
+            } else {
+                $("#appealLocationBasedReportTable").closest(".panel").hide();
+            }
+            calculateAggregatedResultOflocationBasedReport(response);
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function calculateAggregatedResultOflocationBasedReport(response) {
+        var totalNew = 0,
+            totalInherited = -1,
+            sendToOtherOffices = 0,
+            totalResolved = 0,
+            totalRunning = 0,
+            timeExpired = 0;
+        var totalNewAppeal = 0,
+            totalInheritedAppeal = -1,
+            totalResolvedAppeal = 0,
+            totalRunningAppeal = 0,
+            timeExpiredAppeal = 0,
+            hasAppealReportFlag = false;
+        response.forEach(function (item, index) {
+            var monthlyGrievanceReport = item.monthlyGrievanceReport;
+            var monthlyAppealReport = item.monthlyAppealReport;
+            if (monthlyGrievanceReport) {
+                if(totalInherited == -1) {
+                    totalInherited = monthlyGrievanceReport["inheritedFromLastMonthCount"];
+                }
+                totalNew += (monthlyGrievanceReport["onlineSubmissionCount"]
+                    + monthlyGrievanceReport["conventionalMethodSubmissionCount"]
+                    + monthlyGrievanceReport["selfMotivatedAccusationCount"]);
+                sendToOtherOffices += monthlyGrievanceReport["sentToOtherCount"];
+                totalResolved += monthlyGrievanceReport["resolvedCount"];
+                totalRunning += monthlyGrievanceReport["runningCount"];
+                timeExpired = monthlyGrievanceReport["timeExpiredCount"];
+            }
+            if (monthlyAppealReport) {
+                if(totalInheritedAppeal == -1) {
+                    totalInheritedAppeal = monthlyAppealReport["inheritedFromLastMonthCount"];
+                }
+                totalNewAppeal += (monthlyAppealReport["onlineSubmissionCount"]
+                    + monthlyAppealReport["conventionalMethodSubmissionCount"]
+                    + monthlyAppealReport["selfMotivatedAccusationCount"]);
+                totalResolvedAppeal += monthlyAppealReport["resolvedCount"];
+                totalRunningAppeal += monthlyAppealReport["runningCount"];
+                timeExpiredAppeal = monthlyAppealReport["timeExpiredCount"];
+                hasAppealReportFlag = true;
+            }
+        });
+        var aggregatedRow = "<tr class='text-center bold' style='background: #00ffff;'>" +
+            "<td>সর্বমোট</td>" +
+            "<td colspan='3'>" + ("" + totalNew).toBanglaNumber() + "</td>" +
+            "<td>" + ("" + totalInherited).toBanglaNumber() + "</td>" +
+            "<td>" + ("" + (totalNew + totalInherited)).toBanglaNumber() + "</td>" +
+            "<td>" + ("" + sendToOtherOffices).toBanglaNumber() + "</td>" +
+            "<td>" + ("" + totalResolved).toBanglaNumber() + "</td>" +
+            "<td>" + ("" + totalRunning).toBanglaNumber() + "</td>" +
+            "<td>" + ("" + timeExpired).toBanglaNumber() + "</td>" +
+            "<td>-</td>" +
+            "</tr>";
+        $("#grievanceLocationBasedReportTable tbody").append(aggregatedRow);
+        if(hasAppealReportFlag) {
+            var aggregatedAppealRow = "<tr class='text-center bold' style='background: #00ffff;'>" +
+                "<td>সর্বমোট</td>" +
+                "<td>" + ("" + totalNewAppeal).toBanglaNumber() + "</td>" +
+                "<td>" + ("" + totalInheritedAppeal).toBanglaNumber() + "</td>" +
+                "<td>" + ("" + (totalNewAppeal + totalInheritedAppeal)).toBanglaNumber() + "</td>" +
+                "<td>" + ("" + totalResolvedAppeal).toBanglaNumber() + "</td>" +
+                "<td>" + ("" + totalRunningAppeal).toBanglaNumber() + "</td>" +
+                "<td>" + ("" + timeExpiredAppeal).toBanglaNumber() + "</td>" +
+                "<td>-</td>" +
+                "</tr>";
+            $("#appealLocationBasedReportTable tbody").append(aggregatedAppealRow);
+        }
+    }
+
+    function populateUazilla(districtId) {
+        var upazilla = "#upazillaSelect";
+        var officeLevel = $("input[name=officeLevel]").val();
+        var upazilaId = $("input[name=upazilaId]").val();
+
+        $(upazilla).empty();
+        $(upazilla).select2("destroy");
+        if (languageCode == "en") {
+            var opt = new Option("Select All", 0);
+            $(opt).data({id: 0, nameBangla: "সকল অফিস", nameEnglish: "All Office"});
+            $(upazilla).append(opt);
+        } else {
+            var opt = new Option("সকল অফিস", 0);
+            $(opt).data({id: 0, nameBangla: "সকল অফিস", nameEnglish: "All Office"});
+            $(upazilla).append(opt);
+        }
+        $.getJSON("/api/geo/upazilas/" + districtId, function(result) {
+            $.each(result, function(i, field) {
+                if (languageCode == "en") {
+                    var opt = new Option(field.nameEnglish, field.id);
+                    $(opt).data(field);
+                    $(upazilla).append(opt);
+                } else {
+                    var opt = new Option(field.nameBangla, field.id);
+                    $(opt).data(field);
+                    $(upazilla).append(opt);
+                }
+            });
+            switch (officeLevel){
+                case "6":
+                    $(upazilla).find("option[value="+ upazilaId +"]").prop('selected', 'selected');
+                    $(upazilla).select2({width: '208px'}).trigger('change');
+                    $(upazilla).prop('disabled', 'disabled');
+                    break;
+                default:
+                    $(upazilla).select2({width: '208px'});
+                    break;
+            }
+        });
+        $(upazilla).show();
+    }
+
+    function populateDistrict(divisionId) {
+        var district = "#districtSelect";
+        var officeLevel = $("input[name=officeLevel]").val();
+        var districtId = $("input[name=districtId]").val();
+
+        $(district).empty();
+        $(district).select2("destroy");
+        if (languageCode == "en") {
+            var opt = new Option("All Office", 0);
+            $(opt).data({id: 0, nameBangla: "সকল অফিস", nameEnglish: "All Office"});
+            $(district).append(opt);
+        } else {
+            var opt = new Option("সকল অফিস", 0);
+            $(opt).data({id: 0, nameBangla: "সকল অফিস", nameEnglish: "All Office"});
+            $(district).append(opt);
+        }
+        $.getJSON("/api/geo/district/" + divisionId, function(result) {
+            $.each(result, function(i, field) {
+                if (languageCode == "en") {
+                    var opt = new Option(field.nameEnglish, field.id);
+                    $(opt).data(field);
+                    $(district).append(opt);
+                } else {
+                    var opt = new Option(field.nameBangla, field.id);
+                    $(opt).data(field);
+                    $(district).append(opt);
+                }
+            });
+            switch (officeLevel) {
+                case "5":
+                case "6":
+                    $(district).find("option[value=" + districtId + "]").prop('selected', 'selected');
+                    $(district).select2({width: '208px'}).trigger('change');
+                    $(district).prop('disabled', 'disabled');
+                    populateUazilla(districtId);
+                    break;
+                default:
+                    $(district).select2({width: '208px'});
+                    break;
+            }
+        });
+        $(district).show();
+    }
+
+    function populateDivision() {
+        var divisionId = $("input[name=divisionId]").val();
+        var officeLevel = $("input[name=officeLevel]").val();
+
+        var division = "#divisionSelect";
+        $(division).empty();
+        $(division).select2("destroy");
+        $.getJSON("/api/geo/division", function(result) {
+            $.each(result, function(i, field) {
+                if (languageCode == "en") {
+                    var opt = new Option(field.nameEnglish, field.id);
+                    $(opt).data(field);
+                    $(division).append(opt);
+                } else {
+                    var opt = new Option(field.nameBangla, field.id);
+                    $(opt).data(field);
+                    $(division).append(opt);
+                }
+            });
+            switch (officeLevel){
+                case "4":
+                case "5":
+                case "6":
+                    $(division).find("option[value=" + divisionId +"]").prop('selected', 'selected');
+                    $(division).select2({width: '208px'}).trigger('change');
+                    $(division).prop('disabled', 'disabled');
+                    populateDistrict(divisionId);
+                    break;
+                default:
+                    $(division).select2({width: '208px'});
+                    break;
+            }
+        });
+    }
+
+    function initSelections() {
+        var division = "#divisionSelect";
+        var district = "#districtSelect";
+        $(division).select2({width: '208px'});
+        $("#districtSelect").select2({width: '208px'});
+        $("#upazillaSelect").select2({width: '208px'});
+        $(division).on('change', function () {
+            var divId = $(division).val();
+            $("#upazillaSelect").empty();
+            $("#districtSelect").empty();
+            populateDistrict(divId);
+        });
+
+        $(district).on('change', function () {
+            var disId = $(district).val();
+            $("#upazillaSelect").empty();
+            populateUazilla(disId);
+        });
+    }
+
+    function initlocationBasedReportTabContents() {
+        initReportDatepicker($("#locationBasedReportFrom"));
+        initReportDatepicker($("#locationBasedReportTo"));
+        $("#locationBasedReport").find(".form-inline").removeClass("form-inline");
+        bindlocationBasedInputFieldChangeEvents();
+        bindlocationBasedReportViewAction();
+        printlocationBasedReport();
+        initSelections();
+        populateDivision();
+    }
+</script>

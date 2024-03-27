@@ -1,0 +1,426 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="footer" th:remove="tag">
+    <!--[if lt IE 9]>
+    <script src="/assets/global/plugins/respond.min.js"></script>
+    <script src="/assets/global/plugins/excanvas.min.js"></script>
+    <script src="/assets/global/plugins/ie8.fix.min.js"></script>
+    <![endif]-->
+    <!-- BEGIN CORE PLUGINS -->
+    <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/underscore-min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-sessiontimeout/bootstrap-session-timeout.min.js"
+            type="text/javascript"></script>
+    <th:block th:if="${showDrawerMenu}">
+        <script src="/assets/global/plugins/drawer/js/iscroll.min.js" type="text/javascript"></script>
+        <script src="/assets/global/plugins/drawer/js/drawer.min.js" type="text/javascript"></script>
+        <link href="/assets/global/plugins/drawer/css/drawer.css" rel="stylesheet">
+    </th:block>
+    <script>
+        String.prototype.toBanglaNumber = function () {
+            var engNum = this;
+            var bngNum = '';
+            var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            engNum.split('').forEach(function (digit) {
+                var index = parseInt(digit);
+                bngNum += isNaN(index) ? digit : bngDigits[index];
+            });
+            return bngNum;
+        };
+
+        String.prototype.toEnglishNumber = function () {
+            var bngNum = this;
+            var engNum = '';
+            var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            bngNum.split('').forEach(function (digit) {
+                var index = bngDigits.indexOf(digit);
+                engNum += index >= 0 ? index : digit;
+            });
+            return engNum;
+        };
+
+        function blockUI() {
+            var isEnglish = (languageCode == "en");
+            var msg = isEnglish ? "Loading... Just a moment please" : "লোড হচ্ছে... দয়া করে অপেক্ষা করুন";
+            $.blockUI({
+                message: '<h1>' + msg + '</h1>'
+            });
+        }
+
+        function unblockUI() {
+            $.unblockUI();
+        }
+    </script>
+    <script src="/assets/global/plugins/bootstrap-datepicker/js/moment-with-locales.js" type="text/javascript"
+            charset="UTF-8"></script>
+    <script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker-1.6.4.js" type="text/javascript"
+            charset="UTF-8"></script>
+    <script src="/assets/global/plugins/jquery.cookie.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/icheck/icheck.min.js" type="text/javascript"></script>
+
+    <script src="/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+    <script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
+
+    <script src="/assets/layouts/layout/scripts/layout.min.js" type="text/javascript"></script>
+    <script src="/assets/layouts/layout/scripts/demo.min.js" type="text/javascript"></script>
+    <script src="/assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
+    <script src="/assets/layouts/global/scripts/quick-nav.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-summernote/summernote.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-sweetalert/sweetalert.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/easy-autocomplete/jquery.easy-autocomplete.min.js"
+            type="text/javascript"></script>
+    <!--[if lt IE 9]>
+    <![endif]-->
+    <!-- END THEME GLOBAL SCRIPTS -->
+    <!-- BEGIN THEME LAYOUT SCRIPTS -->
+    <!--    <th:block th:if="${grsUser==false && superAdmin==false}">-->
+    <!--        <script type="text/javascript" src="http://idp.doptor.gov.bd/sso/lib/script.2.min.js"></script>-->
+    <!--        <script>-->
+    <!--            var url = "/oisf/sso/user/apps";-->
+    <!--            widget.init({-->
+    <!--                "widgetColor": "light",-->
+    <!--                "widgetSize": "20px",-->
+    <!--                "appPermissionURL": url-->
+    <!--            });-->
+
+    <!--            var sso_menu = new SSOMenu().init({-->
+    <!--                "headType": "A",-->
+    <!--                "clientId": "tBCwBygTKMoZwOiMopcSs3L2XsMa"-->
+    <!--            });-->
+
+    <!--            var ssoMenuHead = $(sso_menu.head);-->
+
+    <!--            /*<![CDATA[*/-->
+    <!--            var usernameTh = $("#officerUsername").val();-->
+    <!--            /*]]>*/-->
+
+    <!--            ssoMenuHead.replaceWith("<a href=\"javascript:;\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" data-hover=\"dropdown\" data-close-others=\"true\" >\n" +-->
+    <!--                "                        <img alt=\"\" class=\"img-circle\" src=\"assets/layouts/layout/img/avatar3_small.jpg\"/>\n" +-->
+    <!--                "                        <span class=\"username hide-on-tab\"> " + usernameTh + "</span>\n" +-->
+    <!--                "                        <i class=\"fa fa-angle-down\"></i>\n" +-->
+    <!--                "                    </a>");-->
+
+
+    <!--            var ssoMenuBody = $(sso_menu.body);-->
+    <!--            var ssoMenuUL = $(sso_menu.ulist);-->
+
+    <!--            ssoMenuUL.attr('style', 'right: 0; left: auto');-->
+
+    <!--            ssoMenuUL.addClass('dropdown-menu dropdown-menu-default');-->
+    <!--            ssoMenuUL.find("#profile").prepend("<i class=\"icon-user\"></i>");-->
+    <!--            ssoMenuUL.find("#profile").wrapInner("<a></a>");-->
+    <!--            ssoMenuUL.find("#local").find("li").prepend("<i class=\"icon-key\"></i>");-->
+    <!--            ssoMenuUL.find("#local").find("li").wrapInner("<a href='/ssologout'></a>");-->
+    <!--            ssoMenuUL.find("#local").append("<li class=\"divider\"></li>");-->
+    <!--            ssoMenuUL.find("#global").find("li").prepend("<i class=\"icon-key\"></i>");-->
+    <!--            ssoMenuUL.find("#global").find("li").wrapInner("<a href='/ssologout'></a>");-->
+    <!--            ssoMenuUL.attr('id', 'headermenu');-->
+    <!--            ssoMenuUL.find('form').attr('style', 'margin: 10px 10px;');-->
+    <!--            /*var hidden_div_element = document.getElementById("list_of_organograms");-->
+    <!--            var hidden_inputs = hidden_div_element.getElementsByTagName("input");-->
+    <!--            var len = hidden_inputs.length, i;-->
+    <!--            for (i = 0; i < len; i++) {-->
+    <!--                ssoMenuUL.prepend("<li id=\""+hidden_inputs[i].id+"\" value=\""+hidden_inputs[i].value+"\">" +-->
+    <!--                    "<a value=\""+ hidden_inputs[i].dataset.text + "\" href=\"#\"> <i class=\"icon-users\"></i>"+ hidden_inputs[i].dataset.text +"</a>" +-->
+    <!--                    "</li>");-->
+    <!--            }*/-->
+
+    <!--            ssoMenuBody.replaceWith(ssoMenuUL);-->
+
+
+    <!--        </script>-->
+    <!--    </th:block>-->
+    <script th:inline="javascript">
+        var roles;
+        /*<![CDATA[*/
+        var isGrsUser = /*[[${grsUser}]]*/ true;
+        /*]]>*/
+        if (!isGrsUser) {
+            // Only call for non GRS User
+            setAdditionalRole();
+        }
+
+        function setAdditionalRole() {
+            $.getJSON("/api/user/organograms", function (response) {
+                if ($("[name='showDrawerMenu']").val() == "true") {
+                    insertAdditionalRolesInLeftMenu(response);
+                } else {
+                    insertAdditionalRolesInTopHeader(response);
+                }
+            });
+        }
+
+        function setBangla() {
+            $.cookie("lang", "fr");
+            location.reload();
+        }
+
+        function setEnglish() {
+            $.cookie("lang", "en");
+            location.reload();
+        }
+
+        function insertAdditionalRolesInLeftMenu(response) {
+            var strRolesMenu = "";
+            var extraRolesCount = 0;
+            $("list-group-item.switchRole").remove();
+            roles = response.roles;
+            $.each(response.roles, function (index, role) {
+                if (!role.selected) {
+                    strRolesMenu += '<li class="list-group-item font-purple switchRole"><a href="javascript:;" onclick="switchRole(' + role.officeUnitOrganogramId + ')" style="white-space: normal;"><i class="fa fa-briefcase"></i><span>&nbsp;' + role.designation + ' (' + role.officeUnitNameBangla + '), ' + role.officeNameBangla + '</span></a></li>';
+                    extraRolesCount++;
+                } else {
+                    var currentRole = role.designation + ' (' + role.officeUnitNameBangla + ')';
+                    $(".drawer-nav .profile-usertitle-job").html(currentRole);
+                    $(".drawer-nav .profile-usertitle-office").html(role.officeNameBangla);
+                }
+            });
+            $(".drawer-nav .extra-roles-count").html((" (" + extraRolesCount).toBanglaNumber() + ")");
+            if (strRolesMenu.length <= 0) {
+                strRolesMenu = "<div class='list-group-item text-center font-purple'>অন্য কোনো দায়িত্ব নেই</div>";
+            }
+            $(".drawer-nav .other-roles").html(strRolesMenu);
+        }
+
+        function insertAdditionalRolesInTopHeader(response) {
+            var strRolesMenu = "";
+            $("li.switchRole").remove();
+            $("span.selectedRole").remove();
+            roles = response.roles;
+            $.each(response.roles, function (index, role) {
+                if (!role.selected) {
+                    strRolesMenu += '<li class="switchRole"><a href="javascript:;" onclick="switchRole(' + role.officeUnitOrganogramId + ')" style="white-space: normal;"><i class="icon-users"></i>' + role.designation + ' (' + role.officeUnitNameBangla + ') ( ' + role.officeNameBangla + ' )</a><li class="divider switchRole"></li></li>';
+                } else {
+                    $(".username").html($(".username").html() + ' - ' + role.designation + ' (' + role.officeUnitNameBangla + ')');
+                }
+            });
+            $("#local123").before(strRolesMenu);
+            $("#profile").before(strRolesMenu);
+            $("#profile").hide();
+        }
+
+        function switchRole(officeUnitOrganogramId) {
+            var singleRole;
+            $.each(roles, function (index, role) {
+                if (role.officeUnitOrganogramId == officeUnitOrganogramId) {
+                    singleRole = role;
+                }
+            });
+            $.ajax({
+                type: "PUT",
+                url: "/api/user/organograms",
+                dataType: "json",
+                data: JSON.stringify(singleRole),
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    window.location.replace("/login");
+                }
+            });
+        }
+
+        var languageCode = $.cookie("lang");
+        var jsLangCodeForLibs = "bn";
+        if (languageCode == "en") {
+            jsLangCodeForLibs = 'en';
+        }
+
+        function redirectToAppropriatePage(data) {
+            window.location.replace(data.url);
+        }
+
+        function updateNotification(notificationId) {
+            $.ajax({
+                type: "PUT",
+                url: "/api/notification/update?id=" + notificationId,
+                dataType: "json",
+                success: redirectToAppropriatePage
+            });
+        }
+
+        function previewGrsGROManual(clickedLink, e) {
+            if (e) {
+                e.preventDefault();
+            }
+            $("#grsGROManualModal").modal("show");
+        }
+
+        function previewFile(clickedLink, e) {
+            if (e) {
+                e.preventDefault();
+            }
+            var domainURL = "http://" + document.location.host;
+            if ($(clickedLink).attr("href").startsWith("http://")) {
+                domainURL = "";
+            }
+            if ($(clickedLink).hasClass("media-embed")) {
+                var isEmbed = false;
+                if ($(clickedLink).attr("data-asset") == "true") {
+                    isEmbed = true;
+                }
+                if (isEmbed) {
+                    $("#fileViewerModal .modal-body").html('<embed src="' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;"></embed>');
+                } else {
+                    $("#fileViewerModal .modal-body").html('<iframe src="http://docs.google.com/gview?embedded=true&url=' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;" frameborder="0"></iframe>');
+                }
+                $("#fileViewerModal").modal("show");
+                return false;
+            } else if ($(clickedLink).hasClass("media-audio")) {
+                $("#fileViewerModal .modal-body").html('<audio style="width:100%;" controls><source src="' + $(clickedLink).attr("href") + '" type="audio/mpeg">Your browser does not support the audio element.</audio>');
+                $("#fileViewerModal").modal("show");
+                return false;
+            } else if ($(clickedLink).hasClass("media-video")) {
+                $("#fileViewerModal .modal-body").html('<video style="width:100%;height:480px;" controls><source src="' + $(clickedLink).attr("href") + '" type="video/mp4">Your browser does not support the video tag.</video>');
+                $("#fileViewerModal").modal("show");
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function initLeftMenuInMobileView() {
+            $('.drawer').drawer({
+                class: {
+                    nav: 'drawer-nav',
+                    toggle: 'drawer-toggle',
+                    overlay: 'drawer-overlay',
+                    open: 'drawer-open',
+                    close: 'drawer-close',
+                    dropdown: 'drawer-dropdown'
+                },
+                iscroll: {
+                    mouseWheel: true,
+                    preventDefault: false
+                },
+                showOverlay: true
+            });
+            var pathname = window.location.pathname;
+            pathname = pathname.replace("/", "");
+            $(".profile-usermenu a[href='" + pathname + "']").closest("li").addClass("active");
+        }
+
+        function initSessionTimeout() {
+            var enableSessionTimeout = $("[name='enableSessionTimeout']");
+            if (enableSessionTimeout.val() == "true") {
+                var logoutUrl = enableSessionTimeout.attr("data-logout-url"),
+                    redirAfterTime = 30 * 60 * 1000,
+                    warnAfterTime = redirAfterTime - (30 * 1000);
+
+                $.sessionTimeout({
+                    title: "<div class='font-purple bold text-center'>আপনার লগইন সেশন সমাপ্ত হতে যাচ্ছে</div>",
+                    message: "",
+                    keepAliveButton: 'লগইন থাকুন',
+                    logoutButton: 'লগ আউট',
+                    logoutUrl: logoutUrl,
+                    redirUrl: logoutUrl,
+                    warnAfter: warnAfterTime,
+                    redirAfter: redirAfterTime,
+                    keepAlive: false,
+                    countdownMessage: "<div class='alert alert-warning font-lg text-center margin-top-40 margin-bottom-40'>আপনি {timer} সময়ের মধ্যে স্বয়ংক্রিয়ভাবে লগ আউট হতে যাচ্ছেন</div>",
+                    countdownBar: true
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            $("#grsGROManualModal").on('shown.bs.modal', function (e) {
+                $("#grsGROManualModal img").each(function (key, val) {
+                    var selector = $(val);
+                    var source = selector.attr('data-src');
+                    selector.attr('src', source);
+                });
+            });
+            $(".scroller").each(function () {
+                if ($(this).attr("data-initialized")) {
+                    return; // exit
+                }
+
+                var height;
+
+                if ($(this).attr("data-height")) {
+                    height = $(this).attr("data-height");
+                } else {
+                    height = $(this).css('height');
+                }
+
+                $(this).slimScroll({
+                    allowPageScroll: true, // allow page scroll when the element scroll is ended
+                    size: '7px',
+                    color: ($(this).attr("data-handle-color") ? $(this).attr("data-handle-color") : '#bbb'),
+                    wrapperClass: ($(this).attr("data-wrapper-class") ? $(this).attr("data-wrapper-class") : 'slimScrollDiv'),
+                    railColor: ($(this).attr("data-rail-color") ? $(this).attr("data-rail-color") : '#eaeaea'),
+                    position: isRTL ? 'left' : 'right',
+                    height: height,
+                    alwaysVisible: ($(this).attr("data-always-visible") == "1" ? true : false),
+                    railVisible: ($(this).attr("data-rail-visible") == "1" ? true : false),
+                    disableFadeOut: true
+                });
+
+                $(this).attr("data-initialized", "1");
+            });
+
+            if (languageCode == null || languageCode == "fr") {
+                $("#selectedLanguageLogoLink").attr("src", "/assets/global/img/flags/bd.png");
+                $("#selectedLanguageName").text("বাংলা");
+                $("#alternateLanguageLogoLink").attr("src", "/assets/global/img/flags/bd.png");
+                $("#alternateLanguageName").text("English");
+                $("a#alternateLanguageLink").attr('href', 'javascript:setEnglish()');
+            }
+            if (languageCode == "en") {
+                $("#selectedLanguageLogoLink").attr("src", "/assets/global/img/flags/bd.png");
+                $("#selectedLanguageName").text("English");
+                $("#alternateLanguageLogoLink").attr("src", "/assets/global/img/flags/bd.png");
+                $("#alternateLanguageName").text("বাংলা");
+                $("a#alternateLanguageLink").attr('href', 'javascript:setBangla()');
+            }
+
+            $('.summernote').summernote({
+                height: 100,
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear', 'fontname']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['Insert', ['table', 'hr']],
+                    ['Misc', ['undo', 'redo']]
+                ]
+            });
+
+            if ($("[name='showDrawerMenu']").val() == "true") {
+                initLeftMenuInMobileView();
+            }
+
+            initSessionTimeout();
+
+        });
+
+
+        function ssoLogout() {
+
+
+            $.ajax({
+                type: 'GET',
+                url: '/ssologout',
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    window.location.href =[[${@environment.getProperty('nothi.logoutUrl')}]];
+                },
+                failed: function (error) {
+                    window.location.href = [[${@environment.getProperty('nothi.logoutUrl')}]];
+                }
+            });
+
+        }
+
+
+    </script>
+
+</div>

@@ -1,0 +1,245 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-sidebar-wrapper" th:fragment="leftMenu(adminMenus, lang, permissions)">
+    <div class="page-sidebar navbar-collapse collapse">
+        <ul class="page-sidebar-menu  page-header-fixed " data-keep-expanded="false" data-auto-scroll="true"
+            data-slide-speed="200" style="padding-top: 20px">
+            <li class="sidebar-toggler-wrapper hide">
+                <div class="sidebar-toggler">
+                    <span></span>
+                </div>
+            </li>
+            <li class="sidebar-search-wrapper">
+            </li>
+            <li class="nav-item" th:if="${permissions.contains('SEE_OFFICE')}">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-home"></i>
+                    <span class="title" th:text="#{offices}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li class="nav-item">
+                        <a th:href="@{viewOffice.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{offices.by.layer})}"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{viewAllOffice.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{offices.all})}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item" th:if="${permissions.contains('MANAGE_CELL')}">
+                <a class="nav-link" th:href="@{manageCell.do}">
+                    <i class="glyphicon glyphicon-star"></i>
+                    <span class="title" th:text="#{cell.member.list.view.header}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:if="${permissions.contains('CENTRAL_DASHBOARD_RECEIVER')}">
+                <a class="nav-link" th:href="@{manageCentralDashboardReceivers.do}">
+                    <i class="glyphicon glyphicon-dashboard"></i>
+                    <span class="title" th:text="#{central.dashboard.recipients}"></span>
+                </a>
+            </li>
+<!--            <li class="nav-item" th:if="${permissions.contains('CENTRAL_DASHBOARD_RECEIVER')}">-->
+<!--                <a class="nav-link" th:href="@{manageSafetyNet.do}">-->
+<!--                    <i class="fa fa-spoon"></i>-->
+<!--                    <span class="title" th:text="#{management.safetynet.program}"></span>-->
+<!--                </a>-->
+<!--            </li>-->
+            <li class="nav-item" th:if="${permissions.contains('UPLOAD_CITIZEN_CHARTER')}">
+                <a class="nav-link" th:href="@{uploadCitizensCharter.do}">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span class="title" th:text="#{upload.citizen.charter}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:if="${permissions.contains('SETUP_CITIZEN_CHARTER')}">
+                <a class="nav-link" th:href="@{manageCitizenCharter.do}">
+                    <i class="glyphicon glyphicon-list-alt"></i>
+                    <span class="title" th:text="#{setup.citizen.charter}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:if="${permissions.contains('CONFIGURE_OFFICE')}">
+                <a class="nav-link" th:href="@{manageOffice.do}">
+                    <i class="glyphicon glyphicon-check"></i>
+                    <span class="title" th:text="#{setup.office.at.grs}"></span>
+                </a>
+                </li>
+            <li class="nav-item" th:if="${permissions.contains('CONFIGURE_OFFICE')}">
+                <a class="nav-link" th:href="@{manageGrievance.do}">
+                    <i class="glyphicon glyphicon-check"></i>
+                    <span class="title" th:text="#{management.grievance.program}"></span>
+                </a>
+            </li>
+            <li class="nav-item" th:if="${permissions.contains('CONFIGURE_OFFICE')}">
+                <a class="nav-link" th:href="@{manageOfficeMissing.do}">
+                    <i class="fa fa-times"></i>
+                    <span class="title" th:text="#{missing.setup.office.at.grs}"></span>
+                </a>
+            </li>
+            <li th:if="${permissions.contains('VIEW_EDUCATIONAL_QUALIFICATIONS') || permissions.contains('ADD_EDUCATIONAL_QUALIFICATIONS')}" class="nav-item ">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-education"></i>
+                    <span class="title" th:text="#{all.x(#{education})}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li th:if="${permissions.contains('VIEW_EDUCATIONAL_QUALIFICATIONS')}" class="nav-item">
+                        <a th:href="@{viewEducation.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{education})}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('ADD_EDUCATIONAL_QUALIFICATIONS')}" class="nav-item">
+                        <a th:href="@{addEducation.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            <span class="title" th:text="#{add.x(#{education})}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li th:if="${permissions.contains('VIEW_USER_COUNT')}" class="nav-item ">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-education"></i>
+                    <span class="title" th:text="#{all.x(#{user})}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li th:if="${permissions.contains('VIEW_USER_COUNT')}" class="nav-item">
+                        <a th:href="@{grsUsers.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{user})}"></span>
+                        </a>
+                    </li>
+
+                    <li th:if="${permissions.contains('VIEW_USER_COUNT')}" class="nav-item">
+                        <a th:href="@{addGrsUsers.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            <span class="title" th:text="#{add.x(#{user})}"></span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
+            <li th:if="${permissions.contains('VIEW_OCCUPATIONS') || permissions.contains('ADD_OCCUPATIONS')}" class="nav-item ">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-asterisk"></i>
+                    <span class="title" th:text="#{all.x(#{occupation})}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li th:if="${permissions.contains('VIEW_OCCUPATIONS')}" class="nav-item">
+                        <a th:href="@{viewOccupations.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{occupation})}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('ADD_OCCUPATIONS')}" class="nav-item">
+                        <a th:href="@{addOccupations.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            <span class="title" th:text="#{add.x(#{occupation})}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li th:if="${permissions.contains('VIEW_EMAIL_TEMPLATE') || permissions.contains('VIEW_SMS_TEMPLATE') || permissions.contains('SETUP_EMAIL') || permissions.contains('SETUP_SMS')}" class="nav-item ">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-duplicate"></i>
+                    <span class="title" th:text="#{template}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li th:if="${permissions.contains('VIEW_EMAIL_TEMPLATE')}" class="nav-item">
+                        <a th:href="@{viewEmailTemplate.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{template.email})}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('SETUP_EMAIL')}" class="nav-item">
+                        <a th:href="@{addEmailTemplate.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            <span class="title" th:text="#{add.x(#{template.email})}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('VIEW_SMS_TEMPLATE')}" class="nav-item">
+                        <a th:href="@{viewSmsTemplate.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{template.sms})}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('SETUP_SMS')}" class="nav-item">
+                        <a th:href="@{addSmsTemplate.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            <span class="title" th:text="#{add.x(#{template.sms})}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li th:if="${permissions.contains('VIEW_SP_PROGRAM') || permissions.contains('SAVE_SP_PROGRAM')}" class="nav-item">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-asterisk"></i>
+                    <span class="title" th:text="#{grievance.safetynet.program}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li th:if="${permissions.contains('VIEW_SP_PROGRAM')}" class="nav-item">
+                        <a th:href="@{spProgrammeSetup.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-eye-open"></i>
+                            <span class="title" th:text="#{view.x(#{safetynet.program})}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('SAVE_SP_PROGRAM')}" class="nav-item">
+                        <a th:href="@{addSpProgramme.do}" class="nav-link ">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            <span class="title" th:text="#{add.x(#{safetynet.program})}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li th:if="${permissions.contains('CONFIGURE_EMAIL') || permissions.contains('CONFIGURE_SMS')}" class="nav-item ">
+                <a href="javascript:;" class="nav-link nav-toggle">
+                    <i class="glyphicon glyphicon-wrench"></i>
+                    <span class="title" th:text="#{other.settings}"></span>
+                    <span class="arrow"></span>
+                </a>
+                <ul class="sub-menu">
+                    <li th:if="${permissions.contains('CONFIGURE_EMAIL')}" class="nav-item">
+                        <a th:href="@{setupEmailSMS.do?id=2}" class="nav-link">
+                            <i class="glyphicon glyphicon-envelope"></i>
+                            <span class="title" th:text="#{setup.email}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('CONFIGURE_SMS')}" class="nav-item">
+                        <a th:href="@{setupEmailSMS.do?id=1}" class="nav-link">
+                            <i class="glyphicon glyphicon-phone"></i>
+                            <span class="title" th:text="#{setup.sms}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('FILE_UPLOAD_SETUP')}" class="nav-item">
+                        <a th:href="@{fileUploadSetup.do}" class="nav-link">
+                            <i class="glyphicon glyphicon-open"></i>
+                            <span class="title" th:text="#{file.upload.setup}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${permissions.contains('SYSTEM_NOTIFICATION_SETTINGS')}" class="nav-item">
+                        <a th:href="@{systemNotificationSettings.do}" class="nav-link">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <span class="title" th:text="#{report.notification.setup}"></span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<script th:fragment="superadmin_leftmenuScript">
+    var pathname = window.location.pathname;
+    pathname = pathname.replace("/", "");
+    $("[href='" + pathname + "']").attr("style", "background: #ffffff!important")
+        .closest(".sub-menu").show()
+        .closest(".nav-item").addClass('open')
+        .find('.arrow').addClass('open');
+</script>

@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="hooDashboardIncludeStyle" th:remove="tag">
+    <link href="/assets/global/css/dashboard-main.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/css/dashboard-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/easy-autocomplete/easy-autocomplete.css" rel="stylesheet" type="text/css"/>
+</div>
+
+<div th:fragment="hooDashboard" th:remove="tag">
+    <div class="app-title">
+        <div class="col-md-12 col-sm-12 col-12 date">
+            <span th:text="${currentDateMonthYear}"></span>
+            <h2 id="officeName" style="display: none;"><span th:text="${officeName}" th:remove="tag"></span> এর
+                ড্যাশবোর্ড</h2>
+            <h2 id="officeNameCell" style="display: none;">মন্ত্রিপরিষদ বিভাগের অভিযোগ ব্যবস্থাপনা সেল</h2>
+            <h2 id="officeNameCoordinator" style="display: none;">মাঠ পর্যায়ের সমন্বয়কের ড্যাশবোর্ড</h2>
+            <h2 id="officeNameCentral" style="display: none;">অভিযোগ প্রতিকার ব্যবস্থার সামগ্রিক চিত্র</h2>
+            <input type="hidden" name="officeId" th:value="${officeId}">
+            <input type="hidden" name="officeLevel" th:value="${officeLevel}">
+            <input type="hidden" name="divisionId" th:value="${divisionId}">
+            <input type="hidden" name="districtId" th:value="${districtId}">
+            <input type="hidden" name="upazilaId" th:value="${upazilaId}">
+        </div>
+    </div>
+    <div th:if="${canViewGrievanceDashboard}" class="tab-container" id="tab0_body">
+        <div th:replace="dashboard2/hooDashboardLandingPage :: hooDashboardLandingPage"></div>
+    </div>
+    <div th:if="${isCellGRO}" class="tab-container" id="tabCell_body">
+        <div th:replace="dashboard2/cellDashboard :: cellDashboard"></div>
+    </div>
+    <div th:if="${isCentralDashboardRecipient}" class="tab-container" id="tabCentral_body">
+        <div th:replace="dashboard2/centralDashboardLandingPage :: centralDashboardLandingPage"></div>
+    </div>
+    <div th:if="${isDivisionLevelFC || isDistrictLevelFC}" class="tab-container" id="tabCoordinator_body">
+        <div th:replace="dashboard2/fieldLevelCoordinator :: fieldLevelCoordinator"></div>
+    </div>
+    <div th:if="${canViewGrievanceDashboard}" class="tab-container" id="tabMonthlyReport_body">
+        <div th:replace="dashboard2/currentMonthReport :: currentMonthReport"></div>
+    </div>
+    <div class="tab-container" id="tabMinistryReport_body">
+        <div th:replace="dashboard2/ministryReport :: ministryReport"></div>
+    </div>
+    <div class="tab-container" id="tabLayerWiseReport_body">
+        <div th:replace="dashboard2/layerWiseReport :: layerWiseReport"></div>
+    </div>
+    <div class="tab-container" id="tabLocationBasedReport_body">
+        <div th:replace="dashboard2/locationBasedReport :: locationBasedReport"></div>
+    </div>
+    <div class="tab-container" id="tabUpazilaWiseGrievanceReport_body">
+        <div th:replace="dashboard2/upazilaWiseSafetynetGrievanceReport :: upazilaWiseSafetynetGrievanceReport"></div>
+    </div>
+    <th:block th:if="${canViewGrievanceDashboard}">
+        <div class="tab-container" id="tabGrievanceRegister_body">
+            <div th:replace="dashboard2/grievanceRegister :: grievanceRegister"></div>
+        </div>
+        <div class="tab-container" id="tabGrievanceExpired_body">
+            <div th:replace="dashboard2/grievanceTimeExpired :: grievanceTimeExpired"></div>
+        </div>
+        <div class="tab-container" id="tabGrievanceResolved_body">
+            <div th:replace="dashboard2/grievanceResolvedCurrentMonth :: grievanceResolvedCurrentMonth"></div>
+        </div>
+        <div class="tab-container" id="tabCountBySections_body">
+            <div th:replace="dashboard2/grievanceGroupBySection :: grievanceGroupBySection"></div>
+        </div>
+        <div class="tab-container" id="tabCountByServices_body">
+            <div th:replace="dashboard2/grievanceGroupByService :: grievanceGroupByService"></div>
+        </div>
+        <div class="tab-container" id="tabGrievancesFeedback_body">
+            <div th:replace="dashboard2/grievanceRatingAndFeedback :: grievanceRatingAndFeedback"></div>
+        </div>
+        <div class="tab-container" id="tabGrievanceCharts_body">
+            <div th:replace="dashboard2/grievanceCharts :: grievanceCharts"></div>
+        </div>
+    </th:block>
+
+    <th:block th:if="${canViewAppealAndSubOfficeDashboard}">
+        <div class="tab-container" id="tabAppealRegister_body">
+            <div th:replace="dashboard2/appealRegister :: appealRegister"></div>
+        </div>
+        <div class="tab-container" id="tabAppealExpired_body">
+            <div th:replace="dashboard2/appealTimeExpired :: appealTimeExpired"></div>
+        </div>
+        <div class="tab-container" id="tabAppealResolved_body">
+            <div th:replace="dashboard2/appealResolved :: appealResolved"></div>
+        </div>
+        <div class="tab-container" id="tabCountByChildOffices_body">
+            <div th:replace="dashboard2/appealFromOffices :: appealFromOffices"></div>
+        </div>
+        <div class="tab-container" id="tabAppealsFeedback_body">
+            <div th:replace="dashboard2/appealRatingAndFeedback :: appealRatingAndFeedback"></div>
+        </div>
+        <div class="tab-container" id="tabAppealCharts_body">
+            <div th:replace="dashboard2/appealCharts :: appealCharts"></div>
+        </div>
+
+        <div class="tab-container" id="tabChildOfficesStatus_body">
+            <div th:replace="dashboard2/subOfficesStatistics :: subOfficesStatistics"></div>
+        </div>
+        <div class="tab-container" id="tabChildOfficesReports_body">
+            <div th:replace="dashboard2/subOfficesReports :: subOfficesReports"></div>
+        </div>
+    </th:block>
+
+    <th:block th:if="${canViewGrievanceDashboard}">
+        <div class="tab-container" id="tabSuggestions_body">
+            <div th:replace="dashboard2/suggestions :: suggestions"></div>
+        </div>
+        <div class="tab-container" id="tabAppealedComplaints_body">
+            <div th:replace="dashboard2/appealedComplaints :: appealedComplaints"></div>
+        </div>
+        <div class="tab-container" id="tabTagidList_body">
+            <div th:replace="dashboard2/tagidList :: tagidList"></div>
+        </div>
+    </th:block>
+
+    <div class="tab-container" id="tabCustomReport_body">
+        <div th:replace="dashboard2/customReport :: customReport"></div>
+    </div>
+
+<!--    <div class="tab-container" id="tabSafetyNetDashboard_body">-->
+<!--        <div th:replace="dashboard2/safetyNetDashboard :: safetyNetDashboard"></div>-->
+<!--    </div>-->
+
+</div>
+
+<div th:fragment="hooDashboardIncludeScript" th:remove="tag">
+    <script src="assets/global/plugins/echarts/echarts-all.js" type="text/javascript"></script>
+    <script src="assets/global/scripts/printThis.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/select2/js/i18n/bn.js" type="text/javascript"></script>
+    <th:block th:replace="dashboard2/centralDashboardLandingPage :: centralDashboardLandingPageScript"></th:block>
+    <th:block th:replace="dashboard2/currentMonthReport :: currentMonthReportScript"></th:block>
+    <th:block th:replace="dashboard2/grievanceRegister :: grievanceRegisterScript"></th:block>
+    <th:block th:replace="dashboard2/appealRegister :: appealRegisterScript"></th:block>
+    <th:block th:replace="dashboard2/suggestions :: suggestionsScript"></th:block>
+    <th:block th:replace="dashboard2/subOfficesReports :: subOfficesReportsScript"></th:block>
+    <th:block th:replace="dashboard2/appealedComplaints :: appealedComplaintsScript"></th:block>
+    <th:block th:replace="dashboard2/tagidList :: tagidListScript"></th:block>
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+    <th:block th:replace="dashboard2/customReport :: customReportScript"></th:block>
+    <th:block th:replace="dashboard2/ministryReport :: ministryReportScript"></th:block>
+    <th:block th:replace="dashboard2/layerWiseReport :: layerWiseReportScript"></th:block>
+    <th:block th:replace="dashboard2/locationBasedReport :: locationBasedReportScript"></th:block>
+    <th:block th:replace="dashboard2/safetyNetDashboard :: safetyNetDashboardScript"></th:block>
+    <th:block th:replace="dashboard2/upazilaWiseSafetynetGrievanceReport :: upazilaWiseSafetynetGrievanceReportScript"></th:block>
+</div>
+
+<script type="text/javascript" th:fragment="hooDashboardScript">
+    initReportDatepicker($("#customReportMonthYear"));
+    initReportDatepickerOnlyYear($("#customReportMonthYear1"));
+    initReportDatepicker($("#customReportMonthYear2"));
+    initReportDatepicker($("#customReportMonthYear4"));
+
+    function changeCurrentMonthYear(val) {
+        let dateFrom = $("#customReportMonthYear").datepicker("getDate");
+        let month = dateFrom.getMonth() + 1;
+        let year = dateFrom.getFullYear();
+        console.log(year + "_" + month, val);
+        $('.monthToBeShown').html(val);
+        loadHooDashboardLandingPageData(year + "_" + month);
+    }
+
+    function changeCurrentMonthYear1(val) {
+        let dateFrom = $("#customReportMonthYear1").datepicker("getDate");
+        let month = dateFrom.getMonth() + 1;
+        let year = dateFrom.getFullYear();
+        $('#currentYear1').html(val);
+        loadYearlyDashboardData1(year);
+    }
+
+    function changeCurrentMonthYear2(val) {
+        let dateFrom = $("#customReportMonthYear2").datepicker("getDate");
+        let month = dateFrom.getMonth() + 1;
+        let year = dateFrom.getFullYear();
+        $('#currentYear2').html(val);
+        $('#currentYear3').html(val.split(',')[1]);
+        loadCentralDashboardData2(year, month);
+    }
+
+    function changeCurrentMonthYear4(val) {
+        let dateFrom = $("#customReportMonthYear4").datepicker("getDate");
+        let month = dateFrom.getMonth() + 1;
+        let year = dateFrom.getFullYear();
+        $('#currentYear4').html(val);
+        showMinistryLevelOfficesStatistics(year, month);
+    }
+
+
+    const DEFAULT_CHART_INITIALIZATION_DELAY = 500;
+    const MEDIUMS = {
+        "ONLINE": "ওয়েবসাইট",
+        "FROM_LAST_MONTH": "পূর্ববর্তী মাসের জের",
+        "CONVENTIONAL_METHOD": "প্রচলিত পদ্ধতিতে",
+        "SELF_MOTIVATED_ACCEPTANCE": "স্বপ্রণোদিতভাবে গৃহীত"
+    };
+    const SERVICE_TYPES = {
+        "NAGORIK": "নাগরিক",
+        "DAPTORIK": "দাপ্তরিক",
+        "STAFF": "কর্মকর্তা-কর্মচারী"
+    };
+    const MONTH_NAME_BANGLA = ["জানুয়ারী", "ফেব্রুয়ারী", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+    const itemPerPage = 10;
+
+    function tooltipBanglaFormatter(params, ticket, callback) {
+        return params.name + " :<br>"
+            + ('' + params.value).toBanglaNumber() + " ("
+            + ('' + params.percent).toBanglaNumber() + "%)";
+    }
+
+    function getTableNoDataFoundRow(colspanValue) {
+        var message = (languageCode == "en") ? "No data has been found" : "কোনো তথ্য পাওয়া যায়নি";
+        return "<tr><td colspan='" + colspanValue + "' class='text-center'>" + message + "</td></tr>";
+    }
+
+    function encodeOfficeIdOnDrillDown(param) {
+        var encodedPrefix = btoa("" + (Math.pow(10, 10) * Math.random())).substr(0, 20).split("").reverse().join("");
+        var encodedParams = btoa("" + param);
+        return encodedPrefix + encodedParams;
+    }
+
+    function showLoadingFailureMessage() {
+        toastr.error("দুঃখিত! ত্রুটির জন্য দেখানো যাচ্ছেনা", null, {positionClass: 'toast-top-center'});
+    }
+
+    function formattedIdentifiedReasonByGRO(currentLocationList) {
+        if (currentLocationList.length == 0) {
+            return "-";
+        }
+        var formattedList = "";
+        currentLocationList.forEach(function (currentLocation, index) {
+            var waitingFrom = new Date(currentLocation.waitingFrom).toISOString().slice(0, 10).toBanglaNumber();
+            var identifiedReason = "<li>"
+                + currentLocation.officeName + " দপ্তরের "
+                + currentLocation.officeUnitName + " শাখায় "
+                + waitingFrom + " তারিখ হতে প্রক্রিয়াধীন রয়েছে"
+                + "</li>";
+            formattedList += identifiedReason;
+        });
+        return "<ul>" + formattedList + "</ul>";
+    }
+
+    function getGeneralPieChartOptions(chartData, radius) {
+        var legendData = [];
+        var seriesData = [];
+        var colorList = [];
+        var comparisonPie = chartData;
+        delete comparisonPie.total;
+        delete comparisonPie.rating;
+        $.each(comparisonPie, function (key, value) {
+            legendData.push(value.name);
+            seriesData.push({name: value.name, value: value.value});
+            colorList.push(value.color);
+        });
+        return {
+            color: colorList,
+            toolbox: {
+                show: false,
+                feature: {
+                    restore: {
+                        show: true,
+                        title: "রিলোড"
+                    },
+                    saveAsImage: {
+                        show: true,
+                        title: "সংরক্ষণ",
+                        type: 'png'
+                    }
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: tooltipBanglaFormatter
+            },
+            legend: {
+                left: 'left',
+                data: legendData
+            },
+            series: [{
+                type: 'pie',
+                radius: radius ? radius : '60%',
+                center: ['50%', '55%'],
+                selectedMode: 'single',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'inner'
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                data: seriesData
+            }]
+        }
+    }
+
+    function getBarChartDataOfTotalAndResolvedGrievancesByMonth(data, isGrievance) {
+        var monthList = [];
+        var totalList = [];
+        var resolvedList = [];
+        var yearList = [];
+        data.forEach(function (elm) {
+            monthList.push(MONTH_NAME_BANGLA[elm.month]);
+            totalList.push(elm.total);
+            resolvedList.push(elm.resolved);
+            yearList.push(elm.year);
+        });
+        return {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function (params) {
+                    var monthIndex = (new Date()).getMonth();
+                    var yearCurrent = (new Date()).getFullYear();
+                    var dataIndex = params[0].dataIndex;
+                    var yearData = yearList[dataIndex];
+                    var value1 = ('' + params[0].value).toBanglaNumber();
+                    var value2 = ('' + params[1].value).toBanglaNumber();
+                    value1 = ((yearCurrent == yearData) && (dataIndex > monthIndex)) ? "-" : value1;
+                    value2 = ((yearCurrent == yearData) && (dataIndex > monthIndex)) ? "-" : value2;
+
+
+                    return params[0].name + "<br>" +
+                        params[0].seriesName + ": " + value1 + "<br>" +
+                        params[1].seriesName + ": " + value2;
+                }
+            },
+            toolbox: {
+                feature: {
+                    restore: {show: true, title: 'রিফ্রেশ'},
+                    saveAsImage: {show: true, title: 'সংরক্ষণ'}
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: monthList,
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    axisLabel: {
+                        interval: 0
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: (isGrievance ? 'অভিযোগের সংখ্যা' : 'আপিলের সংখ্যা'),
+                    axisLabel: {
+                        formatter: function (value) {
+                            return ("" + value).toBanglaNumber();
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: "প্রাপ্ত অভিযোগ",
+                    type: 'bar',
+                    barGap: 5,
+                    data: totalList
+                },
+                {
+                    name: "নিষ্পত্তিকৃত অভিযোগ",
+                    type: 'bar',
+                    data: resolvedList
+                }
+            ]
+        };
+    }
+
+
+    function getBarChartDataOfTotalAndResolvedGrievancesByYear(data, isGrievance) {
+        var yearList = [];
+        var totalList = [];
+        var resolvedList = [];
+        data.forEach(function (elm) {
+            yearList.push(elm.year);
+            totalList.push(elm.total);
+            resolvedList.push(elm.resolved);
+        });
+        return {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                formatter: function (params) {
+                    var monthIndex = (new Date()).getMonth();
+                    var dataIndex = params[0].dataIndex;
+                    var value1 = dataIndex <= monthIndex ? ('' + params[0].value).toBanglaNumber() : "-";
+                    var value2 = dataIndex <= monthIndex ? ('' + params[1].value).toBanglaNumber() : "-";
+                    return params[0].name + "<br>" +
+                        params[0].seriesName + ": " + value1 + "<br>" +
+                        params[1].seriesName + ": " + value2;
+                }
+            },
+            toolbox: {
+                feature: {
+                    restore: {show: true, title: 'রিফ্রেশ'},
+                    saveAsImage: {show: true, title: 'সংরক্ষণ'}
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: yearList,
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    axisLabel: {
+                        interval: 0
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: (isGrievance ? 'অভিযোগের সংখ্যা' : 'আপিলের সংখ্যা'),
+                    axisLabel: {
+                        formatter: function (value) {
+                            return ("" + value).toBanglaNumber();
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: "প্রাপ্ত অভিযোগ",
+                    type: 'bar',
+                    barGap: 5,
+                    data: totalList
+                },
+                {
+                    name: "নিষ্পত্তিকৃত অভিযোগ",
+                    type: 'bar',
+                    data: resolvedList
+                }
+            ]
+        };
+    }
+
+    function getAOOptionsForAppealCountByChildOffices(appealCountByChildOfficesArray) {
+        var officeNamesList = [];
+        var totalCountList = [];
+        appealCountByChildOfficesArray.forEach(function (elm) {
+            var name = (languageCode == 'en') ? elm['nameEnglish'] : elm['nameBangla'];
+            officeNamesList.push(name);
+            totalCountList.push(elm['grievanceCount']);
+        });
+        return {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                    crossStyle: {
+                        color: '#993856'
+                    }
+                },
+                formatter: function tooltipBanglaFormatter(params) {
+                    return params[0].name + "<br>" +
+                        params[0].seriesName + ": " + ('' + params[0].value).toBanglaNumber();
+                }
+            },
+            toolbox: {
+                feature: {
+                    restore: {show: true, title: 'রিফ্রেশ'},
+                    saveAsImage: {show: true, title: 'সংরক্ষণ'}
+                }
+            },
+            legend: {
+                data: ['প্রাপ্ত আপিল']
+            },
+            xAxis: [
+                {
+                    show: false,
+                    type: 'category',
+                    data: officeNamesList,
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'আপিলের সংখ্যা',
+                    axisLabel: {
+                        formatter: function (value) {
+                            return ("" + value).toBanglaNumber();
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: 'প্রাপ্ত আপিল',
+                    type: 'bar',
+                    data: totalCountList
+                }
+            ]
+        };
+    }
+
+    function getGROOptionsForGrievanceCountBySection(grievanceCountBySectionArray) {
+        var dataArray = [];
+        if (grievanceCountBySectionArray && grievanceCountBySectionArray.length > 0) {
+            var nameSuffix = (languageCode == 'en' ? "English" : "Bangla");
+            dataArray = grievanceCountBySectionArray.filter(function (elm) {
+                return (elm.grievanceCount != null) && (elm.grievanceCount != 0);
+            }).map(function (elm) {
+                return {name: elm["name" + nameSuffix], value: elm.grievanceCount};
+            });
+        }
+        return {
+            tooltip: {
+                trigger: 'item',
+                formatter: tooltipBanglaFormatter
+            },
+            toolbox: {
+                show: true,
+                orient: 'horizontal',
+                left: 'right',
+                feature: {
+                    restore: {show: true, title: 'রিফ্রেশ'},
+                    saveAsImage: {show: true, title: 'সংরক্ষণ'}
+                }
+            },
+            series: [
+                {
+                    name: 'সেকশন অনুযায়ী বিভাজন',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '52%'],
+                    data: dataArray,
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inner',
+                            formatter: function (params) {
+                                return params.name + " (" + params.value + ")";
+                            }
+                        }
+                    },
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+    }
+
+    function getGROOptionsForGrievanceCountByService(grievanceCountByServiceArray) {
+        var dataArray = [];
+        if (grievanceCountByServiceArray && grievanceCountByServiceArray.length > 0) {
+            var nameSuffix = (languageCode == 'en' ? "English" : "Bangla");
+            dataArray = grievanceCountByServiceArray.filter(function (elm) {
+                return (elm.grievanceCount != null) && (elm.grievanceCount != 0);
+            }).map(function (elm) {
+                return {name: elm["name" + nameSuffix], value: elm.grievanceCount};
+            });
+        }
+        return {
+            tooltip: {
+                trigger: 'item',
+                formatter: tooltipBanglaFormatter
+            },
+            toolbox: {
+                show: true,
+                orient: 'horizontal',
+                left: 'right',
+                feature: {
+                    restore: {show: true, title: 'রিফ্রেশ'},
+                    saveAsImage: {show: true, title: 'সংরক্ষণ'}
+                }
+            },
+            series: [
+                {
+                    name: 'সেবা অনুযায়ী বিভাজন',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '52%'],
+                    data: dataArray,
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'inner',
+                            formatter: function (params) {
+                                return params.name + " (" + params.value + ")";
+                            }
+                        }
+                    },
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+    }
+
+    function loadHooDashboardLandingPageData(currentDateValue) {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        var apiendpoint = "/api/dashboard/offices/" + officeId + "/hoo-dashboard-data";
+        if (currentDateValue !== null) {
+            apiendpoint = "/api/dashboard/offices/" + officeId + "/hoo-dashboard-data/" + currentDateValue;
+        }
+        $.getJSON(apiendpoint, function (response) {
+            for (var prop in response) {
+                if (response.hasOwnProperty(prop)) {
+                    var value = response[prop];
+                    var dom = $("#" + prop);
+                    if (dom.length > 0) {
+                        dom.text(value ? ("" + value).toBanglaNumber() : "০");
+                    }
+                }
+            }
+        }).done(function (response) {
+        }).fail(function (response) {
+            var message = (languageCode == "en") ? "Sorry! Cannot load dashboard data" : "দুঃখিত! তথ্য লোড করা যাচ্ছেনা";
+            toastr.error(message, null, {positionClass: 'toast-top-center'});
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function loadCabinetCellPageData() {
+        blockUI();
+        $.getJSON("/api/dashboard/cell-dashboard-data", function (response) {
+            for (var prop in response) {
+                if (response.hasOwnProperty(prop)) {
+                    var value = response[prop];
+                    var dom = $("#" + prop + "OfCell");
+                    if (dom.length > 0) {
+                        dom.text(value ? ("" + value).toBanglaNumber() : "০");
+                    }
+                }
+            }
+        }).done(function (response) {
+        }).fail(function (response) {
+            var message = (languageCode == "en") ? "Sorry! Cannot load dashboard data" : "দুঃখিত! তথ্য লোড করা যাচ্ছেনা";
+            toastr.error(message, null, {positionClass: 'toast-top-center'});
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function loadFieldCoordinatorDashboardData() {
+        blockUI();
+        $.getJSON("/api/dashboard/field-coordinator-data", function (response) {
+            var currentMonthResolutions = response;
+            var isEnglish = (languageCode == "en");
+            var bodyContent = "";
+            var aggregatedTotal = 0;
+            var aggregatedForwarded = 0;
+            var aggregatedResolved = 0;
+            var aggregatedExpired = 0;
+            if (currentMonthResolutions.length > 0) {
+                currentMonthResolutions.forEach(function (rowObj, index) {
+                    var total = rowObj.totalGrievances,
+                        forwarded = rowObj.forwardedGrievances,
+                        resolved = rowObj.resolvedGrievances,
+                        expired = rowObj.timeExpiredGrievances;
+                    aggregatedTotal += total;
+                    aggregatedForwarded += forwarded;
+                    aggregatedResolved += resolved;
+                    aggregatedExpired += expired;
+                    var resolveRate = 0.0,
+                        serial = index + 1,
+                        exactTotal = total - forwarded;
+                    var params = encodeOfficeIdOnDrillDown(rowObj.officeId);
+                    if (exactTotal > 0) {
+                        var rate = (resolved / exactTotal) * 100;
+                        resolveRate = rate.toFixed(2);
+                    } else {
+                        resolveRate = "-";
+                    }
+                    bodyContent += "<tr class='text-center'>" +
+                        "<td>" + (isEnglish ? serial : ("" + serial).toBanglaNumber()) + "</td>" +
+                        "<td><a class='clickable-link' href='dashboard.do?params=" + params + "' class='blueLink' title='ড্যাশবোর্ড দেখুন'>" + rowObj.officeName + "</a></td>" +
+                        "<td>" + (isEnglish ? total : ("" + total).toBanglaNumber()) + "</td>" +
+                        "<td>" + (isEnglish ? resolveRate : ("" + resolveRate).toBanglaNumber()) + "</td>" +
+                        "<td>" + (isEnglish ? expired : ("" + expired).toBanglaNumber()) + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContent = getTableNoDataFoundRow(5);
+            }
+            var aggregatedResolveRate = 0.0,
+                aggregatedExactTotal = aggregatedTotal - aggregatedForwarded;
+            if (aggregatedExactTotal > 0) {
+                aggregatedResolveRate = ((aggregatedResolved / aggregatedExactTotal) * 100).toFixed(2);
+            }
+            $("#fieldCoordinatorTotalGrievance").text(("" + aggregatedTotal).toBanglaNumber());
+            $("#fieldCoordinatorTimeExpiredGrievance").text(("" + aggregatedExpired).toBanglaNumber());
+            $("#fieldCoordinatorResolvedGrievance").text(("" + aggregatedResolved).toBanglaNumber());
+            $("#fieldCoordinatorGrievanceResolveRate").text(("" + aggregatedResolveRate).toBanglaNumber());
+            $("#fieldCoordinatorDataTable tbody").empty().html(bodyContent);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+
+        if ($("[name='isDivisionLevelFC']").val() == "true") {
+            blockUI();
+            $.getJSON("/api/dashboard/field-coordinator-appeal-data", function (response) {
+                var fieldCoordinatorDivisionOffices = response;
+                var aggregatedTotal = 0;
+                var aggregatedResolved = 0;
+                var aggregatedExpired = 0;
+                if (fieldCoordinatorDivisionOffices.length > 0) {
+                    fieldCoordinatorDivisionOffices.forEach(function (rowObj, index) {
+                        aggregatedTotal += rowObj.total;
+                        aggregatedResolved += rowObj.resolved;
+                        aggregatedExpired += rowObj.expired;
+                    });
+                }
+                var aggregatedResolveRate = 0.00;
+                if (aggregatedTotal > 0) {
+                    aggregatedResolveRate = ((aggregatedResolved / aggregatedTotal) * 100).toFixed(2);
+                }
+                $("#fieldCoordinatorTotalAppeal").text(("" + aggregatedTotal).toBanglaNumber());
+                $("#fieldCoordinatorTimeExpiredAppeal").text(("" + aggregatedExpired).toBanglaNumber());
+                $("#fieldCoordinatorResolvedAppeal").text(("" + aggregatedResolved).toBanglaNumber());
+                $("#fieldCoordinatorAppealResolveRate").text(("" + aggregatedResolveRate).toBanglaNumber());
+            }).done(function () {
+            }).always(function () {
+                unblockUI();
+            }).fail(showLoadingFailureMessage);
+        }
+    }
+
+    function loadTimeExpiredGrievances() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/grievances/expired", function (response) {
+            var list = response;
+            var bodyContents = "";
+            if (list.length > 0) {
+                list.forEach(function (obj, index) {
+                    var grievance = obj.grievance;
+                    var currentLocationList = obj.grievanceCurrentLocationList;
+                    bodyContents += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + grievance.subject + "</td>" +
+                        "<td>" + grievance.serviceNameBangla + "</td>" +
+                        "<td>" + grievance.typeBangla + "</td>" +
+                        "<td>" + grievance.expectedDateOfClosingBangla.substr(0, 10) + "</td>" +
+                        "<td>" + formattedIdentifiedReasonByGRO(currentLocationList) + "</td>" +
+                        "<td class='text-center'><a href='javascript:;' data-id='" + grievance.id + "' class='provide-nudge fa fa-paper-plane btn btn-circle btn-xs btn-primary' style='cursor: pointer;'></a></td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContents = "<tr><td colspan='7' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td></tr>";
+            }
+            $("#grievancesListForNudge tbody").html(bodyContents);
+        }).always(function () {
+            unblockUI();
+        });
+
+        var nudgeForm = $("form.provide-nudge-form");
+        var messageInputField = $("#nudgeMessage");
+        messageInputField.summernote({height: 200});
+        $("#grievancesListForNudge tbody").off("click").on("click", ".provide-nudge", function () {
+            var _this = $(this);
+            var grievanceId = _this.attr("data-id");
+            $("#modalProvideNudge [name='grievanceId']").val(grievanceId);
+            messageInputField.summernote("reset");
+            $("#modalProvideNudge").modal("show");
+        });
+        nudgeForm.off("submit").on("submit", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var grievanceId = nudgeForm.find("[name='grievanceId']").val();
+            var message = $("#nudgeMessage").summernote("code");
+            var data = {
+                grievanceId: grievanceId,
+                decision: message
+            };
+            $.ajax({
+                type: "POST",
+                url: "/api/grievance/provide-nudge",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    $("#modalProvideNudge").modal("hide");
+                    toastr.success(response.message, null, {positionClass: 'toast-top-center'});
+                },
+                error: function (response) {
+                    toastr.error(response.message, null);
+                },
+                beforeSend: function () {
+                    $.blockUI({
+                        message: (languageCode == "en" ? "Please wait, Nudge is submitting" : "তাগিদ প্রদান করা হচ্ছে, দয়া করে অপেক্ষা করুন"),
+                        baseZ: 1100
+                    });
+                },
+                complete: function () {
+                    $.unblockUI();
+                }
+            });
+        });
+    }
+
+    function loadTimeExpiredAppeals() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/appeals/expired", function (response) {
+            var list = response;
+            var bodyContents = "";
+            if (list.length > 0) {
+                list.forEach(function (obj, index) {
+                    var grievance = obj.grievance;
+                    var currentLocationList = obj.grievanceCurrentLocationList;
+                    bodyContents += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + grievance.subject + "</td>" +
+                        "<td>" + grievance.serviceNameBangla + "</td>" +
+                        "<td>" + grievance.typeBangla + "</td>" +
+                        "<td>" + grievance.expectedDateOfClosingBangla.substr(0, 10) + "</td>" +
+                        "<td>" + formattedIdentifiedReasonByGRO(currentLocationList) + "</td>" +
+                        "<td class='text-center'><a href='javascript:;' data-id='" + grievance.id + "' class='provide-nudge fa fa-paper-plane btn btn-circle btn-xs btn-primary' style='cursor: pointer;'></a></td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContents = "<tr><td colspan='7' class='text-center'>দুঃখিত! কোনো তথ্য পাওয়া যায়নি</td></tr>";
+            }
+            $("#appealsListForNudge tbody").html(bodyContents);
+        }).always(function () {
+            unblockUI();
+        });
+
+        var nudgeForm = $("form.provide-nudge-form");
+        var messageInputField = $("#nudgeMessage");
+        messageInputField.summernote({height: 200});
+        $("#appealsListForNudge tbody").off("click").on("click", ".provide-nudge", function () {
+            var _this = $(this);
+            var grievanceId = _this.attr("data-id");
+            $("#modalProvideNudge [name='grievanceId']").val(grievanceId);
+            messageInputField.summernote("reset");
+            $("#modalProvideNudge").modal("show");
+        });
+        nudgeForm.off("submit").on("submit", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var grievanceId = nudgeForm.find("[name='grievanceId']").val();
+            var message = $("#nudgeMessage").summernote("code");
+            var data = {
+                grievanceId: grievanceId,
+                decision: message
+            };
+            $.ajax({
+                type: "POST",
+                url: "/api/grievance/provide-nudge",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: "json",
+                success: function (response) {
+                    $("#modalProvideNudge").modal("hide");
+                    toastr.success(response.message, null, {positionClass: 'toast-top-center'});
+                },
+                error: function (response) {
+                    toastr.error(response.message, null);
+                }
+            });
+        });
+    }
+
+    function loadGrievanceChartsAndData() {
+        blockUI();
+        $.when(criteriaUpdateGrievanceGraph("Graph")).then(function () {
+            $("#tabGrievanceCharts_body .view-report").click();
+            unblockUI();
+        });
+
+        // $("#tabGrievanceCharts_body .view-report").click();
+
+        // var officeId = $("[name='officeId']").val();
+        //
+        // let date = new Date();
+        // let month = date.getMonth();
+        // let year = date.getFullYear();
+        // var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        //
+        // $.getJSON("/api/dashboard/offices/" + officeId + "/grievances/count-by-status", function (response) {
+        //     var countByStatus = response;
+        //     delete countByStatus.total;
+        //     delete countByStatus.rating;
+        //     var tableBodyForSection = "";
+        //     var hasDataToGenerateChart = false;
+        //     Object.keys(countByStatus).forEach(function (key, index) {
+        //         var elm = countByStatus[key];
+        //         var grievanceCount = elm["value"] ? elm["value"] : 0;
+        //         if (grievanceCount > 0) {
+        //             hasDataToGenerateChart = true;
+        //         }
+        //         tableBodyForSection += "<tr class='text-center'>" +
+        //             "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+        //             "<td>" + elm["name"] + "</td>" +
+        //             "<td>" + ("" + grievanceCount).toBanglaNumber() + "</td>" +
+        //             "</tr>";
+        //     });
+        //     $("#grievanceTable1 tbody").empty().html(tableBodyForSection);
+        //     if (hasDataToGenerateChart) {
+        //         $("#grievanceChart1").empty();
+        //         setTimeout(function () {
+        //             var groChart1 = echarts.init(document.getElementById("grievanceChart1"));
+        //             groChart1.setOption(getGeneralPieChartOptions(countByStatus, "50%"));
+        //         }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        //     } else {
+        //         $("#grievanceChart1").html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+        //     }
+        // }).done(function () {
+        // }).always(function () {
+        //     unblockUI();
+        // }).fail(showLoadingFailureMessage);
+        //
+        // $.getJSON("/api/dashboard/layer/-1/offices/" + officeId + "/year/" + year + "/month/"
+        //     + month + "/grievances/current-year-total-resolved" + urlPartForGrsEnabled, function (response) {
+        //     var compareWithLastMonth = response;
+        //     setTimeout(function () {
+        //         var grievanceChart2 = echarts.init(document.getElementById("grievanceChart2"));
+        //         grievanceChart2.setOption(getBarChartDataOfTotalAndResolvedGrievancesByMonth(compareWithLastMonth, true));
+        //     }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        // }).done(function () {
+        // }).always(function () {
+        //     unblockUI();
+        // }).fail(showLoadingFailureMessage);
+        //
+        //
+        // // $.getJSON("/api/dashboard/offices/" + officeId + "/grievances/all-year-total-resolved", function (response) {
+        // //     var compareWithLastMonth = response;
+        // //     setTimeout(function () {
+        // //         var grievanceChart3 = echarts.init(document.getElementById("grievanceChart3"));
+        // //         grievanceChart3.setOption(getBarChartDataOfTotalAndResolvedGrievancesByYear(compareWithLastMonth, true));
+        // //     }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        // // }).done(function () {
+        // // }).always(function () {
+        // //     unblockUI();
+        // // }).fail(showLoadingFailureMessage);
+    }
+
+
+    function bindGrievanceGraphViewAction(tag) {
+
+        $("#view-report" + tag).on("click", function () {
+
+            var dateFrom = $("#graphReportYear" + tag).datepicker("getDate");
+            var month = $("#graphReportMonth" + tag).val();
+
+            var layerLevel = $("#officeLayers" + tag).val();
+            var officeId = $("#secondSelection" + tag).val();
+
+            var isRequestSend = false;
+            var officeOrigin = -1;
+            if (!(layerLevel >= 0 && layerLevel <= 2)) {
+                officeOrigin = $("#firstSelection" + tag).val();
+            }
+
+            var officeIdCurrentUser = $("[name='officeId']").val();
+
+            if (officeIdCurrentUser != 28) {
+                officeId = officeIdCurrentUser;
+                layerLevel = -1;
+                officeOrigin = -1;
+                isRequestSend = true;
+            } else if ((!officeId || isNaN(parseInt(officeId)))) {
+                var firstSelection = $("#firstSelection" + tag).val();
+
+                if (!(layerLevel >= 0 && layerLevel <= 2) && (firstSelection == 9999)) {
+
+                    isRequestSend = true;
+
+
+                } else {
+                    toastr.error("দপ্তর নির্বাচন সঠিক নয়", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+            if (!dateFrom || !month) {
+                toastr.error("দয়া করে সঠিক মাস ও বছর নির্বাচন করুন", null, {positionClass: 'toast-top-center'});
+                return;
+            } else {
+                isRequestSend = true;
+
+            }
+
+            if (isRequestSend) {
+                if (officeId === 'undefined' || officeId == null) {
+                    officeId = 9999;
+                }
+                let year = dateFrom.getFullYear();
+                if (tag == "Graph") {
+                    loadGrievanceChartsAndDataClick(layerLevel, officeOrigin, officeId, year, month);
+                } else if (tag == "AppealGraph") {
+                    loadAppealChartsAndDataClick(layerLevel, officeOrigin, officeId, year, month);
+                }
+            }
+
+            return;
+
+        });
+    }
+
+
+    function loadGrievanceChartsAndDataClick(layerLevel, officeOrigin, officeId, year, month) {
+        blockUI();
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+        $.getJSON("/api/dashboard/layer/" + layerLevel + "/officeOrigin/" + officeOrigin + "/offices/" + officeId + "/year/" + year + "/month/" + month + "/grievances/count-by-status" + urlPartForGrsEnabled, function (response) {
+            var countByStatus = response;
+            delete countByStatus.total;
+            delete countByStatus.rating;
+            var tableBodyForSection = "";
+            var hasDataToGenerateChart = false;
+            Object.keys(countByStatus).forEach(function (key, index) {
+                var elm = countByStatus[key];
+                var grievanceCount = elm["value"] ? elm["value"] : 0;
+                if (grievanceCount > 0) {
+                    hasDataToGenerateChart = true;
+                }
+                tableBodyForSection += "<tr class='text-center'>" +
+                    "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                    "<td>" + elm["name"] + "</td>" +
+                    "<td>" + ("" + grievanceCount).toBanglaNumber() + "</td>" +
+                    "</tr>";
+            });
+            $("#grievanceTable1 tbody").empty().html(tableBodyForSection);
+            if (hasDataToGenerateChart) {
+                $("#grievanceChart1").empty();
+                setTimeout(function () {
+                    var groChart1 = echarts.init(document.getElementById("grievanceChart1"));
+                    groChart1.setOption(getGeneralPieChartOptions(countByStatus, "50%"));
+                }, DEFAULT_CHART_INITIALIZATION_DELAY);
+            } else {
+                $("#grievanceChart1").html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+            }
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+
+        $.getJSON("/api/dashboard/layer/" + layerLevel + "/officeOrigin/" + officeOrigin + "/offices/" + officeId + "/year/" + year + "/month/"
+            + month + "/grievances/current-year-total-resolved" + urlPartForGrsEnabled, function (response) {
+            var compareWithLastMonth = response;
+            setTimeout(function () {
+                var grievanceChart2 = echarts.init(document.getElementById("grievanceChart2"));
+                grievanceChart2.setOption(getBarChartDataOfTotalAndResolvedGrievancesByMonth(compareWithLastMonth, true));
+            }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+
+
+        // $.getJSON("/api/dashboard/offices/" + officeId + "/year/" + year + "/grievances/all-year-total-resolved", function (response) {
+        //     var compareWithLastMonth = response;
+        //     setTimeout(function () {
+        //         var grievanceChart3 = echarts.init(document.getElementById("grievanceChart3"));
+        //         grievanceChart3.setOption(getBarChartDataOfTotalAndResolvedGrievancesByYear(compareWithLastMonth, true));
+        //     }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        // }).done(function () {
+        // }).always(function () {
+        //     unblockUI();
+        // }).fail(showLoadingFailureMessage);
+    }
+
+    function loadAppealChartsAndData() {
+        blockUI();
+
+        $.when(criteriaUpdateGrievanceGraph("AppealGraph")).then(function () {
+            $("#tabAppealCharts_body .view-report").click();
+            unblockUI();
+        });
+
+        // var officeId = $("[name='officeId']").val();
+        // $.getJSON("/api/dashboard/offices/" + officeId + "/appeals/count-by-status", function (response) {
+        //     var countByStatus = response;
+        //     delete countByStatus.total;
+        //     delete countByStatus.declined;
+        //     delete countByStatus.rating;
+        //     var tableBodyForSection = "";
+        //     var hasDataToGenerateChart = false;
+        //     Object.keys(countByStatus).forEach(function (key, index) {
+        //         var elm = countByStatus[key];
+        //         var appealCount = elm["value"] ? elm["value"] : 0;
+        //         if (appealCount > 0) {
+        //             hasDataToGenerateChart = true;
+        //         }
+        //         tableBodyForSection += "<tr class='text-center'>" +
+        //             "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+        //             "<td>" + elm["name"] + "</td>" +
+        //             "<td>" + ("" + appealCount).toBanglaNumber() + "</td>" +
+        //             "</tr>";
+        //     });
+        //     $("#appealTable1 tbody").empty().html(tableBodyForSection);
+        //     if (hasDataToGenerateChart) {
+        //         $("#appealChart1").empty();
+        //         setTimeout(function () {
+        //             var groChart1 = echarts.init(document.getElementById("appealChart1"));
+        //             groChart1.setOption(getGeneralPieChartOptions(countByStatus, "50%"));
+        //         }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        //     } else {
+        //         $("#appealChart1").html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+        //     }
+        // }).done(function () {
+        // }).always(function () {
+        //     unblockUI();
+        // }).fail(showLoadingFailureMessage);
+        //
+        // $.getJSON("/api/dashboard/offices/" + officeId + "/appeals/current-year-total-resolved", function (response) {
+        //     var compareWithLastMonth = response;
+        //     setTimeout(function () {
+        //         var appealChart2 = echarts.init(document.getElementById("appealChart2"));
+        //         appealChart2.setOption(getBarChartDataOfTotalAndResolvedGrievancesByMonth(compareWithLastMonth, false));
+        //     }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        // }).done(function () {
+        // }).always(function () {
+        //     unblockUI();
+        // }).fail(showLoadingFailureMessage);
+    }
+
+    function loadAppealChartsAndDataClick(layerLevel, officeOrigin, officeId, year, month) {
+        blockUI();
+        var urlPartForGrsEnabled = (showAllOffices == true) ? "?grsEnabled=false" : "";
+
+
+        $.getJSON("/api/dashboard/layer/" + layerLevel + "/officeOrigin/" + officeOrigin + "/offices/" + officeId + "/year/" + year + "/month/" + month + "/appeals/count-by-status" + urlPartForGrsEnabled, function (response) {
+            var countByStatus = response;
+            delete countByStatus.total;
+            delete countByStatus.declined;
+            delete countByStatus.rating;
+            var tableBodyForSection = "";
+            var hasDataToGenerateChart = false;
+            Object.keys(countByStatus).forEach(function (key, index) {
+                var elm = countByStatus[key];
+                var appealCount = elm["value"] ? elm["value"] : 0;
+                if (appealCount > 0) {
+                    hasDataToGenerateChart = true;
+                }
+                tableBodyForSection += "<tr class='text-center'>" +
+                    "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                    "<td>" + elm["name"] + "</td>" +
+                    "<td>" + ("" + appealCount).toBanglaNumber() + "</td>" +
+                    "</tr>";
+            });
+            $("#appealTable1 tbody").empty().html(tableBodyForSection);
+            if (hasDataToGenerateChart) {
+                $("#appealChart1").empty();
+                setTimeout(function () {
+                    var groChart1 = echarts.init(document.getElementById("appealChart1"));
+                    groChart1.setOption(getGeneralPieChartOptions(countByStatus, "50%"));
+                }, DEFAULT_CHART_INITIALIZATION_DELAY);
+            } else {
+                $("#appealChart1").html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+            }
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+
+        $.getJSON("/api/dashboard/layer/" + layerLevel + "/officeOrigin/" + officeOrigin + "/offices/" + officeId + "/year/" + year + "/month/"
+            + month + "/appeals/current-year-total-resolved" + urlPartForGrsEnabled, function (response) {
+            var compareWithLastMonth = response;
+            setTimeout(function () {
+                var appealChart2 = echarts.init(document.getElementById("appealChart2"));
+                appealChart2.setOption(getBarChartDataOfTotalAndResolvedGrievancesByMonth(compareWithLastMonth, false));
+            }, DEFAULT_CHART_INITIALIZATION_DELAY);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadSafetyNetDashboard() {
+        alert("Loading dashboard data in progress...");
+    }
+
+    function viewChildOfficesStatus() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/offices/" + officeId + "/hoo-child-offices-data", function (response) {
+            var currentMonthResolutions = response;
+            var isEnglish = (languageCode == "en");
+            var bodyContent = "";
+            if (currentMonthResolutions.length > 0) {
+                currentMonthResolutions.forEach(function (rowObj, index) {
+                    var total = rowObj.totalGrievances,
+                        forwarded = rowObj.forwardedGrievances,
+                        resolved = rowObj.resolvedGrievances,
+                        expired = rowObj.timeExpiredGrievances;
+                    var resolveRate = 0.0,
+                        serial = index + 1,
+                        exactTotal = total - forwarded;
+                    var params = encodeOfficeIdOnDrillDown(rowObj.officeId);
+                    if (exactTotal > 0) {
+                        var rate = (resolved / exactTotal) * 100;
+                        resolveRate = rate.toFixed(2);
+                    } else {
+                        resolveRate = "-";
+                    }
+                    bodyContent += "<tr class='text-center'>" +
+                        "<td>" + (isEnglish ? serial : ("" + serial).toBanglaNumber()) + "</td>" +
+                        "<td><a class='clickable-link' href='dashboard.do?params=" + params + "' class='blueLink' title='ড্যাশবোর্ড দেখুন'>" + rowObj.officeName + "</a></td>" +
+                        "<td>" + (isEnglish ? total : ("" + total).toBanglaNumber()) + "</td>" +
+                        "<td>" + (isEnglish ? resolveRate : ("" + resolveRate).toBanglaNumber()) + "</td>" +
+                        "<td>" + (isEnglish ? expired : ("" + expired).toBanglaNumber()) + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContent = getTableNoDataFoundRow(5);
+            }
+            $("#subOfficesStatisticsTable tbody").empty().html(bodyContent);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadCurrentMonthResolvedGrievances() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/grievances/current-month-resolution", function (response) {
+            var currentMonthResolutions = response;
+            var tableBody = $("#currentMonthResolutions tbody");
+            var bodyContent = "";
+            if (currentMonthResolutions.length > 0) {
+                currentMonthResolutions.forEach(function (rowObj, index) {
+                    bodyContent += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + rowObj.subject + "</td>" +
+                        "<td>" + rowObj.serviceName + "</td>" +
+                        "<td>" + new Date(rowObj.closedDate).toISOString().slice(0, 10).toBanglaNumber() + "</td>" +
+                        "<td>" + (rowObj.groIdentifiedCause ? rowObj.groIdentifiedCause : "-") + "</td>" +
+                        "<td>" + (rowObj.groDecision ? rowObj.groDecision : "-") + "</td>" +
+                        "<td>" + (rowObj.groSuggestion ? rowObj.groSuggestion : "-") + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContent = getTableNoDataFoundRow(7);
+            }
+            tableBody.empty().html(bodyContent);
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadCurrentMonthResolvedAppeals() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/appeals/resolution-statistics", function (response) {
+            var currentMonthResolutions = response;
+            var bodyContent = "";
+            if (currentMonthResolutions.length > 0) {
+                currentMonthResolutions.forEach(function (rowObj, index) {
+                    bodyContent += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + rowObj.subject + "</td>" +
+                        "<td>" + rowObj.serviceName + "</td>" +
+                        "<td>" + new Date(rowObj.closedDate).toISOString().slice(0, 10).toBanglaNumber() + "</td>" +
+                        "<td>" + (rowObj.aoIdentifiedCause ? rowObj.aoIdentifiedCause : "-") + "</td>" +
+                        "<td>" + (rowObj.aoDecision ? rowObj.aoDecision : "-") + "</td>" +
+                        "<td>" + (rowObj.aoSuggestion ? rowObj.aoSuggestion : "-") + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                bodyContent = getTableNoDataFoundRow(7);
+            }
+            $("#appealResolvedInCurrentMonth tbody").empty().html(bodyContent);
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadGrievancesCountBySections() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/grievances/count-by-sections", function (response) {
+            var grievanceCountBySection = response.list;
+            if (grievanceCountBySection && grievanceCountBySection.length > 0) {
+                var tableBodyForSection = "";
+                var nameSuffix = (languageCode == 'en' ? "English" : "Bangla");
+                var hasDataToGenerateChart = false;
+                grievanceCountBySection.forEach(function (elm, index) {
+                    var grievanceCount = elm["grievanceCount"] ? elm["grievanceCount"] : 0;
+                    if (grievanceCount > 0) {
+                        hasDataToGenerateChart = true;
+                    }
+                    tableBodyForSection += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + elm["name" + nameSuffix] + "</td>" +
+                        "<td>" + ("" + grievanceCount).toBanglaNumber() + "</td>" +
+                        "</tr>";
+                });
+                $("#gro_sub_tab_2_1 table tbody").empty().html(tableBodyForSection);
+                if (hasDataToGenerateChart) {
+                    $("#gro-sub-chart-2").empty();
+                    setTimeout(function () {
+                        var groSubChart2 = echarts.init(document.getElementById("gro-sub-chart-2"));
+                        groSubChart2.setOption(getGROOptionsForGrievanceCountBySection(grievanceCountBySection));
+                    }, DEFAULT_CHART_INITIALIZATION_DELAY);
+                } else {
+                    $("#gro-sub-chart-2").html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+                }
+            } else {
+                $("#gro-sub-chart-2").empty().html("<h1 class='text-center'>No grievance count by section is available yet</h1>");
+            }
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadGrievancesCountByServices() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/grievances/count-by-services", function (response2) {
+            var grievanceCountByService = response2.list;
+            if (grievanceCountByService && grievanceCountByService.length > 0) {
+                var tableBodyForService = "";
+                var nameSuffix = (languageCode == 'en' ? "English" : "Bangla");
+                var hasDataToGenerateChart = false;
+                grievanceCountByService.forEach(function (elm, index) {
+                    var grievanceCount = elm["grievanceCount"] ? elm["grievanceCount"] : 0;
+                    if (grievanceCount > 0) {
+                        hasDataToGenerateChart = true;
+                    }
+                    tableBodyForService += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + elm["name" + nameSuffix] + "</td>" +
+                        "<td>" + ("" + grievanceCount).toBanglaNumber() + "</td>" +
+                        "</tr>";
+                });
+                $("#gro_sub_tab_3_1 table tbody").empty().html(tableBodyForService);
+                if (hasDataToGenerateChart) {
+                    $("#gro-sub-chart-3").empty();
+                    setTimeout(function () {
+                        var groSubChart3 = echarts.init(document.getElementById("gro-sub-chart-3"));
+                        groSubChart3.setOption(getGROOptionsForGrievanceCountByService(grievanceCountByService));
+                    }, DEFAULT_CHART_INITIALIZATION_DELAY);
+                } else {
+                    $("#gro-sub-chart-3").html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+                }
+            } else {
+                $("#gro_sub_tab_3_1 table tbody").empty().html(getTableNoDataFoundRow(3));
+                $("#gro-sub-chart-3").empty().html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+            }
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadAppealsCountByChildOffices() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/dashboard/office/" + officeId + "/appeals/count-by-child-offices", function (response) {
+            var appealCountByChildOffices = response.list;
+            if (appealCountByChildOffices && appealCountByChildOffices.length > 0) {
+                var tableBodyForSection = "";
+                var nameSuffix = (languageCode == 'en' ? "English" : "Bangla");
+                appealCountByChildOffices.forEach(function (elm, index) {
+                    tableBodyForSection += "<tr>" +
+                        "<td>" + ("" + (index + 1)).toBanglaNumber() + "</td>" +
+                        "<td>" + elm["name" + nameSuffix] + "</td>" +
+                        "<td>" + ("" + (elm["grievanceCount"] ? elm["grievanceCount"] : 0)).toBanglaNumber() + "</td>" +
+                        "</tr>";
+                });
+                $("#appealCountBySources tbody").empty().html(tableBodyForSection);
+                $("#ao-appeal-source-chart").empty();
+                setTimeout(function () {
+                    var aoSubChart2 = echarts.init(document.getElementById("ao-appeal-source-chart"));
+                    aoSubChart2.setOption(getAOOptionsForAppealCountByChildOffices(appealCountByChildOffices));
+                }, DEFAULT_CHART_INITIALIZATION_DELAY);
+            } else {
+                $("#appealCountBySources tbody").empty().html(getTableNoDataFoundRow(3));
+                $("#ao-appeal-source-chart").empty().html("<div class='text-center font-blue'>চিত্রলেখ তৈরির জন্য পর্যাপ্ত উপাত্ত নেই</div>");
+            }
+        }).done(function () {
+        }).always(function () {
+            unblockUI();
+        }).fail(showLoadingFailureMessage);
+    }
+
+    function loadAppealsFeedbackList() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/offices/" + officeId + "/complaints/appeal/rated-in-current-month", function (response) {
+            var grievanceList = response;
+            var isEnglish = (languageCode == "en");
+            var attrSuffix = isEnglish ? "English" : "Bangla";
+            var tbody = "";
+            if (grievanceList.length > 0) {
+                _.each(grievanceList, function (grievance, index) {
+                    var serial = index + 1;
+                    var trackingNumber = grievance["trackingNumber" + attrSuffix];
+                    var rating = (grievance["appealRating"] ? (isEnglish ? grievance["appealRating"] : ("" + grievance["appealRating"]).toBanglaNumber()) : (isEnglish ? "0" : "০"));
+                    tbody += "<tr>" +
+                        "<td class='text-center'>" + (isEnglish ? serial : ("" + serial).toBanglaNumber()) + "</td>" +
+                        "<td class='text-center'>" + (trackingNumber ? (isEnglish ? trackingNumber : trackingNumber.toBanglaNumber()) : "-") + "</td>" +
+                        "<td><a href='viewGrievances.do?id=" + grievance.id + "' class='clickable-link' title='" + (isEnglish ? "View grievance details" : "অভিযোগের বিস্তারিত দেখুন") + "'>" + grievance.subject + "</a></td>" +
+                        "<td>" + grievance["serviceName" + attrSuffix] + "</td>" +
+                        "<td class='text-center'>" + grievance["type" + attrSuffix] + "</td>" +
+                        "<td class='text-center'>" + rating + "</td>" +
+                        "<td>" + (grievance["appealFeedbackComments"] ? grievance["appealFeedbackComments"] : "-") + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                tbody = getTableNoDataFoundRow(7);
+            }
+            var tbodyDOM = $("#appealRatingAndFeedbackTable tbody");
+            tbodyDOM.html(tbody);
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function loadGrievancesFeedbackList() {
+        blockUI();
+        var officeId = $("[name='officeId']").val();
+        $.getJSON("/api/offices/" + officeId + "/complaints/grievance/rated-in-current-month", function (response) {
+            var grievanceList = response;
+            var isEnglish = (languageCode == "en");
+            var attrSuffix = isEnglish ? "English" : "Bangla";
+            var tbody = "";
+            if (grievanceList.length > 0) {
+                _.each(grievanceList, function (grievance, index) {
+                    var serial = index + 1;
+                    var trackingNumber = grievance["trackingNumber" + attrSuffix];
+                    var rating = (grievance["rating"] ? (isEnglish ? grievance["rating"] : ("" + grievance["rating"]).toBanglaNumber()) : (isEnglish ? "0" : "০"));
+                    tbody += "<tr>" +
+                        "<td class='text-center'>" + (isEnglish ? serial : ("" + serial).toBanglaNumber()) + "</td>" +
+                        "<td class='text-center'>" + (trackingNumber ? (isEnglish ? trackingNumber : trackingNumber.toBanglaNumber()) : "-") + "</td>" +
+                        "<td><a href='viewGrievances.do?id=" + grievance.id + "' class='clickable-link' title='" + (isEnglish ? "View grievance details" : "অভিযোগের বিস্তারিত দেখুন") + "'>" + grievance.subject + "</a></td>" +
+                        "<td>" + grievance["serviceName" + attrSuffix] + "</td>" +
+                        "<td class='text-center'>" + grievance["type" + attrSuffix] + "</td>" +
+                        "<td class='text-center'>" + rating + "</td>" +
+                        "<td>" + (grievance["feedbackComments"] ? grievance["feedbackComments"] : "-") + "</td>" +
+                        "</tr>";
+                });
+            } else {
+                tbody = getTableNoDataFoundRow(7);
+            }
+            var tbodyDOM = $("#ratingAndFeedbackTable tbody");
+            tbodyDOM.html(tbody);
+        }).always(function () {
+            unblockUI();
+        });
+    }
+
+    function bindLeftMenuTabOpenActions() {
+        $("body").on("tab0-opened", function () {
+            loadHooDashboardLandingPageData(null);
+        });
+        $("body").on("tabCell-opened", function () {
+            loadCabinetCellPageData();
+        });
+        $("body").on("tabCoordinator-opened", function () {
+            loadFieldCoordinatorDashboardData();
+        });
+        $("body").on("tabMonthlyReport-opened", function () {
+            loadCurrentMonthReportData();
+        });
+        $("body").on("tabGrievanceRegister-opened", function () {
+            loadGrievanceRegister(1);
+        });
+
+        $("body").on("tabCentral-opened", function () {
+            loadYearlyDashboardData();
+            loadCentralDashboardData();
+            viewServicesGrievenceCountByOffices();
+            showMinistryLevelOfficesStatistics();
+        });
+
+        $("body").on("tabSuggestions-opened", function () {
+            loadSuggestionsList(1);
+        });
+
+        $("body").on("tabAppealedComplaints-opened", function () {
+            loadAppealedComplaints(1);
+        });
+
+        $("body").on("tabTagidList-opened", function () {
+            loadTagidList(1);
+        });
+
+        $("body").on("tabGrievanceExpired-opened", function () {
+            loadTimeExpiredGrievances();
+        });
+
+        $("body").on("tabGrievanceResolved-opened", function () {
+            loadCurrentMonthResolvedGrievances();
+        });
+
+        $("body").on("tabCountBySections-opened", function () {
+            loadGrievancesCountBySections();
+        });
+
+        $("body").on("tabCountByServices-opened", function () {
+            loadGrievancesCountByServices();
+        });
+
+        $("body").on("tabGrievancesFeedback-opened", function () {
+            loadGrievancesFeedbackList();
+        });
+
+        $("body").on("tabGrievanceCharts-opened", function () {
+            loadGrievanceChartsAndData();
+        });
+
+        $("body").on("tabAppealRegister-opened", function () {
+            loadAppealRegister(1);
+        });
+
+        $("body").on("tabAppealExpired-opened", function () {
+            loadTimeExpiredAppeals();
+        });
+
+        $("body").on("tabAppealResolved-opened", function () {
+            loadCurrentMonthResolvedAppeals();
+        });
+
+        $("body").on("tabCountByChildOffices-opened", function () {
+            loadAppealsCountByChildOffices();
+        });
+
+        $("body").on("tabAppealsFeedback-opened", function () {
+            loadAppealsFeedbackList();
+        });
+
+        $("body").on("tabAppealCharts-opened", function () {
+            loadAppealChartsAndData();
+        });
+
+        $("body").on("tabChildOfficesStatus-opened", function () {
+            viewChildOfficesStatus();
+        });
+        $("body").on("tabChildOfficesReports-opened", function () {
+            loadChildOfficesLastMonthReportData();
+        });
+
+        $("body").on("tabCustomReport-opened", function () {
+            loadAppealedComplaints(1);
+        });
+
+        $("body").on("tabSafetyNetDashboard-opened", function () {
+            loadSafetyNetDashboard();
+        });
+    }
+
+    function initLeftMenu() {
+        var treeviewMenu = $('.app-menu');
+        $('[data-toggle="sidebar"]').click(function (event) {
+            event.preventDefault();
+            $('.app').toggleClass('sidenav-toggled');
+        });
+        $("[data-toggle='treeview']").click(function (event) {
+            event.preventDefault();
+            if (!$(this).parent().hasClass('is-expanded')) {
+                treeviewMenu.find("[data-toggle='treeview']").parent().removeClass('is-expanded');
+            }
+            $(this).parent().toggleClass('is-expanded');
+        });
+        $("[data-toggle='treeview.'].is-expanded").parent().toggleClass('is-expanded');
+        $("[data-toggle='tooltip']").tooltip();
+
+        $("#left-menu-tabs li a").on("click", function () {
+            var tabId = $(this).attr("id");
+            if (!$(this).hasClass("active")) {
+                $("#left-menu-tabs li a").removeClass("active");
+                $(this).addClass("active");
+                $(".tab-container").hide();
+                $("#" + tabId + "_body").fadeIn("slow");
+                $("body").trigger(tabId + "-opened");
+                showAppropriateOfficeName(tabId);
+            }
+        });
+    }
+
+    function showAppropriateOfficeName(tabId) {
+        var type = tabId.replace("tab", "");
+        $("[id^='officeName']").hide();
+        if (tabId == "tabCell") {
+            $("#officeNameCell").show();
+        } else if (tabId == "tabCoordinator") {
+            $("#officeNameCoordinator").show();
+        } else if (tabId == "tabCentral") {
+            $("#officeNameCentral").show();
+        } else {
+            $("#officeName").show();
+        }
+    }
+
+    function showFirstTabContents() {
+        var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
+        $(".tab-container").hide();
+        $("#" + firstTabId + "_body").show();
+        $("body").trigger(firstTabId + "-opened");
+        showAppropriateOfficeName(firstTabId);
+    }
+
+    function initDashboardMenuCollapseAndHide() {
+        $("#circularMenu").on('click', function () {
+            if ($("#circularMenuSection").hasClass("show")) {
+                $("#circularMenuSection").removeClass("show")
+            } else {
+                $("#circularMenuSection").addClass("show")
+            }
+        })
+
+        $("#grievanceManagementMenu").on('click', function () {
+            if ($("#grievanceManagementMenuSection").hasClass("show")) {
+                $("#grievanceManagementMenuSection").removeClass("show")
+            } else {
+                $("#grievanceManagementMenuSection").addClass("show")
+            }
+        })
+
+        $("#appealManagementMenu").on('click', function () {
+            if ($("#appealManagementMenuSection").hasClass("show")) {
+                $("#appealManagementMenuSection").removeClass("show")
+            } else {
+                $("#appealManagementMenuSection").addClass("show")
+            }
+        })
+
+        $("#underCoveredDepartmentMenu").on('click', function () {
+            if ($("#underCoveredDepartmentMenuSection").hasClass("show")) {
+                $("#underCoveredDepartmentMenuSection").removeClass("show")
+            } else {
+                $("#underCoveredDepartmentMenuSection").addClass("show")
+            }
+        })
+    }
+
+    function convertToBangla(engNum) {
+        let bngNum = '';
+        let bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            let index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    }
+
+
+    function criteriaUpdateGrievanceGraph(tag) {
+        let date = new Date();
+        let month = date.getMonth();
+        let year = date.getFullYear();
+
+        $('#graphReportMonth' + tag).val((month + 1) + "").trigger('change');
+        $("#graphReportYear" + tag).datepicker('setDate', new Date(year, month, 1));
+
+        var officeId = $("[name='officeId']").val();
+        var result = list.find(function (element) {
+            return element['id'] == officeId;
+        });
+        if (!result) {
+            var searchField = $("#searchOffice" + tag);
+            searchField.closest(".form-inline").find(".error-text").show();
+        } else {
+            loadDataForAutoSelectionType(result, tag, "appendAll");
+        }
+    }
+
+
+    function initGrievanceGraph(tag) {
+        var officeIdCurrentUser = $("[name='officeId']").val();
+        if (officeIdCurrentUser == 28) {
+            bindOfficeLayersChangeActionsForReport(tag, "appendAll");
+        }
+        initReportDatepickerOnlyYear($("#graphReportYear" + tag));
+        bindGrievanceGraphViewAction(tag);
+        $('#graphReportMonth' + tag).select2();
+        criteriaUpdateGrievanceGraph(tag);
+    }
+
+
+    $(document).ready(function () {
+        let date = new Date();
+        let month = date.getMonth();
+        let year = date.getFullYear();
+        let banglaMonth = MONTH_NAME_BANGLA[month];
+        let banglaYear = convertToBangla(year + "");
+
+        $('.monthToBeShown').html(banglaMonth + ", " + banglaYear);
+        $('#currentMonthYearValue').val(banglaMonth + ", " + banglaYear);
+
+
+        initLeftMenu();
+        initMonthlyReportTabContents();
+        initCustomReportTabContents();
+        initSafetyNetDashboard();
+        initGrievanceRegisterTable();
+        initAppealRegisterTable();
+        initSuggestionsTable();
+        initAppealedComplaintsTable();
+        initTagidListTable();
+        bindLeftMenuTabOpenActions();
+        showFirstTabContents();
+        bindChildOfficesReportPrintAction();
+        initMinistryReportTabContents();
+        initlayerWiseReportTabContents();
+        initlocationBasedReportTabContents();
+        initSafetynetComplaintReportTabContents();
+        printRegister();
+        printSuggestion();
+        initDashboardMenuCollapseAndHide();
+
+        initGrievanceGraph("Graph");
+        initGrievanceGraph("AppealGraph");
+
+    });
+</script>

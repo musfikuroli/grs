@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN CONTENT BODY -->
+
+<div class="page-content" style="min-height: 1601px;" th:fragment="addCitizenCharter">
+    <div class="form-body">
+        <form id="citizenCharterCreateEditForm" class="ajax-submit-form" data-url="/api/office/citizen-charters" th:object="${service}">
+            <input type="hidden" name="id" th:field="*{id}" />
+            <div th:if="${service.getOfficeId() == null}">
+                <div class="form-group" id="officeSelectionOptions">
+                    <select id="officeLayers">
+                        <option value="" selected style="display: none;" th:text="#{select.x(#{office.type})}"></option>
+                        <option value="1" th:text="#{ministry-bivag}"></option>
+                        <option value="2" th:text="#{directorate}"></option>
+                        <option value="4" th:text="#{division}"></option>
+                        <option value="5" th:text="#{district}"></option>
+                        <option value="6" th:text="#{upazila}"></option>
+                        <option value="7" th:text="#{others}"></option>
+                    </select>
+                    <select id="firstSelection" style="display: none;"></select>
+                    <select id="secondSelection" style="display: none;"></select>
+                    <select id="thirdSelection" style="display: none;"></select>
+                </div>
+                <input type="hidden" id="officeId" name="officeId"/>
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{service.type}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <select id="serviceTypeSelection" class="form-control" name="serviceType" type="hidden" th:attr="data-required-message=#{error.message.for.required}">
+                            <option value="" selected style="display: none;" th:text="#{select.x(#{service.type})}"></option>
+                            <span th:each="serviceType : ${serviceTypes}">
+                            <option th:value="${serviceType.getValue()}" th:text="#{${serviceType.getKey()}}"></option>
+                        </span>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" th:text="#{select.x(#{service})}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <select id="serviceSelection" class="form-control" name="serviceId" type="hidden" th:attr="data-required-message=#{error.message.for.required}">
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm-12">
+                        <label class="control-label" th:text="#{responsible.officer}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <select id="employeeDropDown" class="form-control" name="officeUnitOrganogramId" type="hidden" th:attr="data-required-message=#{error.message.for.required}">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${service.getOfficeId() != null}">
+                <input type="hidden" name="officeId" th:value="${service.getOfficeId()}"/>
+                <input type="hidden" name="officeUnitOrganogramId" th:value="${service.getOfficeUnitOrganogramId()}">
+                <input type="hidden" name="serviceId" th:value="${service.getServiceId()}">
+                <input type="hidden" name="serviceType" th:value="${service.getServiceType().toString()}">
+            </div>
+
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.name} , #{bangla})}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="text" name="serviceNameBangla" class="form-control" th:field="*{serviceNameBangla}" th:placeholder="#{provide.x(#{service.name})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.name} , #{english})}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="text" name="serviceNameEnglish" class="form-control" th:field="*{serviceNameEnglish}" th:placeholder="#{provide.x(#{service.name})}" th:attr="data-required-message=#{error.message.for.required}, data-minlength-message=#{error.message.for.minlength.n(#{'3'})}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.procedure} , #{bangla})}"></label>
+                    <textarea name="serviceProcedureBangla" class="form-control" rows="3" th:field="*{serviceProcedureBangla}" th:placeholder="#{provide.x(#{service.procedure})}"></textarea>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.procedure} , #{english})}"></label>
+                    <textarea name="serviceProcedureEnglish" class="form-control" rows="3" th:field="*{serviceProcedureEnglish}" th:placeholder="#{provide.x(#{service.procedure})}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{bangla})}"></label>
+                    <textarea name="documentAndLocationBangla" class="form-control" rows="3" th:field="*{documentAndLocationBangla}" th:placeholder="#{provide.x(#{necessary.x(#{document.and.location})})}" ></textarea>
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{necessary.x(#{document.and.location})}, #{english})}"></label>
+                    <textarea name="documentAndLocationEnglish" class="form-control" rows="3" th:field="*{documentAndLocationEnglish}" th:placeholder="#{provide.x(#{necessary.x(#{document.and.location})})}" ></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{bangla})}"></label>
+                    <input type="text" name="paymentMethodBangla" class="form-control" th:field="*{paymentMethodBangla}" th:placeholder="#{provide.x(#{service.price.and.payment.method})}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{x.y.bracket(#{service.price.and.payment.method} , #{english})}"></label>
+                    <input type="text" name="paymentMethodEnglish" class="form-control" th:field="*{paymentMethodEnglish}" th:placeholder="#{provide.x(#{service.price.and.payment.method})}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" th:text="#{service.time}"></label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="number" name="serviceTime" class="form-control" th:field="*{serviceTime}" th:placeholder="#{provide.x(#{service.time})}" th:attr="data-number-message=#{error.message.for.number}">
+                </div>
+                <div class="form-group col-sm-6">
+                    <div class="mt-radio-inline" th:field="*{status}" th:attr="data-required-message=#{error.message.for.required}">
+                        <label class="control-label" th:text="#{status}"></label>
+                        <span class="required" aria-required="true"> * </span>
+                        <input name="status" id="yes" type="radio" value="true" th:checked="*{status}"/>
+                        <label for="yes">
+                            <span th:remove="tag" th:text="#{yes}"></span>
+                        </label>
+                        <input name="status" id="no" type="radio" value="false" th:checked="*{status}==false ? true:false"/>
+                        <label for="no">
+                            <span th:remove="tag" th:text="#{no}"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn green" th:text="#{${service.getId() != null ? 'update' : 'save'}}"></button>
+            <button type="reset" class="btn blue" th:text="#{reset}"></button>
+            <button type="button" class="btn default back-button" th:text="#{back}"></button>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="addCitizenCharterIncludeScript" th:remove="tag">
+    <div th:replace="service/addService :: addServiceIncludeScript" th:remove="tag"></div>
+</div>
+
+<script th:fragment="addCitizenCharterScript">
+
+    function getLanguageVersion(object) {
+        return (languageCode == "en" ? object.nameEnglish : object.nameBangla);
+    }
+
+    function getFirstLayers(id) {
+        $.getJSON("/api/officelayers/" + id, function (result) {
+            $("#firstSelection").empty();
+            var opt = new Option(languageCode == "en" ? "--- Select Office ---" : "--- অফিস বাছাই করুন ---");
+            opt.setAttribute("style", "display: none;");
+            $("#firstSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#firstSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#firstSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getZilas() {
+        $.getJSON("/api/geo/districts", function (result) {
+            $("#firstSelection").empty();
+            var opt = new Option(languageCode == "en" ? "--- Select District ---" : "--- জেলা বাছাই করুন ---")
+            opt.setAttribute("style", "display: none;");
+            $("#firstSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#firstSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#firstSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function onGetUpazilaZilaSelectionChange() {
+        $.getJSON("/api/geo/upazilas/" + $("#firstSelection").val(), function (result) {
+            var opt = new Option(languageCode == "en" ? "--- Select Upazila ---" : "---উপজেলা বাছাই করুন---");
+            $("#secondSelection").empty().hide();
+            $("#thirdSelection").empty().hide();
+            opt.setAttribute("style", "display: none;");
+            $("#secondSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#secondSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#secondSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function GetOfficesByZila() {
+        $.getJSON("/api/officelayers/" + $('#officeLayers').val() + "/" + $("#firstSelection").val(), function (result) {
+            $("#secondSelection").empty();
+            var opt = new Option(languageCode == "en" ? "---Select Office---" : "---অফিস বাছাই করুন---");
+            opt.setAttribute("style", "display: none;");
+            $("#secondSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#secondSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#secondSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function GetOfficesByUpazila() {
+        $.getJSON("/api/officelayers/" + $('#officeLayers').val() + "/" + $("#firstSelection").val() + "/" + $("#secondSelection").val(), function (result) {
+            var opt = new Option(languageCode == "en" ? "---Select Office---" : "---অফিস বাছাই করুন---");
+            $("#thirdSelection").empty();
+            opt.setAttribute("style", "display: none;");
+            $("#thirdSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#thirdSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#thirdSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function getDivisions() {
+        $.getJSON("/api/geo/division", function (result) {
+            var opt = new Option(languageCode == "en" ? "---Select Division---" : "---বিভাগ বাছাই করুন---");
+            opt.setAttribute("style", "display: none;");
+            $("#firstSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#firstSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#firstSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function GetOfficesByDivision() {
+        $.getJSON("/api/officelayers/division/" + $("#officeLayers").val() + "/" + $("#firstSelection").val(), function (result) {
+            var opt = new Option(languageCode == "en" ? "---Select Office---" : "---অফিস বাছাই করুন---");
+            $("#secondSelection").empty();
+            opt.setAttribute("style", "display: none;");
+            $("#secondSelection").append(opt);
+            $.each(result, function (i, field) {
+                $("#secondSelection").append(new Option(getLanguageVersion(field), field.id));
+            });
+            $("#secondSelection").show();
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function clearAllSelection() {
+        $("#firstSelection").empty().hide();
+        $("#secondSelection").empty().hide();
+        $("#thirdSelection").empty().hide();
+        $("#serviceSelection").empty();
+        $("#employeeDropDown").empty();
+    }
+
+    function getServiceList(officeId) {
+        $("#officeId").val(officeId);
+        $.getJSON("/api/office/service/not/" + officeId, function (result) {
+            $("#serviceSelection").empty();
+            var opt = new Option(languageCode == "en" ? "--Select Service--" : "--সেবা বাছাই করুন--");
+            opt.setAttribute("style", "display: none;");
+            $("#serviceSelection").append(opt);
+            var nameFieldSuffix = languageCode == 'en' ? 'English' : 'Bangla';
+            $.each(result.services, function (i, field) {
+                $("#serviceSelection").append(new Option(field['serviceName' + nameFieldSuffix], field.id));
+            });
+        }).done(function () {
+        }).fail(function () {
+        }).always(function () {
+        });
+    }
+
+    function populateEmployeeDropDown(data) {
+        var _select = $('#employeeDropDown');
+        _select.empty();
+        _select.append('<tbody>');
+        _select.append('<option value="" disabled selected hidden>' + languageCode == 'en' ? '--Select Responsible Officer--' : '--দায়িত্বপ্রাপ্ত কর্মকর্তা বাছাই করুন--' + '</option>');
+        $.each(data.objects, function (key, val) {
+            _select.append('<option value="' + val.id + '">' + val.name + '</option>');
+        })
+        _select.append('</tbody>');
+    }
+
+    function populateServiceTable(data) {
+        var _select = $('#serviceDropDown');
+        _select.empty();
+        _select.append('<option value="" disabled selected hidden>' + languageCode == 'en' ? '--Select Service--' : '--সেবা বাছাই করুন--' + '</option>');
+        _select.append('<tbody>');
+        $.each(data.services, function (key, val) {
+            _select.append('<option value="' + val.id + '">' + val.name + '</option>');
+        })
+        _select.append('</tbody>');
+        $('#serviceDropDown').trigger('change');
+    }
+
+    function officeDropDownEventHandler(officeId) {
+        var url = '/api/office/employee/' + officeId;
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: populateEmployeeDropDown,
+        });
+    }
+
+    function serviceDropDownEventHandler() {
+        var serviceId = $('#serviceSelection').find('option:selected').val();
+        if(serviceId != null && parseInt(serviceId) > 0) {
+            $.getJSON("/api/services/" + serviceId, function (response) {
+                var autoFillFields = ["serviceNameBangla", "serviceNameEnglish", "serviceProcedureBangla", "serviceProcedureEnglish", "documentAndLocationBangla", "documentAndLocationEnglish", "paymentMethodBangla", "paymentMethodEnglish", "serviceTime"];
+                var form = $("#citizenCharterCreateEditForm");
+                autoFillFields.forEach(function (field) {
+                    form.find("[name='" + field + "']").val(response[field]);
+                })
+            }); 
+        }
+    }
+
+    function bindOfficeLayersChangeActions() {
+        $('#officeLayers').on("change", function () {
+            clearAllSelection();
+            switch (this.value) {
+                case "":
+                    break;
+
+                case "1":
+                    getFirstLayers("1");
+                    $("#firstSelection").off("change");
+                    break;
+                case "2":
+                    getFirstLayers("2");
+                    $("#firstSelection").off("change");
+                    break;
+                case "3":
+                    getDivisions("3");
+                    $("#firstSelection").off("change").on("change", GetOfficesByDivision);
+                    $("#secondSelection").off("change");
+                    break;
+
+                case "4":
+                    getZilas();
+                    $("#firstSelection").off("change").on("change", GetOfficesByZila);
+                    $("#secondSelection").off("change");
+                    break;
+
+                case "5":
+                    getZilas();
+                    $("#firstSelection").off("change").on("change", onGetUpazilaZilaSelectionChange);
+                    $("#secondSelection").off("change").on("change", GetOfficesByUpazila);
+                    break;
+
+                case "6":
+                    getFirstLayers("6");
+                    $("#firstSelection").off("change");
+                    break;
+            }
+            $("#serviceSelection").on("change", serviceDropDownEventHandler);
+        });
+    }
+
+    function getSelectedOfficeId() {
+        var officeLayerValue = $('#officeLayers').val();
+        var officeId;
+        switch (officeLayerValue) {
+            case "1":
+            case "2":
+            case "6":
+                officeId = $('#firstSelection').val();
+                break;
+            case "3":
+            case "4":
+                officeId = $('#secondSelection').val();
+                break;
+            case "5":
+                officeId = $('#thirdSelection').val();
+                break;
+            default:
+                return null;
+                break;
+        }
+        return officeId;
+    }
+
+    function isOfficeSelectionValid() {
+        var officeId = getSelectedOfficeId();
+        return officeId != null && officeId.length > 0;
+    }
+
+    function validateCreateEditForm(form) {
+        form.validate({
+            rules: {
+                serviceId: {
+                    required: true
+                },
+                serviceType: {
+                    required: true
+                },
+                officeUnitOrganogramId: {
+                    required: true
+                },
+                serviceNameBangla: {
+                    required: true,
+                    minlength: 3
+                },
+                serviceNameEnglish: {
+                    required: true,
+                    minlength: 3
+                },
+                serviceTime: {
+                    number: true
+                },
+                status: {
+                    required: true
+                }
+            },
+            messages: {
+                serviceId: {
+                    required: form.find("[name='serviceId']").attr("data-required-message")
+                },
+                serviceType: {
+                    required: form.find("[name='serviceType']").attr("data-required-message")
+                },
+                officeUnitOrganogramId: {
+                    required: form.find("[name='officeUnitOrganogramId']").attr("data-required-message")
+                },
+                serviceNameBangla: {
+                    required: form.find("[name='serviceNameBangla']").attr("data-required-message"),
+                    minlength: form.find("[name='serviceNameBangla']").attr("data-minlength-message")
+                },
+                serviceNameEnglish: {
+                    required: form.find("[name='serviceNameEnglish']").attr("data-required-message"),
+                    minlength: form.find("[name='serviceNameEnglish']").attr("data-minlength-message")
+                },
+                serviceTime: {
+                    number: form.find("[name='serviceTime']").attr("data-number-message")
+                },
+                status: {
+                    required: form.find("[name='status']").attr("data-required-message")
+                }
+            }
+        });
+    }
+
+    function bindFormResetAndSubmissionActions(form) {
+        form.find("button[type='reset']").on("click", function () {
+            clearAllSelection();
+        });
+        form.on("ajax-submit-success", function (event, data) {
+            if(data.success) {
+                toastr.success(data.message, null, {positionClass: 'toast-top-center'});
+            } else {
+                toastr.error(data.message, null, {positionClass: 'toast-top-center'});
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        var form = $("#citizenCharterCreateEditForm");
+        bindOfficeLayersChangeActions();
+        validateCreateEditForm(form);
+        bindFormResetAndSubmissionActions(form);
+        $("#officeSelectionOptions").on("change", "select", function() {
+            if(isOfficeSelectionValid()) {
+                var officeId = getSelectedOfficeId();
+                getServiceList(officeId);
+                officeDropDownEventHandler(officeId);
+            }
+        });
+    });
+</script>

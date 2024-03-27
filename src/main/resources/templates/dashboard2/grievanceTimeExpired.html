@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="grievanceTimeExpired" th:remove="tag">
+    <div class="panel-body" style="background: white;">
+        <div class="table-responsive">
+            <table id="grievancesListForNudge" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="text-center">ক্রমিক</th>
+                    <th class="text-center">অভিযোগের বিষয়</th>
+                    <th class="text-center">অভিযোগ সংশ্লিষ্ট সেবা</th>
+                    <th class="text-center">ধরন</th>
+                    <th class="text-center">অভিযোগ নিষ্পত্তির তারিখ</th>
+                    <th class="text-center">অভিযোগ অনিষ্পন্ন থাকার কারণ</th>
+                    <th class="text-center">তাগিদ প্রদান করুন</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal" id="modalProvideNudge" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form class="provide-nudge-form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="grievanceId">
+                        <div class="form-group">
+                            <label class="control-label">তাগিদের বিস্তারিত বিবরণঃ </label>
+                            <div id="nudgeMessage"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn blue" style="cursor: pointer">প্রদান করুন</button>
+                        <button type="button" class="btn dark btn-outline" style="cursor: pointer" data-dismiss="modal">বন্ধ করুন</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

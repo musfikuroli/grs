@@ -1,0 +1,12 @@
+/* Style the second URL with a red border */
+#test-gdocsviewer {
+	border: 5px red solid;
+	padding: 20px;
+	width: 650px;
+	background: #ccc;
+	text-align: center;
+}
+/* Style all gdocsviewer containers */
+.gdocsviewer {
+	margin:10px;
+}

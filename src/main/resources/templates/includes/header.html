@@ -1,0 +1,153 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div class="page-wrapper-row" th:fragment="header(menu)">
+    <div class="page-wrapper-top">
+        <div class="page-header">
+            <div class="page-header-strip">
+                <div class="container">
+                    <ul class="header-strip-nav">
+<!--                        <li class="bangla">-->
+<!--                            <i class="icon-call-end"></i>-->
+<!--                            <a href="tel:+88029113781" th:text="#{helpdesk.phone.number}"></a>-->
+<!--                        </li>-->
+                        <li class="english">
+                            <i class="icon-envelope"></i>
+                            <a href="mailto:grs@cabinet.gov.bd">grs@cabinet.gov.bd</a>
+                        </li>
+                        <li class="label circle border pull-right" th:if="${isMobileLogin}">
+                            <a id="selectedLanguageLink" href="javascript:;" data-close-others="true" aria-expanded="true">
+                                <span id="selectedLanguageName" class="langname"> বাংলা </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="page-header-top" th:if="${!isMobileLogin}">
+                <div class="container left">
+                    <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+                    <a href="javascript:;" class="menu-toggler"></a>
+                    <!-- END RESPONSIVE MENU TOGGLER -->
+                    <a href="/" class="home-button"></a>
+                    <div class="page-logo">
+                        <a href="/">
+                            <img src="/assets/layouts/layout3/img/Header-logo2-original.png" alt="logo" class="logo-default">
+                        </a>
+                    </div>
+                    <!-- BEGIN TOP NAVIGATION MENU -->
+                    <div class="top-menu">
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="top-menu-complaint" th:if="${isLoggedIn == false}">
+                                <a class="btn btn-default" href="/login?a=5" data-toggle="tooltip" th:title="#{index.button.mygov.user.login.text}">
+                                    <i class="fa fa-sign-in show-on-mobile">&nbsp;</i>
+                                    <span class="hide-on-mobile" th:text="#{index.button.mygov.user.login.text}"></span>
+                                </a>
+                            </li>
+                            <li class="top-menu-complaint" th:if="${isLoggedIn == false}">
+                                <a class="btn btn-default" href="/login?a=0" data-toggle="tooltip" th:title="#{index.button.user.login.text}">
+                                    <i class="fa fa-sign-in show-on-mobile">&nbsp;</i>
+                                    <span class="hide-on-mobile" th:text="#{index.button.user.login.text}"></span>
+                                </a>
+                            </li>
+                            <li class="top-menu-complaint" th:if="${isLoggedIn == false}">
+                                <a class="btn btn-default" href="/login?a=1" data-toggle="tooltip" th:title="#{index.button.administrative.login.text}">
+                                    <i class="icon-lock show-on-mobile">&nbsp;</i>
+                                    <span class="hide-on-mobile" th:text="#{index.button.administrative.login.text}"></span>
+                                </a>
+                            </li>
+                            <th:block th:if="${isLoggedIn == true}">
+                                <li class="top-menu-complaint">
+                                    <a class="btn btn-default " href="/login/success" data-toggle="tooltip" th:title="#{my.panel}">
+                                        <i class="icon-user show-on-mobile">&nbsp;</i>
+                                        <span class="hide-on-mobile" th:text="#{my.panel}"></span>
+                                    </a>
+                                </li>
+                                <li class="top-menu-complaint" th:if="${(grsUser == true || superAdmin) && !isMyGovLogin}">
+                                    <a class="btn btn-default " href="/logout" data-toggle="tooltip" th:title="#{logout}">
+                                        <i class="icon-power show-on-mobile">&nbsp;</i>
+                                        <span class="hide-on-mobile" th:text="#{logout}"></span>
+                                    </a>
+                                </li>
+                                <li class="top-menu-complaint" th:if="${(isMyGovLogin)}">
+                                    <a class="btn btn-default " href="/mygovlogout" data-toggle="tooltip" th:title="#{logout}">
+                                        <i class="icon-power show-on-mobile">&nbsp;</i>
+                                        <span class="hide-on-mobile" th:text="#{logout}"></span>
+                                    </a>
+                                </li>
+                                <li class="top-menu-complaint" th:if="${grsUser == false && superAdmin == false}">
+                                    <a class="btn btn-default " href="/ssologout" data-toggle="tooltip" th:title="#{logout}">
+                                        <i class="icon-power show-on-mobile">&nbsp;</i>
+                                        <span class="hide-on-mobile" th:text="#{logout}"></span>
+                                    </a>
+                                </li>
+                            </th:block>
+                            <li class="droddown dropdown-separator">
+                                <span class="separator"></span>
+                            </li>
+                            <li class="dropdown dropdown-language">
+                                <a id="selectedLanguageLink" href="javascript:;" data-close-others="true" aria-expanded="true">
+                                    <span id="selectedLanguageName" class="langname"> বাংলা </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- END TOP NAVIGATION MENU -->
+                </div>
+            </div>
+            <div class="page-header-menu">
+                <div class="container">
+                    <!-- BEGIN MEGA MENU -->
+                    <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+                    <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+                    <div class="hor-menu hor-menu-light">
+                        <ul class="nav navbar-nav">
+                            <li aria-haspopup="true" class="menu-dropdown classic-menu-dropdown ">
+                                <ul class="dropdown-menu pull-left" style=" background-color: seashell;">
+                                    <li aria-haspopup="true" id="serviceMenu">
+                                        <a href="/services.do" th:text="#{citizen.charter.view}"></a>
+                                    </li>
+                                    <li aria-haspopup="true" id="onikMenu">
+                                        <a href="/groInformation.do" th:text="#{index.menu.onik.appeal.officer.info}"></a>
+                                    </li>
+                                    <li aria-haspopup="true" class="dropdown-submenu" id="complaintSubmissionMenu">
+                                        <a href="javascript:;" class="nav-link nav-toggle" th:text="#{index.menu.complaint.submission.info}">
+                                            <span class="arrow"></span>
+                                        </a>
+                                        <ul class="dropdown-menu" style=" background-color: seashell;">
+                                            <li th:if="${isOisfUser}" aria-haspopup="true">
+                                                <a href="javascript:addStaffGrievanceButtonEventHandler()" class="nav-link " th:text="#{staff.complaint}"></a>
+                                            </li>
+                                            <li th:if="${!isOisfUser && !isLoggedIn}" aria-haspopup="true">
+                                                <a href="javascript:addPublicGrievanceWithoutLoginButtonEventHandler()" class="nav-link " th:text="#{citizen.complaint}"></a>
+                                            </li>
+                                            <li th:if="${!isOisfUser && isLoggedIn && isOthersComplainant}" aria-haspopup="true">
+                                                <a href="javascript:addPublicGrievanceForOthersButtonEventHandler()" class="nav-link " th:text="#{citizen.complaint}"></a>
+                                            </li>
+                                            <li th:if="${!isOisfUser && isLoggedIn && !isOthersComplainant}" aria-haspopup="true">
+                                                <a href="javascript:addPublicGrievanceButtonEventHandler()" class="nav-link " th:text="#{citizen.complaint}"></a>
+                                            </li>
+                                            <li aria-haspopup="true">
+                                                <a href="/anonymousAddGrievance.do" class="nav-link " th:text="#{anonymous.title}"></a>
+                                            </li>
+                                            <li aria-haspopup="true">
+                                                <a href="javascript:showComplaintStatusModal()" class="nav-link " th:text="#{index.menu.grievance.status}"></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li aria-haspopup="true" class=" ">
+                                        <a href="/assets/previewGrsUserManual.pdf" onclick="javascript:previewGrsUserManual(this, event);" class="nav-link media-embed" th:text="#{index.manual.text}" data-asset="false"></a>
+                                    </li>
+                                    <li aria-haspopup="true" class=" ">
+                                        <a href="/assets/flow_chart.pdf" class="nav-link media-embed" onclick="javascript:showFlowchartModal(this, event);" th:text="#{index.button.process.flows.text}" data-asset="false"></a>
+                                    </li>
+                                    <li aria-haspopup="true" class=" ">
+                                        <a href="/assets/grs_guideline.pdf" class="nav-link media-embed" onclick="javascript:previewGrsGuideline(this, event);" th:text="#{index.button.complaint.resolution.manual.text}" data-asset="false"></a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- END MEGA MENU -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

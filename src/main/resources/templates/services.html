@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="includes/htmlhead :: htmlhead">...</head>
+
+<body class="page-container-bg-solid" style="background: #fff !important;">
+<div class="page-wrapper">
+    <div th:replace="includes/header :: header(${menu})">...</div>
+    <div class="page-wrapper-row full-height">
+        <div class="page-wrapper-middle">
+            <!-- BEGIN CONTAINER -->
+            <div class="page-container">
+                <!-- BEGIN CONTENT -->
+                <div class="page-content-wrapper">
+                    <!-- BEGIN CONTENT BODY -->
+                    <!-- BEGIN PAGE HEAD-->
+                    <div class="page-body">
+                        <div class="row">
+                            <div th:class="${!isMobileLogin? 'col-xs-12 col-sm-12 col-md-12 col-lg-12 a' : ''}">
+                                <div th:class="${!isMobileLogin? 'main-box-div' : ''}">
+                                    <p class="text-center font-lg"
+                                       th:text="#{choose.office.to.view.citizen.charter}"></p>
+                                    <div class="page-content" th:replace="citizenCharter :: citizenCharter"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END PAGE HEAD-->
+                    <!-- BEGIN PAGE CONTENT BODY -->
+                    <!-- END PAGE CONTENT BODY -->
+                    <!-- END CONTENT BODY -->
+                </div>
+                <!-- END CONTENT -->
+            </div>
+            <!-- END CONTAINER -->
+        </div>
+    </div>
+    <div th:replace="includes/footer :: footer">...</div>
+</div>
+<div th:replace="includes/footer_includes :: footer">...</div>
+<div th:replace="citizenCharter :: citizenCharterIncludeScript"></div>
+<script th:replace="citizenCharter :: citizenCharterScript"></script>
+</body>
+</html>

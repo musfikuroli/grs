@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="addAnonymousGrievancesIncludeStyle" th:remove="tag">
+    <div th:replace="fileUpload :: fileUploadIncludeStyle"></div>
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/bootstrap-summernote/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="/assets/global/plugins/easy-autocomplete/easy-autocomplete.css" rel="stylesheet" type="text/css"/>
+</div>
+
+
+<div class="page-content" th:fragment="addAnonymousGrievances">
+
+    <fieldset th:class="${!isMobileLogin ? 'complaint-submission-fieldset' : 'mobile-padding'}">
+        <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-7 complaint-submission-title" id="addGrievanceTitle" th:text="#{grievance.submission.form.Anonymous}"></div>
+        </div>
+        <form id="formAddGrievance" action="javascript:;" accept-charset="UTF-8" class="form-horizontal" method="POST">
+            <div class="form-body">
+
+                <div class="form-group complaint-submission-padding" th:classappend="${serviceId}!=null ? hide : '' ">
+                    <div class="row">
+                        <label class="control-label col-md-3">
+                            <span th:text="#{choose.office.from.list}"
+                                  th:if="${fromGrievanceUpload == null || !fromGrievanceUpload}"></span>
+                            <span class="required"
+                                  th:if="${fromGrievanceUpload == null || !fromGrievanceUpload}">*</span>
+                            <span th:text="#{office.name.colon}"
+                                  th:if="${fromGrievanceUpload != null && fromGrievanceUpload}"></span>
+                        </label>
+                        <div class="col-md-7" id="officeSelectionId"
+                             th:if="${fromGrievanceUpload == null || !fromGrievanceUpload}">
+                            <th:block th:replace="officeSelection :: officeSelection"></th:block>
+                            <span id="officeLayers-error" class="help-block hide">&nbsp;</span>
+                        </div>
+                        <div class="col-md-7" id="officeSelectionId"
+                             th:if="${fromGrievanceUpload != null && fromGrievanceUpload}">
+                            <span id="officeName" class="" th:text="${officeName}"></span>
+                            <span id="officeLayers-error" class="help-block hide">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="officeId" name="officeId" th:value="${officeId}"/>
+                <input type="hidden" id="blacklistInOfficeId" name="blacklistInOfficeId" th:value="${blacklistInOfficeId}"/>
+                <input type="hidden" id="serviceId" name="serviceId" th:value="${serviceId}"/>
+                <input type="hidden" id="serviceName" name="serviceName" th:value="${serviceName}"/>
+                <input type="hidden" id="groGrievanceUpload" name="serviceName" th:value="${fromGrievanceUpload}"/>
+                <input type="hidden" id="phoneNumber" name="phoneNumber" th:value="${phoneNumber}"/>
+
+                <div class="form-group complaint-submission-padding hide">
+                    <div class="row">
+                        <label class="control-label col-md-3" th:text="#{service.type}"></label>
+                        <div class="col-md-7">
+                            <select class="form-control select2" id="serviceTypeSelection" name="serviceTypeSelection"
+                                    aria-invalid="false">
+                                <option value="" selected style="display: none;"
+                                        th:text="#{choose.service.type}"></option>
+                                <option value="NAGORIK" selected>NAGORIK</option>
+                                <option value="DAPTORIK">DAPTORIK</option>
+                                <option value="STAFF">STAFF</option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group complaint-submission-padding" th:classappend="${serviceId}!=null ? hide : '' ">
+                    <div class="row">
+                        <label class="control-label col-md-3" th:utext="#{related.service.name}"></label>
+                        <div class="col-md-7">
+                            <select id="serviceDropDown" name="serviceId" class="form-control select2"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group complaint-submission-padding hide">
+                    <div class="row">
+                        <div class="col-md-offset-3 col-md-7">
+                            <input id="serviceOthers" name="serviceOthers" class="form-control" type="text"
+                                   th:placeholder="#{service.others}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group complaint-submission-padding">
+                    <div class="row">
+                        <label class="control-label col-md-3" th:utext="#{service.delivery.date}"></label>
+                        <div class="col-md-2">
+                            <div class='input-group date' id='applicationDate' data-date-end-date="0d">
+                                <input class="form-control" name="submissionDate" type="text" data-date-end-date="+0d"
+                                       readonly="readonly"/>
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                            <div id="insertDateErrorSpan"></div>
+                        </div>
+
+                        <label class="control-label col-md-2" th:text="#{tracking.number}"></label>
+                        <div class="col-md-3">
+                            <input id="serviceTrackingNumber" name="serviceTrackingNumber" class="form-control"
+                                   th:placeholder="#{provide.tracking.number.from.form}" type="text">
+                            <span class="help-block">&nbsp;</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!--<div class="form-group complaint-submission-padding">
+                    <div class="row">
+                        <label class="control-label col-md-3" id='relationLabel'
+                               th:utext="#{service.receiver.relation}"></label>
+                        <div class="col-md-2">
+                            <select class="form-control select2" name="relation">
+                                <option value="SELF"><span
+                                        th:text="#{service.receiver.relation.self}" th:remove="tag"></span>
+                                </option>
+                                <option value="REPRESENTATIVE">
+                                <span
+                                        th:text="#{service.receiver.relation.represent}"
+                                        th:remove="tag"></span>
+                                </option>
+                                <option value="RELATIVE"><span
+                                        th:text="#{service.receiver.relation.relative}"
+                                        th:remove="tag"></span>
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <label class="control-label col-md-2" id='serviceReceiverLabel'
+                               th:utext="#{service.receiver.label}"></label>
+                        <div class="col-md-3">
+                            <input id="serviceReceiver" name="serviceReceiver" class="form-control" type="text">
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="form-group complaint-submission-padding">
+                    <div class="row">
+                        <label class="control-label col-md-3" th:utext="#{complaint.subject}"></label>
+                        <div class="col-md-7">
+                            <input id="subject" name="subject" class="form-control" type="text">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group complaint-submission-padding">
+                    <div class="row">
+                        <label class="control-label col-md-3" th:utext="#{description.of.complaint}"></label>
+                        <div class="col-md-7">
+                            <div id="body" name="body" class="summernote"></div>
+                            <span class="body-help-block help-block hide">&nbsp;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="well hide">
+                    <div class="form-group complaint-submission-padding">
+                        <div class="col-md-8">
+                            <div class="mt-checkbox-list">
+                                <label class="mt-checkbox">
+                                    <input id="anonymous" type="checkbox">
+                                    <span></span>
+                                </label>
+                            </div>
+                            <span th:text="#{annonymous}"></span>
+                        </div>
+                        <span class="help-block" th:text="#{warning.about.annonymous}">  </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <h3 class="page-title hide" id="previewGrievanceTitle" th:text="#{confirm.message}"></h3>
+        <div class="well hide" id="confirmationTab">
+            <div id="trackingNumberBlock">
+                <div id="confirmationDiv">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span th:text="#{to}"></span><br/>
+                            <span th:text="#{gro}"></span><br/>
+                            <span id="previewOfficeName"></span><br/>
+                            <br/>
+                        </div>
+                        <div class="col-md-offset-5 col-md-1 pull-right action-buttons">
+                            <button type="button" class="close btn-close"
+                                    onclick="javascript:$('.toggle').trigger('click');" aria-hidden="true"></button>
+                        </div>
+                        <div class="col-md-offset-2 col-md-4 hide">
+                            <span th:text="#{grievance.date.colon}"></span> <span id="previewDateCreated"
+                                                                                  th:text="#{today}"></span><br/>
+                            <span th:text="#{track.colon}"></span> <span id="previewTrackingNumber">-</span><br/>
+                            <span th:text="#{status.colon}"></span> <span th:text="#{unsubmitted}"></span> <br/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <b><span th:text="#{subject.colon}"></span> <span id="previewSubject"></span></b> <br/>
+                            <br/>
+                            <span th:text="#{service.name.colon}"></span> <span id="previewServiceName"></span><br/>
+                            <br/>
+                            <span th:text="#{service.date.colon}"></span> <span id="previewServiceDate"></span><br/>
+                            <br/>
+                            <span class="hide" th:text="#{service.tracking.number.colon}"></span> <span class="hide"
+                                                                                                        id="previewServiceTrackingNumber"></span>
+                            <span th:text="#{mr.ms}"></span>
+                            <br/>
+                            <span id="previewDescription"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <br/>
+                            <span th:text="#{yours.faithfully}"></span><br/>
+                            <span id="previewName"></span> <br/>
+                            <span id="previewPresentAddress"></span><br/>
+                            <!--<span id="previewMobileNumber"></span><br/>-->
+                        </div>
+                    </div>
+                    <div class="row hide">
+                        <div class="col-md-12">
+                            <br/><br/>
+                            <span th:text="#{other.info}"></span>
+                            <hr/>
+                            <span th:text="#{perm.add.colon}"></span> <br/> <span
+                                id="previewPermanentAddress"></span><br/>
+                            <span th:text="#{email.colon}"></span> <span id="previewEmail"></span> <br/>
+                            <span th:text="#{nid.colon}"></span> <span id="previewNid"></span><br/>
+                            <span th:text="#{gender.colon}"></span> <span id="previewGender"></span><br/>
+                            <span th:text="#{dob.colon}"></span> <span id="previewBirthdate"></span><br/>
+                            <span th:text="#{occu.colon}"></span> <span id="previewOccupation"></span><br/>
+                            <span th:text="#{education.colon}"></span> <span id="previewEducation"></span><br/>
+                            <span th:text="#{service.received.by}"></span> <span
+                                id="previewServiceReceivedBy"></span><br/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br/><br/>
+                        <div class="mt-element-list">
+                            <div class="mt-list-head list-simple">
+                                <div class="list-head-title-container">
+                                    <div class="list-date">&nbsp;</div>
+                                    <h3 class="list-title"><span th:text="#{attach.colon}"></span></h3>
+                                </div>
+                            </div>
+                            <div class="mt-list-container list-simple">
+                                <ul id="previewAttachedFilesList"></ul>
+                                <span class="hide" th:text="#{no.files.attached}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="form-body">
+                <div class="col-md-9 col-md-offset-3">
+                    <form id="fileupload" accept-charset="UTF-8" action="api/file/upload" method="POST"
+                          enctype="multipart/form-data" class="">
+                        <div th:replace="fileUpload :: fileUploadHtml">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+    <div class="form-actions">
+        <div class="row">
+            <div class="col-md-3 pull-right" id="actionButtonDiv">
+                <input id="previewGrievanceChkbx" type="checkbox">
+                <button id="submitButton" class="btn green button-submit" th:text="#{send.complaint}"></button>
+                <button th:if="${!isMobileLogin}" id="printGrievancePreview" class="btn green button-submit"
+                        style="display: none;" th:text="#{print}"></button>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="../assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{processing}"> &nbsp;&nbsp; </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: none">
+        <div id="message-i18n-submit-success" th:attr="data-message=#{grievance.submit.success.message}"></div>
+        <div id="message-i18n-tracking-number" th:attr="data-message=#{grievance.tracking.number}"></div>
+        <div id="message-i18n-save-tracking-number" th:attr="data-message=#{grievance.save.tracking.number}"></div>
+        <div id="message-i18n-gro-info" th:attr="data-message=#{grievance.gro.info}"></div>
+        <div id="message-i18n-name" th:attr="data-message=#{name}"></div>
+        <div id="message-i18n-designation" th:attr="data-message=#{designation}"></div>
+        <div id="message-i18n-office" th:attr="data-message=#{office}"></div>
+        <div id="message-i18n-office-unit" th:attr="data-message=#{section}"></div>
+        <div id="message-i18n-phone" th:attr="data-message=#{phone}"></div>
+        <div id="message-i18n-email" th:attr="data-message=#{email}"></div>
+        <div id="message-i18n-thanks" th:attr="data-message=#{thanks}"></div>
+        <div id="message-i18n-view-grievance-list" th:attr="data-message=#{error.page.button.return.home}"></div>
+        <div id="message-i18n-print" th:attr="data-message=#{print}"></div>
+    </div>
+    <!--  -->
+    <div th:replace="fileUpload :: fileUploadTemplateScript"></div>
+    <div th:replace="fileSettingsInputTemplate :: fileSettingsInputTemplate"></div>
+</div>
+
+<div th:fragment="addAnonymousGrievancesIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/bootstrap-summernote/summernote.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="/assets/global/scripts/bootstrap-toggle.min.js"></script>
+    <div th:replace="fileUpload :: fileUploadIncludeScript"></div>
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+    <div th:replace="fileSettingsInputTemplate :: fileSettingsInputTemplateScript"></div>
+    <script src="assets/global/scripts/printThis.js"></script>
+</div>
+
+<script th:fragment="addAnonymousGrievancesScript">
+    var complainant = null,
+        form = null,
+        complainantName = "",
+        isFormSubmitted = false;
+
+    function populateServiceDropdown(data) {
+        var isEnglish = (languageCode == "en"),
+            $select = $('#serviceDropDown'),
+            attrSuffix = isEnglish ? "English" : "Bangla",
+            defaultText = isEnglish ? "Select Service" : "সেবা বাছাই করুন",
+            strOthers = isEnglish ? 'Others' : 'অন্যান্য';
+
+        if ($select.hasClass("select2-hidden-accessible")) {
+            $select.select2('destroy');
+        }
+        $select.empty().append('<option value="" disabled selected hidden>' + defaultText + '</option>');
+        $.each(data.services, function (key, val) {
+            $select.append('<option value="' + val.serviceId + '">' + val['serviceName' + attrSuffix] + '</option>');
+        });
+        $select.append('<option value="0">' + strOthers + '</option>');
+        $select.select2();
+        $select.select2("open");
+        $select.trigger('change');
+        unblockUI();
+    }
+
+    function loadServicesOnOfficeSelectionChange() {
+        $("#officeSelectionId").on('change', "select", function () {
+            var _this = $(this);
+            if (_this.is("#secondSelection")) {
+                var officeId = getOfficeId();
+                var url = '/api/office/service/' + officeId + "/NAGORIK";
+                blockUI();
+                getJson(url, populateServiceDropdown);
+            } else {
+                var serviceDropDown = $('#serviceDropDown');
+                if (serviceDropDown.hasClass("select2-hidden-accessible")) {
+                    serviceDropDown.select2('destroy');
+                }
+                serviceDropDown.empty();
+                serviceDropDown.select2();
+                serviceDropDown.trigger('change');
+            }
+        });
+    }
+
+    function getOfficeId() {
+        var officeId = $("#secondSelection").val();
+        return officeId;
+    }
+
+    function getOfficeName() {
+        return $("#secondSelection option:selected").text();
+    }
+
+
+    function clearServiceAndEmployeeDropdown() {
+        $('#serviceDropDown').empty();
+    }
+
+    function showSuccess(msg) {
+        toastr.success(msg, null, {positionClass: 'toast-top-center'});
+    }
+
+    function showError(msg) {
+        toastr.error(msg, null, {positionClass: 'toast-top-center'});
+    }
+
+    function showLoading() {
+        $("#ajaxProcessingModal").modal('show');
+    }
+
+    function closeLoading() {
+        $("#ajaxProcessingModal").modal('hide');
+    }
+
+    function ajaxPost(url, accept, send, postData, onSuccess, onError) {
+        var isEnglish = (languageCode == "en");
+        var msg = isEnglish ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+        $.blockUI({
+            message: '<h1>' + msg + '</h1>'
+        });
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: accept,
+            contentType: send,
+            data: postData,
+            success: onSuccess,
+            error: onError,
+            complete: function () {
+                $.unblockUI();
+            }
+        });
+    }
+
+    function getJson(url, onGettingJson) {
+        $.getJSON(url, onGettingJson);
+    }
+
+    function getGrievance() {
+        var grievance = {};
+        var array = $("#formAddGrievance :input").serializeArray();
+        $.each(array, function () {
+            grievance[this.name] = this.value || '';
+        });
+        var bodyContent = $("#body").summernote("code");
+        grievance['body'] = bodyContent;
+
+        var isAnonymous = true;
+//        if ($("#anonymous").is(":checked")) {
+//            isAnonymous = true;
+//        }
+        grievance["isAnonymous"] = isAnonymous;
+        grievance["serviceType"] = "NAGORIK";
+
+        var officeId = getOfficeId();
+        grievance["officeId"] = officeId || '';
+
+        if ($('#officeId').val() != "") {
+            grievance["officeId"] = $('#officeId').val() || '';
+        }
+
+        if ($('#serviceId').val() != "") {
+            grievance["serviceId"] = $('#serviceId').val() || '';
+        }
+
+        if ($("#officeLayers").val() == 0) {
+            grievance["officeId"] = 0;
+            grievance["serviceId"] = 0;
+            var serviceName = $('#serviceDropDown :selected').val() == 0 ? $("#serviceOthers").val() : $('#serviceDropDown :selected').text();
+            var interMediateText = languageCode == 'en' ? "is the office and the service is " : " এর সেবাঃ ";
+            grievance["serviceOthers"] = getOfficeName() + interMediateText + serviceName;
+        }
+
+        var files = [];
+        $("tr.template-download.fade.in").find("p.name").each(function () {
+            files.push({
+                name: $(this).find("input[name='fileNameByUser']").val(),
+                url: $(this).find("a").attr("href")
+            });
+        })
+
+        var phoneNumber = null;
+        grievance["files"] = files;
+        if ($("#groGrievanceUpload").val() == "true") {
+            grievance["offlineGrievanceUpload"] = $("#groGrievanceUpload").val();
+//            phoneNumber = $("#phoneNumber").val();
+        }
+        grievance["phoneNumber"] = phoneNumber;
+        var grievance = JSON.stringify(grievance);
+        return grievance;
+    }
+
+    function postGrievance(data) {
+        if (form.valid() == false || checkEmptyFileNameField() == true) {
+            return;
+        }
+        window.onbeforeunload = null;
+
+        var grievance = getGrievance();
+        ajaxPost("/api/grievance", "json", "application/json; charset=utf-8", grievance, showMsgForGrievanceSubmission, showMsgForError);
+    }
+
+    function showMsgForGrievanceSubmission(data) {
+        var isEmpty = jQuery.isEmptyObject(data);
+        closeLoading();
+        $('#previewGrievanceTitle').removeClass("hide");
+        $('#confirmationTab').removeClass("hide");
+        $('#confirmationTab').fadeIn();
+        $('#formAddGrievance').fadeOut();
+        $('#submitButton').fadeOut();
+        $('#fileupload').fadeOut();
+        $("#actionButtonDiv").hide();
+        $("#actionButtonDiv").parent().parent().hide();
+
+        isFormSubmitted = true;
+        var officeId = getOfficeId();
+        if ($('#officeId').val() != "") {
+            officeId = $('#officeId').val() || '';
+        }
+        if ($("#officeLayers").val() == 0) {
+            officeId = 0;
+        }
+
+        var urlToGetGROFrom = '/api/offices/' + officeId + '/gro';
+
+        getJson(urlToGetGROFrom, function (result) {
+            var isEnglish = (languageCode == "en"),
+                attrPrefix = isEnglish ? "English" : "Bangla",
+                phoneNumber = result.phoneNumber;
+            if (data.trackingNumber) {
+                var grievanceSubmissionReceipt = "<div class='confirmation-receipt text-center'>" +
+                    "<div class='font-lg font-blue bold'>" + $("#message-i18n-submit-success").attr("data-message") + "</div>" +
+                    "<div>" + $("#message-i18n-tracking-number").attr("data-message") + " : <span class='trackingNumber'>" + (isEnglish ? data.trackingNumber : data.trackingNumber.toBanglaNumber()) + "</span></div>" +
+                    "<div>" + $("#message-i18n-save-tracking-number").attr("data-message") + "</div>" +
+                    "<br/>" +
+                    "<div class='font-lg bold'> " + $("#message-i18n-gro-info").attr("data-message") + " </div>" +
+                    "<div>" + $("#message-i18n-name").attr("data-message") + ": " + result["name" + attrPrefix] + "</div>" +
+                    "<div>" + $("#message-i18n-designation").attr("data-message") + ": " + result["designation" + attrPrefix] + "</div>" +
+                    "<div>" + $("#message-i18n-office").attr("data-message") + ": " + result["officeName" + attrPrefix] + "</div>" +
+                    "<div>" + $("#message-i18n-office-unit").attr("data-message") + ": " + result["officeUnitName" + attrPrefix] + "</div>" +
+                    "<div>" + $("#message-i18n-phone").attr("data-message") + ": " + (isEnglish ? phoneNumber : phoneNumber.toBanglaNumber()) + "</div>" +
+                    "<div>" + $("#message-i18n-email").attr("data-message") + ": " + result.email + "</div>" +
+                    "</div>" +
+                    "<br/>" +
+                    "<div class='text-center'>" +
+                    "<a href='/' class='btn btn-primary btn-sm'><i class='fa fa-list'></i>&nbsp;<span>" + $("#message-i18n-view-grievance-list").attr("data-message") + "</span></a>" +
+                    "&nbsp;" +
+                    "<a class='btn green btn-sm print-confirmation'><i class='fa fa-print'></i>&nbsp;<span>" + $("#message-i18n-print").attr("data-message") + "</span></a>" +
+                    "</div>";
+                $("#addGrievanceTitle").html($("#message-i18n-thanks").attr("data-message"));
+                $("#trackingNumberBlock").html($(grievanceSubmissionReceipt));
+                $("#trackingNumberBlock .print-confirmation").off().on("click", function () {
+                    $("#trackingNumberBlock .confirmation-receipt").clone()
+                        .css("padding-top", "100px")
+                        .printThis({
+                            importStyle: true,
+                            formValues: false
+                        });
+                });
+                $('#formWizard').find('.button-previous').remove();
+                $('#formWizard').find('.button-submit').remove();
+                var successMessage = (languageCode == "en") ? "Grievance submitted successfully" : "আপনার অভিযোগটি যথাযথভাবে দাখিল হয়েছে।";
+                showSuccess(successMessage);
+            } else {
+                if (languageCode == "en") {
+                    $("#trackingNumberBlock").html("Sorry! Your complaint could not be submitted, please try again");
+                } else {
+                    $("#trackingNumberBlock").html("দুঃখিত! আপনার অভিযোগটি জমা হয়নি, আবার চেষ্টা করুন");
+                }
+                showError(data.message);
+            }
+        });
+    }
+
+    function showMsgForError(data) {
+        if (languageCode == "en") {
+            $("#trackingNumberBlock").html("An unexpected error has occured");
+        } else {
+            $("#trackingNumberBlock").html("দুঃখিত! একটি অনাকাঙ্ক্ষিত ত্রুটি ঘটেছে ");
+        }
+    }
+
+    function getGRSuserInfo(phoneNumber) {
+        getJson("/api/complainant/" + phoneNumber, function (data) {
+            if (data.permanentAddressCountryId != 15) {
+                data.permanentAddressHouse = data.foreignPermanentAddressLine1;
+                data.permanentAddressStreet = data.foreignPermanentAddressLine2;
+                data.permanentAddressTypeNameBng = data.foreignPermanentAddressCity;
+                data.permanentAddressTypeNameEng = data.foreignPermanentAddressCity;
+                data.permanentAddressDistrictNameEng = data.foreignPermanentAddressState;
+                data.permanentAddressDistrictNameBng = data.foreignPermanentAddressState;
+                data.permanentAddressDivisionNameEng = data.foreignPermanentAddressZipCode;
+                data.permanentAddressDivisionNameBng = data.foreignPermanentAddressZipCode;
+            }
+            if (data.presentAddressCountryId != 15) {
+                data.presentAddressHouse = data.foreignPresentAddressLine1;
+                data.presentAddressStreet = data.foreignPresentAddressLine2;
+                data.presentAddressTypeNameBng = data.foreignPresentAddressCity;
+                data.presentAddressTypeNameEng = data.foreignPresentAddressCity;
+                data.presentAddressDistrictNameEng = data.foreignPresentAddressState;
+                data.presentAddressDistrictNameBng = data.foreignPresentAddressState;
+                data.presentAddressDivisionNameEng = data.foreignPresentAddressZipCode;
+                data.presentAddressDivisionNameBng = data.foreignPresentAddressZipCode;
+            }
+            complainant = data;
+            complainantName = complainant.name;
+        });
+    }
+
+    function getOISFuserInfo(employeeRecordId) {
+        getJson("/api/employee/as/complainant/" + employeeRecordId, function (data) {
+            complainant = data;
+        });
+    }
+
+    function getComplainantDetails() {
+
+        var groGrievanceUpload = $("#groGrievanceUpload").val();
+        var phoneNumber = $("#phoneNumber").val();
+        if (groGrievanceUpload) {
+            getGRSuserInfo(phoneNumber);
+        } else {
+            getJson("/api/user", function (data) {
+                var userType = data.userInformation.userType;
+                if (userType == "OISF_USER") {
+                    var employeeRecordId = data.userInformation.officeInformation.employeeRecordId;
+                    getOISFuserInfo(employeeRecordId);
+                } else {
+                    phoneNumber = data.principal;
+                    getGRSuserInfo(phoneNumber);
+                }
+            });
+        }
+    }
+
+    function isEmptyString(str) {
+        return (!str || 0 === str.length);
+    }
+
+    function loadConfirmationTab(complainant) {
+        var selectedServiceName = $("#serviceDropDown option:selected").text();
+        if ($('#serviceName').val() != "") {
+            selectedServiceName = $('#serviceName').val();
+        }
+        var selectedServiceId = $("#serviceDropDown").val();
+        if (selectedServiceId == 0) {
+            selectedServiceName = $("#serviceOthers").val();
+        }
+        var strPresentAddress = "";
+        var strPermanentAddress = "";
+        var lang = languageCode == 'en' ? 'Eng' : 'Bng'
+        if (!isEmptyString(complainant.presentAddressHouse))
+            strPresentAddress += complainant["presentAddressHouse"] + "<br />";
+        if (!isEmptyString(complainant.presentAddressStreet))
+            strPresentAddress += complainant["presentAddressStreet"] + "<br />";
+        if (!isEmptyString(complainant["presentAddressTypeName" + lang]))
+            strPresentAddress += complainant["presentAddressTypeName" + lang] + ", ";
+        if (!isEmptyString(complainant["presentAddressDistrictName" + lang]))
+            strPresentAddress += complainant["presentAddressDistrictName" + lang] + ", ";
+        if (!isEmptyString(complainant["presentAddressDivisionName" + lang]))
+            strPresentAddress += complainant["presentAddressDivisionName" + lang] + ", ";
+        strPresentAddress += complainant.presentAddressCountryName;
+
+        if (!isEmptyString(complainant["permanentAddressHouse"]))
+            strPermanentAddress += complainant["permanentAddressHouse"] + "<br />";
+        if (!isEmptyString(complainant["permanentAddressStreet"]))
+            strPermanentAddress += complainant["permanentAddressStreet"] + "<br />";
+        if (!isEmptyString(complainant["permanentAddressStreet"]))
+            strPermanentAddress += complainant["permanentAddressTypeName" + lang] + ", ";
+        if (!isEmptyString(complainant["permanentAddressDistrictName" + lang]))
+            strPermanentAddress += complainant["permanentAddressDistrictName" + lang] + ", ";
+        if (!isEmptyString(complainant["permanentAddressDivisionName" + lang]))
+            strPermanentAddress += complainant["permanentAddressDivisionName" + lang] + ", ";
+        strPermanentAddress += complainant.permanentAddressCountryName;
+
+        var files = [];
+        $("tr.template-download.fade.in").find("p.name").each(function () {
+            files.push({
+                name: $(this).find("input[name='fileNameByUser']").val(),
+                url: $(this).find("a").attr("href")
+            });
+        })
+
+        var noInfo = "নাই";
+        var officeName = getSelectedOfficeName("");
+        var subject = $("#subject").val();
+        var serviceDate = ("" + $("input[name=submissionDate]").val()).toBanglaNumber();
+        var trackingNumber = $("#serviceTrackingNumber").val();
+        var description = $("#body").summernote("code");
+        var name = complainant.name;
+        var email = complainant.email;
+        var identity = complainant.nidOrBcn;
+        var gender = complainant.gender;
+
+        $("#previewOfficeName").html(officeName == "" ? noInfo : officeName);
+        $("#previewSubject").html(subject == "" ? noInfo : subject);
+        $("#previewServiceName").html(selectedServiceName == "" ? noInfo : selectedServiceName);
+        $("#previewServiceDate").html(serviceDate == "" ? noInfo : serviceDate);
+        $("#previewServiceTrackingNumber").html(trackingNumber == "" ? noInfo : trackingNumber);
+        $("#previewDescription").html(description == "" ? noInfo : description);
+        $("#previewName").html(name == "" ? noInfo : name);
+        $("#previewPresentAddress").html(strPresentAddress == "" ? noInfo : strPresentAddress);
+//        $("#previewMobileNumber").html((languageCode == "en") ? complainant.phoneNumber : complainant.phoneNumber.toBanglaNumber());
+        $("#previewEmail").html(email == "" ? noInfo : email);
+        $("#previewNid").html(identity == "" ? noInfo : identity);
+        $("#previewGender").html(gender == "" ? noInfo : gender);
+        $("#previewBirthdate").html(complainant.birthDate == "" ? noInfo : complainant.birthDate);
+        $("#previewOccupation").html(complainant.occupation == "" ? noInfo : complainant.occupation);
+        $("#previewEducation").html(complainant.education == "" ? noInfo : complainant.education);
+
+        $("#previewPermanentAddress").html(strPermanentAddress == "" ? noInfo : strPermanentAddress);
+        $("#previewAttachedFilesList").html('');
+
+        if (files.length > 0) {
+            var strFilesContent = "";
+            var attrib = "";
+            $.each(files, function (key, val) {
+                var value = val.url;
+                if (value.toLowerCase().endsWith('.png/') || value.toLowerCase().endsWith('.jpeg/') || value.toLowerCase().endsWith('.jpg/') || value.toLowerCase().endsWith('.bmp/') || value.toLowerCase().endsWith('.gif/')) {
+                    attrib = 'data-lightbox=\"' + value + '\"';
+                } else if (value.toLowerCase().endsWith('.pdf/') || value.toLowerCase().endsWith('.txt/') || value.toLowerCase().endsWith('.xls/') || value.toLowerCase().endsWith('.xlsx/') || value.toLowerCase().endsWith('.doc/') || value.toLowerCase().endsWith('.docx/')) {
+                    attrib = 'class=\"media-embed\" onclick=\"javascript:previewFile(this, event)\"';
+                } else if (value.toLowerCase().endsWith('.mp3/')) {
+                    attrib = 'class=\"media-audio\" onclick=\"javascript:previewFile(this, event)\"';
+                } else if (value.toLowerCase().endsWith('.mp4/')) {
+                    attrib = 'class=\"media-video\" onclick=\"javascript:previewFile(this, event)\"';
+                }
+                var fileName = (!val.name || 0 === val.name.length) ? "Untitled File" : val.name;
+                strFilesContent += '' +
+                    '<li class="mt-list-item">' +
+                    '<div class="list-icon-container">' +
+                    '<i class="icon-paper-clip"></i>' +
+                    '</div>' +
+                    '<div class="list-datetime"> &nbsp;</div>' +
+                    '<div class="list-item-content">' +
+                    '<h3>' +
+                    '<a href="' + value + '" ' + attrib + 'data-asset=\"false\">' + fileName + '</a>' +
+                    '</h3>' +
+                    '</div>' +
+                    '</li>';
+            })
+            $("#previewAttachedFilesList").html(strFilesContent);
+        } else {
+            $("#previewAttachedFilesList").next().show().remove();
+        }
+    }
+
+    function previewGrievanceChkbxEventHandler() {
+
+        $('#previewGrievanceChkbx').bootstrapToggle({
+            on: languageCode == 'en' ? 'Close Preview' : 'প্রিভিউ সমাপ্ত করুন',
+            off: languageCode == 'en' ? 'View Preview' : 'প্রিভিউ দেখুন',
+            onstyle: 'success',
+            offstyle: 'default'
+        });
+
+        $("#previewGrievanceChkbx").on('change', function () {
+            if (this.checked) {
+                loadConfirmationTab(complainant);
+                $('#previewGrievanceTitle').removeClass("hide");
+                $('#confirmationTab').removeClass("hide");
+                $('#confirmationTab').fadeIn("fast");
+                $('#previewGrievanceTitle').fadeIn("fast");
+                $('#formAddGrievance').fadeOut("fast");
+                $('#addGrievanceTitle').fadeOut("fast");
+
+                $('#submitButton').fadeOut("fast");
+                $('#fileupload').fadeOut("fast");
+                $('#printGrievancePreview').show();
+            } else {
+                $('#confirmationTab').fadeOut("fast");
+                $('#previewGrievanceTitle').fadeOut("fast");
+                $('#formAddGrievance').fadeIn("fast");
+                $('#addGrievanceTitle').fadeIn("fast");
+                $('#submitButton').fadeIn("fast");
+                $('#fileupload').fadeIn("fast");
+                $('#previewGrievanceTitle').addClass("hide");
+                $('#confirmationTab').addClass("hide");
+                $('#printGrievancePreview').hide();
+            }
+            App.scrollTo(null, -200);
+        });
+
+        $("#previewGrievanceChkbx").change();
+    }
+
+    function init() {
+        $('#serviceDropDown').select2({
+            width: '220px'
+        });
+        if (jsLangCodeForLibs == "bn") {
+            $.fn.datepicker.dates['bn'] = {
+                months: 'জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর'.split('_'),
+                monthsShort: 'জানু_ফেব_মার্চ_এপ্র_মে_জুন_জুল_আগ_সেপ্ট_অক্টো_নভে_ডিসে'.split('_'),
+                days: 'রবিবার_সোমবার_মঙ্গলবার_বুধবার_বৃহস্পতিবার_শুক্রবার_শনিবার'.split('_'),
+                daysShort: 'রবি_সোম_মঙ্গল_বুধ_বৃহস্পতি_শুক্র_শনি'.split('_'),
+                daysMin: 'রবি_সোম_মঙ্গ_বুধ_বৃহঃ_শুক্র_শনি'.split('_'),
+                longDateFormat: {
+                    LT: 'A h:mm সময়',
+                    LTS: 'A h:mm:ss সময়',
+                    L: 'DD/MM/YYYY',
+                    LL: 'D MMMM YYYY',
+                    LLL: 'D MMMM YYYY, A h:mm সময়',
+                    LLLL: 'dddd, D MMMM YYYY, A h:mm সময়'
+                },
+                calendar: {
+                    sameDay: '[আজ] LT',
+                    nextDay: '[আগামীকাল] LT',
+                    nextWeek: 'dddd, LT',
+                    lastDay: '[গতকাল] LT',
+                    lastWeek: '[গত] dddd, LT',
+                    sameElse: 'L'
+                },
+                relativeTime: {
+                    future: '%s পরে',
+                    past: '%s আগে',
+                    s: 'কয়েক সেকেন্ড',
+                    ss: '%d সেকেন্ড',
+                    m: 'এক মিনিট',
+                    mm: '%d মিনিট',
+                    h: 'এক ঘন্টা',
+                    hh: '%d ঘন্টা',
+                    d: 'এক দিন',
+                    dd: '%d দিন',
+                    M: 'এক মাস',
+                    MM: '%d মাস',
+                    y: 'এক বছর',
+                    yy: '%d বছর'
+                },
+                meridiemParse: /রাত|সকাল|দুপুর|বিকাল|রাত/,
+                meridiemHour: function (hour, meridiem) {
+                    if (hour === 12) {
+                        hour = 0;
+                    }
+                    if ((meridiem === 'রাত' && hour >= 4) ||
+                        (meridiem === 'দুপুর' && hour < 5) ||
+                        meridiem === 'বিকাল') {
+                        return hour + 12;
+                    } else {
+                        return hour;
+                    }
+                },
+                meridiem: function (hour, minute, isLower) {
+                    if (hour < 4) {
+                        return 'রাত';
+                    } else if (hour < 10) {
+                        return 'সকাল';
+                    } else if (hour < 17) {
+                        return 'দুপুর';
+                    } else if (hour < 20) {
+                        return 'বিকাল';
+                    } else {
+                        return 'রাত';
+                    }
+                },
+                week: {
+                    dow: 0, // Sunday is the first day of the week.
+                    doy: 6 // The week that contains Jan 1st is the first week of the year.
+                }
+            };
+            moment.locale("bn");
+        }
+
+        $('.input-group.date').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            language: jsLangCodeForLibs,
+            beforeShowDay: function (date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getDate()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowYear: function (date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowDecade: function (date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            },
+            beforeShowCentury: function (date) {
+                if (jsLangCodeForLibs == "bn") {
+                    var obj = {
+                        "enabled": true,
+                        "content": ("" + date.getFullYear()).toBanglaNumber(),
+                        "classes": "",
+                        "tooltip": ""
+                    };
+                    return obj;
+                }
+            }
+        });
+        $("#ajaxProcessingModal").modal('hide');
+        $("#submitButton").on("click", postGrievance);
+        $('.summernote').summernote({
+            height: 300
+        });
+
+        getComplainantDetails();
+        previewGrievanceChkbxEventHandler();
+        form = validateForm();
+    }
+
+    function validateForm() {
+        var form = $('#formAddGrievance');
+        var error = $('.alert-danger', form);
+        var success = $('.alert-success', form);
+        var requiredText = "";
+
+        if (languageCode == "en") {
+            requiredText = "This field is required";
+        } else {
+            requiredText = "এই তথ্যটি প্রদান করা আবশ্যক";
+        }
+
+        form.validate({
+            doNotHideMessage: true,
+            errorElement: 'span',
+            errorClass: 'help-block help-block-error',
+            focusInvalid: false,
+            rules: {
+                serviceId: {
+                    required: true
+                },
+                serviceOthers: {
+                    required: true
+                },
+                submissionDate: {
+                    required: false
+                },
+                subject: {
+                    required: true
+                }
+            },
+
+            messages: {
+                serviceId: {
+                    required: requiredText
+                },
+                serviceOthers: {
+                    required: requiredText
+                },
+                submissionDate: {
+                    required: requiredText
+                },
+                subject: {
+                    required: requiredText
+                }
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.attr("name") == "submissionDate") {
+                    error.insertAfter("#insertDateErrorSpan");
+                } else if (element.attr("name") == "presentAddressTypeValue") {
+                    error.insertAfter("#presentAddressTypeValueDiv");
+                } else if (element.attr("name") == "body") {
+                    error.insertAfter($("#body").parent().find(".body-help-block"));
+                } else if (element.attr("name") == "serviceId") {
+                    error.insertAfter(element.next());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+
+            invalidHandler: function (event, validator) {
+                success.hide();
+                error.show();
+                /* Custom handler if office not selected - Aftab */
+                if (getOfficeId() == 0) {
+                    $("#officeLayers-error").addClass("help-block-error").removeClass("hide").html("এই তথ্যটি প্রদান করা আবশ্যক");
+                    $("#officeLayers").closest('.form-group').removeClass('has-success').addClass('has-error');
+                } else {
+                    $("#officeLayers-error").removeClass("help-block-error").addClass("hide").html("&nbsp;");
+                    $("#officeLayers").closest('.form-group').removeClass('has-error');
+                }
+                /* End of custom code - Aftab */
+                /* Custom handler for summernote body - Aftab */
+                if ($("#body").summernote("isEmpty")) {
+                    $(".body-help-block").addClass("help-block-error").removeClass("hide").html("এই তথ্যটি প্রদান করা আবশ্যক");
+                    $(".body-help-block").closest('.form-group').removeClass('has-success').addClass('has-error');
+                } else {
+                    $(".body-help-block").removeClass("help-block-error").addClass("hide").html("&nbsp;");
+                    $(".body-help-block").closest('.form-group').removeClass('has-error');
+                }
+                /* End of custom code - Aftab */
+
+                App.scrollTo(error, -200);
+            },
+
+            highlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+
+            unhighlight: function (element) {
+                $(element).closest('.form-group').removeClass('has-error');
+            },
+
+            success: function (label) {
+                label.addClass('valid').closest('.form-group').removeClass('has-error').addClass('has-success');
+            },
+
+            submitHandler: function (form) {
+                success.show();
+                error.hide();
+            }
+        });
+        return form;
+    }
+
+    function checkNotAllowedFiles() {
+        var numberOfDisallowedFiles = $("strong.error.label.label-danger").length;
+        if (numberOfDisallowedFiles == 1) {
+            $("#submitButton").removeAttr('disabled');
+            $('#cancelButton').removeAttr('disabled');
+        } else {
+            $("#submitButton").attr('disabled', 'disabled');
+            $('#cancelButton').attr('disabled', 'disabled');
+        }
+    }
+
+    function checkEmptyFileNameField() {
+        var boolvalue = false;
+        $("input[name='fileNameByUser']").closest(".form-body").removeClass("has-error");
+        $("input[name='fileNameByUser']").each(function (index, value) {
+            var text = $(value).val();
+            if (text == "") {
+                boolvalue = true;
+                $(value).closest(".form-body").addClass("has-error");
+            }
+        })
+        return boolvalue;
+    }
+
+    $(document).ready(function () {
+        init();
+        bindOfficeLayersChangeActions("");
+        var officeId = $("#officeId").val();
+        if (officeId) {
+            var url = '/api/office/service/' + officeId + "/NAGORIK";
+            blockUI();
+            getJson(url, populateServiceDropdown);
+        } else {
+            loadServicesOnOfficeSelectionChange();
+        }
+        window.onbeforeunload = function () {
+            return true;
+        };
+        $("#applicationDate").keypress(function (event) {
+            event.preventDefault();
+        });
+
+        $("#previewGrievanceTitle").hide();
+
+        $('#serviceDropDown').on('change', function (e) {
+            if ($(this).val() == "0") {
+                $('#serviceOthers').parent().parent().parent().removeClass('hide');
+            } else {
+                $('#serviceOthers').val('');
+                $('#serviceOthers').parent().parent().parent().addClass('hide');
+            }
+        });
+
+        $("#fileViewerModal").on("hidden.bs.modal", function () {
+            $(this).find(".modal-body").html("");
+        });
+
+        $("#printGrievancePreview").on("click", function () {
+            $("#confirmationTab").clone()
+                .css("padding-top", "50px")
+                .find(".action-buttons")
+                .remove()
+                .end()
+                .find("a")
+                .removeAttr("href")
+                .end()
+                .printThis({
+                    importStyle: true,
+                    formValues: false
+                });
+        });
+
+    });
+</script>

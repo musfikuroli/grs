@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:fragment="safetyNetManagementIncludeStyle" th:remove="tag">
+    <link href="/assets/global/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/global/plugins/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/plugins/easy-autocomplete/easy-autocomplete.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+</div>
+
+<div class="page-content" th:fragment="safetyNetManagement" th:object="${office}">
+
+
+    <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
+
+        <div class="portlet-title">
+            <div class="caption hide-on-mobile">
+                <i class="icon-bubbles"></i>
+                <span class="caption-subject bold uppercase" th:text="#{management.safetynet.program}"></span>
+                <span class="caption-helper">&nbsp;</span>
+            </div>
+        </div>
+
+        <div class="col-md-10 margin-bottom-20">
+            <th:block th:replace="officeSelection :: officeSelection"></th:block>
+        </div>
+
+        <div th:classappend="${!isMobileLogin ? 'portlet-body' : 'mobile-padding'}" >
+
+            <th:block th:if="${manageOwnOffice == null}">
+                <div class="form-inline">
+                    <div class="form-group complaint-submission-padding">
+                        <div class="row">
+                            <label class="control-label col-md-4" id="nameEnLabel"> <span th:text="#{management.safetynet.nameEn}"></span></label>
+                            <div class="col-md-4">
+                                <input class="form-control" id="nameEn" name="nameEn" type="text">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group complaint-submission-padding">
+                        <div class="row">
+                            <label class="control-label col-md-4" id="nameBnLabel"> <span th:text="#{management.safetynet.nameBn}"></span></label>
+                            <div class="col-md-4">
+                                <input class="form-control" id="nameBn" name="nameBn" type="text">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group complaint-submission-padding">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button class="btn blue" id="safetyNetSubmit" type="button" style="cursor:pointer"><span th:text="#{management.safetynet.save}"></span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="blacklistInOfficeId" name="blacklistInOfficeId" th:value="${blacklistInOfficeId}"/>
+                    <input name="manageOwnOffice" type="hidden" value="">
+                    <input name="superAdmin" type="hidden" value="true">
+                    <input name="officeId" type="hidden" value="">
+                    <input name="officeName" type="hidden" value="">
+                    <input name="officeOriginId" type="hidden" value="">
+                    <input name="officeUnitOrganogramId" type="hidden" value="">
+                    <input name="isMobileLogin" type="hidden" value="false">
+
+                </div>
+            </th:block>
+
+            <div id="tblListOfficeSetupMissingWholeDiv" style="cursor:pointer;display:none">
+                <div class="full-height-content-body">
+                    <div>
+                        <table class="table table-hover table-responsive table-striped table-bordered table-checkable order-column" style="cursor:pointer;" id="tblListOfficeSetupMissing">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th th:text="#{management.safetynet.nameEn}"></th>
+                                <th th:text="#{management.safetynet.nameBn}"></th>
+                                <th th:text="#{office.name.english}"></th>
+                                <th th:text="#{office.name.bangla}"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-sm-5 col-md-5">
+                                <div class="dataTables_info" id="tblListOfficeSetupMissing_info" role="status" aria-live="polite" th:text="#{info.template}"></div>
+                            </div>
+                            <div class="col-md-7 col-sm-7">
+                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListView_paginate">
+                                    <div class="pagination-panel pull-right">
+                                        <span th:text="#{page}"></span>
+                                        <span class="pagination-panel-total" th:text="#{number.zero}" ></span>
+                                        <span th:text="#{of}"></span>
+                                        <a href="javascript:;" class="btn btn-sm default prev disabled">
+                                            <i class="fa fa-angle-left"></i>
+                                        </a>
+                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPage" value="০" type="text">
+                                        <a href="javascript:;" class="btn btn-sm default next disabled">
+                                            <i class="fa fa-angle-right"></i>
+                                        </a>
+                                        <span th:text="#{page.shown}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="/assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div th:fragment="safetyNetManagementIncludeScript" th:remove="tag">
+    <script src="/assets/global/plugins/select2/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/icheck/icheck.min.js" type="text/javascript"></script>
+    <th:block th:replace="officeSelection :: officeSelectionScript"></th:block>
+</div>
+
+<script th:fragment="safetyNetManagementScript">
+
+
+    var currentPage = 1, maxPage = 1, itemPerPage = 1000;
+    var officeLayers;
+    var firstSelection;
+    var secondSelection;
+
+    String.prototype.toBanglaNumber = function () {
+        var engNum = this;
+        var bngNum = '';
+        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        engNum.split('').forEach(function (digit) {
+            var index = parseInt(digit);
+            bngNum += isNaN(index) ? digit : bngDigits[index];
+        });
+        return bngNum;
+    };
+
+    function blockUI() {
+        var isEnglish = (languageCode == "en");
+        var msg = isEnglish ? "Loading... Just a moment" : "লোড হচ্ছে... দয়া করে অপেক্ষা করুন" ;
+        $.blockUI({
+            message: '<h1>' + msg + '</h1>',
+            baseZ:11111
+        });
+    }
+
+    function unblockUI() {
+        $.unblockUI();
+    }
+
+    function ajaxPost(url, accept, send, postData, onSuccess, onError) {
+        var isEnglish = (languageCode == "en");
+        var msg = isEnglish ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+        $.blockUI({
+            message: '<h1>' + msg + '</h1>'
+        });
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: accept,
+            contentType: send,
+            data: postData,
+            success: onSuccess,
+            error: onError,
+            complete: function () {
+                $.unblockUI();
+            }
+        });
+    }
+
+    function showMsgForGrievanceSubmission(data) {
+        if (data.success !== undefined) {
+            if (data.success.trim() === 'false') {
+                showError(data.message);
+                return;
+            } else if (data.success.trim() === 'true') {
+                showSuccess(data.message);
+            }
+        }
+    }
+
+    function showError(msg) {
+        toastr.error(msg, null, {positionClass: 'toast-top-center'});
+    }
+
+    function showSuccess(msg) {
+        $("#nameBn").val('');
+        $("#nameEn").val('');
+        toastr.success(msg, null, {positionClass: 'toast-top-center'});
+    }
+
+    function showMsgForError(data) {
+        if (languageCode == "en") {
+            toastr.error("An unexpected error has occured", null, {positionClass: 'toast-top-center'});
+            return;
+        } else {
+            toastr.error("দুঃখিত! একটি অনাকাঙ্ক্ষিত ত্রুটি ঘটেছে ", null, {positionClass: 'toast-top-center'});
+            return;
+        }
+    }
+
+    $(document).ready(function() {
+
+        $('#officeLayers').select2({
+            width: '220px'
+        });
+        bindOfficeLayersChangeActions("");
+        loadOfficeInformation();
+
+        $("#safetyNetSubmit").on("click", function () {
+            if (getSelectedOfficeId('') == null || getSelectedOfficeId('') === undefined) {
+                if (languageCode == "en") {
+                    toastr.error("Office ID should be selected", null, {positionClass: 'toast-top-center'});
+                    return;
+                } else {
+                    toastr.error("অফিস নাম পছন্দ করুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+            if ($('#officeLayers').val() === undefined || $('#officeLayers').val() == null || $('#officeLayers').val() ==='') {
+                if (languageCode == "en") {
+                    toastr.error("Office Layer should be selected", null, {positionClass: 'toast-top-center'});
+                    return;
+                } else {
+                    toastr.error("অফিস লেয়ার পছন্দ করুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+
+            if ($('#nameEn').val() === undefined || $('#nameEn').val()== null || $('#nameEn').val() ==='') {
+                if (languageCode == "en") {
+                    toastr.error("প্রোগ্রামের নাম লিখুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                } else {
+                    toastr.error("প্রোগ্রামের নাম লিখুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+
+            if ($('#nameBn').val() === undefined || $('#nameBn').val()== null || $('#nameBn').val() ==='') {
+                if (languageCode == "en") {
+                    toastr.error("প্রোগ্রামের নাম লিখুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                } else {
+                    toastr.error("প্রোগ্রামের নাম লিখুন", null, {positionClass: 'toast-top-center'});
+                    return;
+                }
+            }
+
+
+            var safetynet = {};
+            safetynet["officeId"] = getSelectedOfficeId('');
+            safetynet["officeLayer"] = $('#officeLayers').val();
+            safetynet["nameEn"] = $('#nameEn').val();
+            safetynet["nameBn"] = $('#nameBn').val();
+
+            ajaxPost("/api/safety-net/setup", "json", "application/json; charset=utf-8", JSON.stringify(safetynet), showMsgForGrievanceSubmission, showMsgForError);
+            loadOfficeInformation();
+        });
+
+
+
+
+        var table1 = $('#tblListOfficeSetupMissing');
+        var emptyTxt = (languageCode == 'en' ? "Sorry. No offices found." : "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ");
+        table1.dataTable({
+            "language": {
+                "aria": {
+                    "sortAscending": ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                },
+                "emptyTable": emptyTxt,
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records found",
+                "infoFiltered": "(filtered1 from _MAX_ total records)",
+                "lengthMenu": "Show _MENU_",
+                "search": "সার্চ:",
+                "zeroRecords": "No matching records found",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next",
+                    "last": "Last",
+                    "first": "First"
+                }
+            },
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "createdRow": function( row, data, dataIndex ) {
+            },
+            columns: [
+                {
+                    data: "id",
+                    render: function (data, type, row, meta) {
+                        var serialNumber = (((currentPage - 1) * itemPerPage) + meta.row + 1);
+                        return (languageCode == "en") ? serialNumber : ("" + serialNumber).toBanglaNumber();
+                    }
+                },
+                {
+                    data: "nameEn"
+                },
+                {
+                    data: "nameBn"
+                },
+                {
+                    data: "officeNameEn"
+                },
+                {
+                    data: "officeNameBn"
+                }
+            ]
+        });
+
+
+        $(".next").click(function(e) {
+            currentPage = currentPage + 1;
+            $(".prev").removeClass("disabled");
+            if (currentPage == maxPage) {
+                $(".next").addClass("disabled");
+            }
+            if (currentPage > maxPage) {
+                currentPage = maxPage;
+            }
+            loadOfficeInformation();
+        });
+
+        $(".prev").click(function(e) {
+            currentPage = currentPage - 1;
+            $(".next").removeClass("disabled");
+            if (currentPage == 1) {
+                $(".prev").addClass("disabled");
+            }
+            if (currentPage < 1) {
+                currentPage = 1;
+            }
+            loadOfficeInformation();
+        });
+
+        $("#currentPage").blur(function(e) {
+            e.preventDefault();
+            var curValue = ("" + $("#currentPage").val()).toEnglishNumber();
+            if ($.isNumeric(curValue)) {
+                if (curValue > 0 && curValue <= maxPage) {
+                    currentPage = curValue;
+                    if (currentPage == 1) {
+                        $(".prev").addClass("disabled");
+                    } else {
+                        $(".prev").removeClass("disabled");
+                    }
+                    if (currentPage == maxPage) {
+                        $(".next").addClass("disabled");
+                    } else {
+                        $(".next").removeClass("disabled");
+                    }
+                    loadOfficeInformation();
+                } else {
+                    toastr.error("Sorry, page range out of bound");
+                    $("#currentPage").val( languageCode == 'en' ? ("" + currentPage) : ("" + currentPage).toBanglaNumber());
+                }
+            } else {
+                toastr.error("Sorry, invalid page number");
+                $("#currentPage").val(languageCode == 'en' ? ("" + currentPage) : ("" + currentPage).toBanglaNumber());
+            }
+        });
+
+
+
+    });
+
+    function getSelectedOfficeId(tag) {
+        var manageOwnOffice = ($("[name='manageOwnOffice']").val() == "true");
+        if(manageOwnOffice) {
+            return $("[name='officeId']").val();
+        } else {
+            return $('#secondSelection' + tag).val();
+        }
+    }
+
+    function loadOfficeInformation() {
+        $('#tblListOfficeSetupMissingWholeDiv').show();
+        blockUI();
+        var searchSize = $("[name='isMobileLogin']").val() == "true" ? 100 : 1000 ;
+        itemPerPage = searchSize;
+        $("#currentPage").val(languageCode == 'en' ? ("" + (currentPage)) : ("" + (currentPage)).toBanglaNumber());
+        $.ajax({
+            url: "/api/safety-net/search",
+            type: "get",
+            data: {
+                "page": (currentPage - 1),
+                "size": searchSize
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response === 0 || response === "" || response.content.length === 0) {
+                    $("#tblListOfficeSetupMissing tbody tr").css("cursor","default");
+                    $(".pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#currentPage").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $(".prev, .next").addClass("disabled");
+                    $('#tblListOfficeSetupMissing').dataTable().fnClearTable();
+                    $("#tblListOfficeSetupMissing_info").html('');
+                }
+                else {
+                    var totalPages = response.totalPages;
+                    var totalElements = response.totalElements;
+                    var dataSize = response.size;
+                    var numberOfElements = response.numberOfElements;
+                    var number = response.number;
+
+                    $(".pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+                    maxPage = totalPages;
+                    if (maxPage == 1) {
+                        $(".prev, .next").addClass("disabled");
+                    }
+                    if (currentPage == 1){
+                        $(".prev").addClass("disabled");
+                    }
+                    if (maxPage > 1 && maxPage!=currentPage){
+                        $(".next").removeClass("disabled");
+                    }
+                    var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি প্রোগ্রামের মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + totalElements) + " Program total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
+                    $("#tblListOfficeSetupMissing_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#tblListOfficeSetupMissing').dataTable().fnClearTable();
+                    $('#tblListOfficeSetupMissing').dataTable().fnAddData(response.content);
+                    $('#tblListOfficeSetupMissing').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+            }
+        });
+    }
+
+</script>

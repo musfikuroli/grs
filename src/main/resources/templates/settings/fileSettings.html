@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="page-content" style="min-height: 1601px;" th:fragment="fileSettings">
+    <div class="form-body">
+        <form id="fileSizeAndTypesSettingsForm">
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="control-label font-lg"> সর্বোচ্চ ফাইল সাইজ (মেগাবাইটে) </label>
+                    <span class="required" aria-required="true"> * </span>
+                    <input type="number" name="fileSize" class="form-control" th:value="${maxFileSize}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label class="control-label font-lg"> যেসব ধরনের ফাইলসমূহ আপলোড করা যাবে </label>
+                    <span class="required" aria-required="true"> * </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2"> ইমেজ ফাইলের ধরন - </label>
+                    <div class="col-md-10">
+                        <div class="mt-checkbox-inline">
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="png|PNG" th:checked="${#lists.contains(allowedFileTypes, 'png') || #lists.contains(allowedFileTypes, 'PNG')}"> .png
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="jpe?g|JPE?G" th:checked="${#lists.contains(allowedFileTypes, 'jpe?g') || #lists.contains(allowedFileTypes, 'JPE?G')}"> .jpg/jpeg
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="gif|GIF" th:checked="${#lists.contains(allowedFileTypes, 'gif') || #lists.contains(allowedFileTypes, 'GIF')}"> .gif
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="svg" th:checked="${#lists.contains(allowedFileTypes, 'svg')}"> .svg
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="bmp" th:checked="${#lists.contains(allowedFileTypes, 'bmp')}"> .bmp
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2"> টেক্সট ফাইলের ধরন - </label>
+                    <div class="col-md-10">
+                        <div class="mt-checkbox-inline">
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="doc|DOC" th:checked="${#lists.contains(allowedFileTypes, 'doc') || #lists.contains(allowedFileTypes, 'DOC')}"> .doc
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="docx|DOCX" th:checked="${#lists.contains(allowedFileTypes, 'docx') || #lists.contains(allowedFileTypes, 'DOCX')}"> .docx
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="pdf|PDF" th:checked="${#lists.contains(allowedFileTypes, 'pdf') || #lists.contains(allowedFileTypes, 'PDF')}"> .pdf
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="txt" th:checked="${#lists.contains(allowedFileTypes, 'txt')}"> .txt
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="xls" th:checked="${#lists.contains(allowedFileTypes, 'xls')}"> .xls
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="xlsx" th:checked="${#lists.contains(allowedFileTypes, 'xlsx')}"> .xlsx
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="pages" th:checked="${#lists.contains(allowedFileTypes, 'pages')}"> .pages
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2"> অডিও ফাইলের ধরন - </label>
+                    <div class="col-md-10">
+                        <div class="mt-checkbox-inline">
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="mp3|MP3" th:checked="${#lists.contains(allowedFileTypes, 'mp3') || #lists.contains(allowedFileTypes, 'MP3')}"> .mp3
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="3gp|3GP" th:checked="${#lists.contains(allowedFileTypes, '3gp') || #lists.contains(allowedFileTypes, '3GP')}"> .3gp
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="amr" th:checked="${#lists.contains(allowedFileTypes, 'amr')}"> .amr
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="wav" th:checked="${#lists.contains(allowedFileTypes, 'wav')}"> .wav
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2"> ভিডিও ফাইলের ধরন - </label>
+                    <div class="col-md-10">
+                        <div class="mt-checkbox-inline">
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="mp4|MP4" th:checked="${#lists.contains(allowedFileTypes, 'mp4') || #lists.contains(allowedFileTypes, 'MP4')}"> .mp4
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="flv|FLV" th:checked="${#lists.contains(allowedFileTypes, 'flv') || #lists.contains(allowedFileTypes, 'FLV')}"> .flv
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="avi" th:checked="${#lists.contains(allowedFileTypes, 'avi')}"> .avi
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="mkv" th:checked="${#lists.contains(allowedFileTypes, 'mkv')}"> .mkv
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="wmv" th:checked="${#lists.contains(allowedFileTypes, 'wmv')}"> .wmv
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="mov|MOV" th:checked="${#lists.contains(allowedFileTypes, 'mov') || #lists.contains(allowedFileTypes, 'MOV')}"> .mov
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="control-label col-md-2"> অন্যান্য - </label>
+                    <div class="col-md-10">
+                        <div class="mt-checkbox-inline">
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="zip" th:checked="${#lists.contains(allowedFileTypes, 'zip')}"> .zip
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="rar" th:checked="${#lists.contains(allowedFileTypes, 'rar')}"> .rar
+                                <span></span>
+                            </label>
+                            <label class="mt-checkbox mt-checkbox-outline col-sm-2">
+                                <input type="checkbox" value="html?" th:checked="${#lists.contains(allowedFileTypes, 'html?')}"> .htm/html
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <button type="submit" class="btn blue submit-button" th:text="#{update}"></button>
+                    <button type="reset" class="btn green" th:text="#{reset}"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal fade" id="ajaxProcessingModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
+                    <span th:text="#{loading.please.wait}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display: none;">
+        <div id="message-i18n-filesize-error" th:attr="data-message=#{x.should.be.greater.than.y(#{file.size}, #{number.zero})}" ></div>
+        <div id="message-i18n-filetype-error" th:attr="data-message=#{x.cannot.be.blank(#{file.type})}" ></div>
+    </div>
+</div>
+
+<script th:fragment="fileSettingsScript">
+    $(document).ready(function () {
+        var form = $("#fileSizeAndTypesSettingsForm");
+        form.on("submit", function (event) {
+           event.preventDefault();
+           event.stopPropagation();
+           var maxFileSize = form.find("[name='fileSize']").val();
+           var allowedFileTypes = form.find("[type='checkbox']:checked").map(function() {
+               return $(this).val();
+           }).get();
+           if(!maxFileSize || parseInt(maxFileSize) <= 0) {
+               toastr.error($("#message-i18n-filesize-error").attr("data-message"), null, {positionClass: 'toast-top-center'});
+           } else if(allowedFileTypes.length == 0) {
+               toastr.error($("#message-i18n-filetype-error").attr("data-message"), null, {positionClass: 'toast-top-center'});
+           } else {
+               var data = {
+                   maxFileSize: maxFileSize,
+                   allowedFileTypes: allowedFileTypes.join("|")
+               };
+               form.find(".submit-button").attr("disabled", "disabled");
+               $("#ajaxProcessingModal").modal("show");
+               $.ajax({
+                   type: "PUT",
+                   url: "/api/settings/file-upload-settings",
+                   data: JSON.stringify(data),
+                   dataType: "json",
+                   contentType: "application/json",
+                   success: function (response) {
+                       if(response.success) {
+                           toastr.success(response.message, null, {positionClass: 'toast-top-center'});
+                       } else {
+                           toastr.error(response.message, null, {positionClass: 'toast-top-center'});
+                       }
+                   },
+                   error: function (response) {
+                       var errorMessage = (languageCode == "en") ? "Sorry! cannot update settings" : "দুঃখিত! সেটিংস হালনাগাদ করা যাচ্ছেনা";
+                       toastr.error(errorMessage, null, {positionClass: 'toast-top-center'});
+                   },
+                   complete: function (response) {
+                       form.find(".submit-button").removeAttr("disabled");
+                       $("#ajaxProcessingModal").modal("hide");
+                   }
+               });
+           }
+        });
+    });
+</script>

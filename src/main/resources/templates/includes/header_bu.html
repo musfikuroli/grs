@@ -1,0 +1,122 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div class="page-wrapper-row" th:fragment="header(menu)">
+    <div class="page-wrapper-top">
+        <div class="page-header">
+            <div class="page-header-strip">
+                <div class="container">
+                    <ul class="header-strip-nav">
+                        <li class="bangla">
+                            <i class="icon-call-end"></i>
+                            +8801768194532, +8801891964464
+                        </li>
+                        <li class="english">
+                            <i class="icon-envelope"></i>
+                            grs@cabinet.gov.bd
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="page-header-top">
+                <div class="container left">
+                    <div class="hor-menu hor-menu-light">
+                        <ul class="nav navbar-nav">
+                            <li aria-haspopup="true" class="menu-dropdown classic-menu-dropdown ">
+                                <a href="javascript:;" class="menu-button"></a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li aria-haspopup="true" class="" id="serviceMenu">
+                                        <a href="/services.do" th:text="#{citizen.charter}">
+                                            <span class="arrow"></span>
+                                        </a>
+                                    </li>
+                                    <li aria-haspopup="true" class="" id="onikMenu">
+                                        <a href="/groInformation.do" th:text="#{index.menu.onik.appeal.officer.info}">
+                                            <span class="arrow"></span>
+                                        </a>
+                                    </li>
+                                    <li aria-haspopup="true" class="dropdown-submenu" id="complaintSubmissionMenu">
+                                        <a href="javascript:;" class="nav-link nav-toggle" th:text="#{index.menu.complaint.submission.info}">
+                                            <span class="arrow"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li th:if="${!isLoggedIn}" aria-haspopup="true" class=" ">
+                                                <a href="javascript:addPublicGrievanceWithoutLoginButtonEventHandler()" class="nav-link " th:text="#{citizen.grievance}"></a>
+                                            </li>
+                                            <li th:if="${isLoggedIn && isOthersComplainant}" aria-haspopup="true" class=" ">
+                                                <a href="javascript:addPublicGrievanceForOthersButtonEventHandler()" class="nav-link " th:text="#{citizen.grievance}"></a>
+                                            </li>
+                                            <li th:if="${isLoggedIn && !isOthersComplainant}" aria-haspopup="true" class=" ">
+                                                <a href="javascript:addPublicGrievanceButtonEventHandler()" class="nav-link " th:text="#{citizen.grievance}"></a>
+                                            </li>
+                                            <li aria-haspopup="true" class=" ">
+                                                <a href="/anonymousAddGrievance.do" class="nav-link " th:text="#{anonymous.title}"></a>
+                                            </li>
+                                            <li aria-haspopup="true" class=" ">
+                                                <a href="javascript:showComplaintStatusModal()" class="nav-link " th:text="#{index.menu.grievance.status}"></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li aria-haspopup="true" class="dropdown-submenu" id="importantInfoMenu">
+                                        <a href="javascript:;" class="nav-link nav-toggle" th:text="#{index.menu.important.info}">
+                                            <span class="arrow"></span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li aria-haspopup="true" class=" ">
+                                                <a href="javascript:;" class="nav-link " th:text="#{index.manual.text}"></a>
+                                            </li>
+                                            <li aria-haspopup="true" class=" ">
+                                                <a href="/assets/flow_chart.pdf" class="nav-link media-embed" onclick="javascript:previewFile(this, event);" th:text="#{index.button.process.flows.text}" data-asset="false"></a>
+                                            </li>
+                                            <li aria-haspopup="true" class=" ">
+                                                <a href="/assets/grs_guideline.pdf" class="nav-link media-embed" onclick="javascript:previewFile(this, event);" th:text="#{index.button.complaint.resolution.manual.text}" data-asset="false"></a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li aria-haspopup="true" class="hide" id="resolutionStoryMenu">
+                                        <a href="/groInformation.do" th:text="#{index.menu.complaint.resolution.story}">
+                                            <span class="arrow"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="/" class="home-button"></a>
+                    <div class="page-logo">
+                        <a href="/">
+                            <img src="/assets/layouts/layout3/img/Header-logo2-original.png" alt="logo" class="logo-default">
+                        </a>
+                    </div>
+                    <div class="top-menu">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown dropdown-language">
+                                <a id="selectedLanguageLink" href="javascript:;" data-close-others="true" aria-expanded="true">
+                                    <span id="selectedLanguageName" class="langname"> বাংলা </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <th:block th:if="${isLoggedIn==false}">
+                        <div class="top-menu-complaint">
+                            <a class="btn btn-default " href="/login?a=0" th:text="#{index.footer.login}"></a>
+                            <a class="btn btn-default " href="/login?a=1" th:text="#{index.button.administrative.login.text}"></a>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${isLoggedIn==true}">
+                        <div class="top-menu-complaint">
+                            <a class="btn btn-default " href="/dashboard.do" th:text="#{menu.dashboard}"></a>
+                        </div>
+                    </th:block>
+
+                    <div class="page-banner">
+                        <div class="banner-text" th:utext="#{banner.text}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-header-menu">
+                <div class="container">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
