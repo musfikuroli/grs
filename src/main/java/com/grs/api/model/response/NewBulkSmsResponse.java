@@ -20,7 +20,7 @@ public class NewBulkSmsResponse implements Serializable {
     public String server;
     public String sms_class;
     public String processing_details;
-    public int credit_deducted;
+    public String credit_deducted;
     public String current_credit;
     public String credit_inheritance;
     public String chunk_id;
