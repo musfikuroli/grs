@@ -240,12 +240,12 @@ public class ShortMessageService {
     }
 
     private HashMap<String,String> getAKeyPKey() {
-        HashMap<String,String> aKeyPKey = new HashMap<String,String>();
+        HashMap<String,String> aKeyPKey = new HashMap<>();
         Long currentTimeMillis = System.currentTimeMillis();
-        String pKey = currentTimeMillis.toString()+"222";
+        String pKey = currentTimeMillis+"222";
 
         Long aKeyInteger = Long.parseLong(pKey) + Long.parseLong(cabinetUserID);
-        String aKey = String.valueOf(aKeyInteger)+encryptedKeyForCabinet;
+        String aKey = aKeyInteger+encryptedKeyForCabinet;
 
         String aKeyMd5 = DigestUtils.md5DigestAsHex(aKey.getBytes(StandardCharsets.UTF_8));
         aKeyPKey.put("akey",aKeyMd5);
