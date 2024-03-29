@@ -1370,6 +1370,17 @@ public class GrievanceForwardingService {
         CellMember cellGro = cellMemberDAO.findByIsGro();
         boolean sendToCell = StringUtil.isValidString(grievance.getAppealOfficerDecision()) && grievance.getCurrentAppealOfficeId() != null && cellGro != null;
 
+        String sql = "select count(id) from complaint_movements where complaint_id=:complaint_id and to_office_id=:paramZero and from_office_id=:paramZero and to_office_unit_id=:paramZero and from_office_unit_id=:paramZero ";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("complaint_id", grievanceForwardingNoteDTO.getGrievanceId());
+        params.put("paramZero", 0);
+
+        Long count = this.grievanceService.findCount(sql, params);
+        if (count != null && count >0) {
+            return new GenericResponse(false, "আপনি একাধিকবার সেল এ আপীল করতে পারবেননা। আপনার অভিযোগ আগে একবার সেল থেকে সমাধান করা হয়েছে। ");
+        }
+
         if (!sendToCell && aoEmployeeOffice == null) {
             return new GenericResponse(false, "আপনার বাছাইকৃত দপ্তরটি সেটআপ করা নেই।");
         }

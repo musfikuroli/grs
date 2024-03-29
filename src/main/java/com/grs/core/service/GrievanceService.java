@@ -111,6 +111,10 @@ public class GrievanceService {
         return this.grievanceDAO.findOne(grievanceId);
     }
 
+    public Long findCount(String sql, Map<String, Object> params) {
+        return this.entityManager.findMaxId(sql, params);
+    }
+
     public Grievance saveGrievance(Grievance grievance) {
         return this.grievanceDAO.save(grievance);
     }

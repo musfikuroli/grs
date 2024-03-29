@@ -16,8 +16,22 @@
                 <span class="modulename caption-subject bold uppercase" th:text="#{manage.x(#{appeal})}"></span>
                 <span class="caption-helper">&nbsp;</span>
             </div>
-            <div class="actions">
-                <a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;" data-original-title="" title=""> </a>
+            <div class="topnav">
+                <button type="submit" style="
+                    float: right;
+                    padding: 6px;
+                    margin-top: 8px;
+                    width: 2%;
+                    font-size: 16px;
+                " id="searchButton"><i class="fa fa-search"></i></button>
+                <input type="text" placeholder="খুঁজুন.." style="
+                    float: right;
+                    padding: 6px;
+                    margin-top: 8px;
+                    font-size: 17px;
+                    width: 30%;
+                    border: 1px solid #ccc;
+                " id="listSearch">
             </div>
         </div>
         <div th:class="${!isMobileLogin ? 'portlet-body' : ''}">
@@ -515,6 +529,22 @@
     $(document).ready(function() {
         var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
         loadUnceenCount();
+
+        if($("[name='isMobileLogin']").val() === "false"){
+            $("#listSearch").keypress(function(e) {
+                if(e.which == 13 && ($("#listSearch").val().trim().length > 0 || $("#listSearch").val().trim().length == $("#listSearch").val().length)) {
+                    loadComplaintsList(currentPageInbox);
+                }
+            });
+            $("#searchButton").click(function(e) {
+                if($("#listSearch").val().trim().length > 0 || $("#listSearch").val().trim().length == $("#listSearch").val().length){
+                    loadComplaintsList(currentPageInbox);
+                }
+            });
+        } else {
+            loadComplaintsList(currentPageInbox);
+        }
+
         $('.date-picker').datepicker({
             rtl: App.isRTL(),
             autoclose: true
@@ -890,8 +920,13 @@
             pageNo = currentPageExpired;
         }
 
+        var searchItem = $("[name='isMobileLogin']").val() == "true" ? "" : $("#listSearch").val()
+        var url = "/api/grievance/appeal/" + currentView;
+        if (searchItem !== "" && searchItem != null) {
+            url = "/api/grievance/appeal/" + currentView+"/search?value="+searchItem;
+        }
         $.ajax({
-            url: "/api/grievance/appeal/" + currentView,
+            url: url,
             type: "get",
             data: {
                 "page": (pageNo - 1),
