@@ -2411,11 +2411,14 @@ public class GrievanceService {
         }
         sql = "update complaint_movements set is_current=0 where complaint_id=:complaintId and id<>:id ";
         params.put("id", maxMovement);
+        params.put("complaintId", reassignGrievance.getCaseId());
 
         if (grievanceEO.getGrievanceCurrentStatus().name().contains("APPEAL")) {
             try {
                 entityManager.updateByQuery(sql, params);
                 sql = "update complaint_movements set action ='APPEAL_STATEMENT_ANSWERED', to_office_unit_organogram_id=:orgId, to_office_id=:toOfficeId, is_current=1, is_cc=0,current_status='APPEAL_STATEMENT_ANSWERED', assigned_role='AO' where id = :id";
+
+                params.remove("complaintId");
                 params.put("orgId", officesGRO.getAppealOfficerOfficeUnitOrganogramId());
                 params.put("toOfficeId", reassignGrievance.getOfficeId());
                 entityManager.updateByQuery(sql, params);

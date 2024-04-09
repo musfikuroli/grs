@@ -310,9 +310,9 @@ public class ReportsService {
                 calendar.add(Calendar.MONTH, -1);
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH) + 1;
-                log.info("===MONTH:{} YEAR:{} OFFICE:{}", month, year, officeId);
+                //log.info("===MONTH:{} YEAR:{} OFFICE:{}", month, year, officeId);
                 MonthlyReport monthlyReport = monthlyReportDAO.findByOfficeIdAndYearAndMonth(officeId, year, month);
-                log.info("===FOUND:{}", monthlyReport != null);
+                //log.info("===FOUND:{}", monthlyReport != null);
                 if (monthlyReport == null) {
                     GrievanceAndAppealMonthlyReportDTO reportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
                             .officeId(officeId)
@@ -322,7 +322,7 @@ public class ReportsService {
                             .monthlyAppealReport(getAppealMonthlyReportForGenerate(officeId, -1L))
                             .build();
                     monthlyReport = monthlyReportDAO.convertToMonthlyReport(reportDTO);
-                    log.info("===GOING TO SAVE FOR MONTH:{} YEAR:{} OFFICE:{}", month, year, officeId);
+                    //log.info("===GOING TO SAVE FOR MONTH:{} YEAR:{} OFFICE:{}", month, year, officeId);
                     monthlyReport = monthlyReportDAO.save(monthlyReport);
                     if (monthlyReport.getId() != null) {
                         reportGeneratedForOffices.add(grsOffice.getOfficeNameBangla() + "\n");
