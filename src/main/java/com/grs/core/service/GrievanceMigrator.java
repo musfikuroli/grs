@@ -44,7 +44,7 @@ public class GrievanceMigrator {
                 return;
             }
 
-            for (Long i = 10512L; i <= max; i++) {
+            for (Long i = min; i <= max; i++) {
                 log.info("====Processing Grievance ID:{}", i);
                 //----Pulling submitted--------
                 sql = "select com.id as complain_id, com.tracking_number as tracking_number, 'NEW' as current_status, com.office_id as office_id, ol.layer_level as layer_level," +
