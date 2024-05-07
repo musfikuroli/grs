@@ -111,9 +111,9 @@ public class GrievanceDAO {
         CitizenCharter citizenCharter = this.citizenCharterDAO.findByOfficeIdAndServiceId(Long.valueOf(grievanceRequestDTO.getOfficeId()), Long.valueOf(grievanceRequestDTO.getServiceId()));
         GrievanceCurrentStatus currentStatus = (officeId == 0 ? GrievanceCurrentStatus.CELL_NEW : GrievanceCurrentStatus.NEW);
         MediumOfSubmission medium = MediumOfSubmission.ONLINE;
-        if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getOfflineGrievanceUpload()) {
+        if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getOfflineGrievanceUpload() != null && grievanceRequestDTO.getOfflineGrievanceUpload()) {
             medium = MediumOfSubmission.CONVENTIONAL_METHOD;
-        } else if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getIsSelfMotivated()) {
+        } else if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getIsSelfMotivated() != null && grievanceRequestDTO.getIsSelfMotivated()) {
             medium = MediumOfSubmission.SELF_MOTIVATED_ACCEPTANCE;
         }
         Grievance grievance = Grievance.builder()
