@@ -20,7 +20,7 @@ public class GrievanceMigrator {
         this.entityManager = entityManager;
     }
 
-    @Scheduled(fixedDelay = Long.MAX_VALUE)
+    //@Scheduled(fixedDelay = Long.MAX_VALUE)
     public void migrate() {
         //---------Migration code--------
 

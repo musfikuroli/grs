@@ -78,7 +78,7 @@ public class GrievanceForwardingDAO {
     public GrievanceForwarding forwardGrievanceKeepingAtInbox(GrievanceForwarding grievanceForwarding) {
         if (grievanceForwarding.getIsCurrent() == null || grievanceForwarding.getIsCurrent()) {
             GrievanceForwarding existingToEntry = this.grievanceForwardingRepo.findByIsCurrentAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(true, grievanceForwarding.getToOfficeId(), grievanceForwarding.getToOfficeUnitOrganogramId(), grievanceForwarding.getGrievance());
-            if (existingToEntry != null) {
+            if (existingToEntry != null && !RoleType.INV_HEAD.equals(grievanceForwarding.getAssignedRole())) {
                 existingToEntry.setIsCurrent(false);
                 this.grievanceForwardingRepo.save(existingToEntry);
             }

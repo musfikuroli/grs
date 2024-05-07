@@ -906,6 +906,10 @@ public class GrievanceForwardingService {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         Grievance grievance = this.grievanceService.findGrievanceById(grievanceForwardingNoteDTO.getGrievanceId());
         GrievanceForwarding grievanceForwardingHead = this.grievanceForwardingDAO.getActiveInvestigationHeadEntry(grievance);
+        if (grievanceForwardingHead == null) {
+            String successMessage = "Committee head not found. Please contact with admin";
+            return new GenericResponse(false, successMessage);
+        }
         String action = "TAKE_HEARING";
         GrievanceCurrentStatus currentStatus;
         if (grievance.getGrievanceCurrentStatus().toString().endsWith("APPEAL")) {
@@ -918,7 +922,7 @@ public class GrievanceForwardingService {
                 grievance,
                 grievanceForwardingNoteDTO.getNote(),
                 action,
-                grievanceForwardingHead.getToEmployeeRecordId(),
+                grievanceForwardingHead.getToEmployeeRecordId(), //before last step its becoming 0
                 grievanceForwardingHead.getToEmployeeRecordId(),
                 grievanceForwardingHead.getToOfficeId(),
                 grievanceForwardingHead.getToOfficeId(),
@@ -1090,7 +1094,7 @@ public class GrievanceForwardingService {
                 fromOfficeId,
                 grievanceForwardingHead.getToOfficeUnitOrganogramId(),
                 fromOfficeUnitOrganogramId,
-                true,
+                false,
                 false,
                 false,
                 false,

@@ -1145,6 +1145,7 @@ public class GrievanceService {
             try {
                 this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
             } catch (Throwable t) {
+                t.printStackTrace();
                 throw new RuntimeException("Grievance File storage error. Please contact with admin!");
             }
         }
