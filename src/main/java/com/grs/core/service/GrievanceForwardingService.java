@@ -169,6 +169,7 @@ public class GrievanceForwardingService {
         return;
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse closeGrievance(Authentication authentication, Long grievanceId, GrievanceForwardingCloseDTO grievanceForwardingCloseDTO) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         Grievance grievance = this.grievanceService.findGrievanceById(grievanceId);
@@ -198,7 +199,12 @@ public class GrievanceForwardingService {
             grievance.setGroIdentifiedCause(grievanceForwardingCloseDTO.getMainReason());
             grievance.setGroSuggestion(grievanceForwardingCloseDTO.getGroSuggestion());
         }
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            this.grievanceService.saveGrievance(grievance, false);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException("Grievance update error. Please contact with admin");
+        }
         String message = "আপনার " + grievance.getTrackingNumber() + " ট্র্যাকিং নম্বরের  অভিযোগটি নিষ্পত্তি হয়েছে।";
         return this.rejectOrCloseGrievance(userInformation, grievanceId, grievanceForwardingCloseDTO.getGroDecision(), grievanceForwardingCloseDTO.getStatus(), message, grievanceForwardingCloseDTO.getFiles(), grievanceForwardingCloseDTO.getReferredFiles());
     }
@@ -217,7 +223,7 @@ public class GrievanceForwardingService {
         return this.rejectOrCloseGrievance(userInformation, grievanceId, comment.getNote(), GrievanceCurrentStatus.REJECTED, message, comment.getFiles(), null);
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse rejectOrCloseGrievance(UserInformation userInformation,
                                                   Long grievanceId,
                                                   String comment,
@@ -249,9 +255,17 @@ public class GrievanceForwardingService {
                 RoleType.GRO,
                 userInformation.getUsername()
         );
-
-        grievanceForwarding = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            grievanceForwarding = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException("Grievance movement insertion error. Please contact with admin");
+        }
+        try {
+            this.grievanceService.saveGrievance(grievance);
+        } catch (Throwable t) {
+            throw new RuntimeException("Grievance update error. Please contact with admin");
+        }
         String body = message.replace("grievance", "Your grievance (tracking id : " + grievance.getTrackingNumber() + ") ");
         this.notifyComplainantAboutStatusChange(this.grievanceService.findGrievanceById(grievanceId), message, body);
         if (files != null) {
@@ -261,7 +275,8 @@ public class GrievanceForwardingService {
             List<MovementAttachedFile> attachedFiles = this.attachedFileService.getAttachedFilesByIdList(referredFiles);
             this.attachedFileService.addMovementAttachedFilesRef(grievanceForwarding, attachedFiles);
         }
-        //TODO:: Alauddin Need to change message here
+        //
+
         message = grievanceCurrentStatus.equals(GrievanceCurrentStatus.REJECTED) ? "অভিযোগ প্রত্যাখ্যান করা হয়েছে" : "অভিযোগ নিষ্পত্তি করা হয়েছে";
         return new GenericResponse(true, message);
     }
@@ -546,9 +561,8 @@ public class GrievanceForwardingService {
                 .build();
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse sendForOpinion(Authentication authentication, OpinionRequestDTO opinionRequestDTO) {
-        //TODO: make action and comment come from message resources. unless there is some changes.
         Long grievanceId = opinionRequestDTO.getGrievanceId();
         List<String> postNodeList = opinionRequestDTO.getPostNode();
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -596,7 +610,12 @@ public class GrievanceForwardingService {
         if (grievance.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW)) {
             grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.ACCEPTED);
             grievance.setCaseNumber(this.grievanceService.getCaseNumber(grievance.getOfficeId()));
-            this.grievanceService.saveGrievance(grievance);
+            try {
+                this.grievanceService.saveGrievance(grievance);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
+
             String message = "<p>অভিযোগটি গৃহীত হয়েছে</p>";
             GrievanceForwarding acceptedForwarding = this.getGrievanceForwarding(
                     grievance,
@@ -617,10 +636,18 @@ public class GrievanceForwardingService {
                     RoleType.GRO,
                     userInformation.getUsername()
             );
-            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(acceptedForwarding);
+            try {
+                this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(acceptedForwarding);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
             prevStatus = grievance.getGrievanceCurrentStatus();
             grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.STATEMENT_ASKED);
-            this.grievanceService.saveGrievance(grievance);
+            try {
+                this.grievanceService.saveGrievance(grievance);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
 
         } else if (grievance.getGrievanceCurrentStatus().toString().startsWith("APPEAL")) {
             if (grievance.getCaseNumber() == null) {
@@ -628,7 +655,11 @@ public class GrievanceForwardingService {
             }
             prevStatus = grievance.getGrievanceCurrentStatus();
             grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.APPEAL_STATEMENT_ASKED);
-            this.grievanceService.saveGrievance(grievance);
+            try {
+                this.grievanceService.saveGrievance(grievance);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
             action = "APPEAL_STATEMENT_ASKED";
 
         } else {
@@ -637,7 +668,11 @@ public class GrievanceForwardingService {
             }
             prevStatus = grievance.getGrievanceCurrentStatus();
             grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.STATEMENT_ASKED);
-            this.grievanceService.saveGrievance(grievance);
+            try {
+                this.grievanceService.saveGrievance(grievance);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
         }
 
         for (GrievanceForwardingDTO grievanceForwardingDTO : forwardingDTOS) {
@@ -663,7 +698,7 @@ public class GrievanceForwardingService {
         return new EmployeeOrganogram(officeId, officeMinistryId, officeUnitOrganogramId);
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse initiateInvestigation(GrievanceForwardingInvestigationDTO grievanceForwardingInvestigationDTO, Authentication authentication) {
         EmployeeOrganogram headOfInvestigation = getOfficeOrgDetail(grievanceForwardingInvestigationDTO.getHead());
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -706,8 +741,11 @@ public class GrievanceForwardingService {
                 RoleType.INV_HEAD,
                 userInformation.getUsername()
         );
-
-        this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        try {
+            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         if (toEmployeeOffice.getEmployeeRecord().getPersonalMobile() != null) {
             this.shortMessageService.sendSMS(toEmployeeOffice.getEmployeeRecord().getPersonalMobile(), "আপনাকে তদন্ত কমিটির প্রধান নির্বাচিত করা হয়েছে। grs.gov.bd এ লগইন করুন এবং আপনার ইনবক্স দেখুন");
         }
@@ -733,13 +771,21 @@ public class GrievanceForwardingService {
                     RoleType.INV_MEMBER,
                     userInformation.getUsername()
             );
-            this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(committeeMemberGrievanceForward);
+            try {
+                this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(committeeMemberGrievanceForward);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
             if (toEmployeeOffice.getEmployeeRecord().getPersonalMobile() != null) {
                 this.shortMessageService.sendSMS(toEmployeeOffice.getEmployeeRecord().getPersonalMobile(), "আপনাকে তদন্ত কমিটির সদস্য নির্বাচিত করা হয়েছে। grs.gov.bd এ লগইন করুন এবং আপনার ইনবক্স দেখুন");
             }
         }
         grievance.setGrievanceCurrentStatus(currentStatus);
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            this.grievanceService.saveGrievance(grievance);
+        } catch (Throwable t){
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         String successMessage = "তদন্ত কমিটি সফলভাবে তৈরি করা হয়েছে";
         return new GenericResponse(true, successMessage);
     }
@@ -1285,7 +1331,7 @@ public class GrievanceForwardingService {
                 .build();
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse forwardGrievanceToAnotherOffice(ForwardToAnotherOfficeDTO forwardToOfficeDTO, UserInformation userInformation) {
         Grievance grievance = this.grievanceService.findGrievanceById(forwardToOfficeDTO.getGrievanceId());
         Long toOfficeId = forwardToOfficeDTO.getOfficeId();
@@ -1337,8 +1383,19 @@ public class GrievanceForwardingService {
         grievance.setServiceOrigin(citizenCharter == null ? null : citizenCharter.getServiceOrigin());
         grievance.setOtherServiceBeforeForward(grievance.getOtherService());
         grievance.setOtherService(citizenCharter == null ? forwardToOfficeDTO.getOtherServiceName() : null);
-        this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException("Grievance movement error. Please contact with admin");
+        }
+
+        try {
+            this.grievanceService.saveGrievance(grievance);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException("Grievance update error. Please contact with admin");
+        }
 
         String trackingNumber = (StringUtil.isValidString(grievance.getTrackingNumber())
                 && (grievance.getTrackingNumber().startsWith("01"))) ?
@@ -1356,7 +1413,7 @@ public class GrievanceForwardingService {
         return new GenericResponse(true, "অভিযোগ অন্য অফিসে পাঠানো হয়েছে।");
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse appealToOfficer(GrievanceForwardingNoteDTO grievanceForwardingNoteDTO, Authentication authentication) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         Boolean isServiceOfficer = Utility.isServiceOfficer(authentication);
@@ -1427,8 +1484,12 @@ public class GrievanceForwardingService {
         grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.APPEAL);
         grievance.setCurrentAppealOfficeId(sendToCell ? 0 : officesGRO.getAppealOfficeId());
         grievance.setCurrentAppealOfficerOfficeUnitOrganogramId(sendToCell ? cellGro.getCellOfficeUnitOrganogramId() : officesGRO.getAppealOfficerOfficeUnitOrganogramId());
-        this.grievanceService.saveGrievance(grievance);
-        this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        try {
+            this.grievanceService.saveGrievance(grievance);
+            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
 
         if(sendToCell){
             aoEmployeeOffice = this.officeService.findEmployeeOfficeByOfficeAndOfficeUnitOrganogramAndStatus(0L, cellGro.getCellOfficeUnitOrganogramId(), true);
@@ -1468,7 +1529,7 @@ public class GrievanceForwardingService {
         return grievanceForwardingDAO.convertToGrievanceForwardingDTO(grievanceForwarding);
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse sendToAppealOfficer(Authentication authentication, GrievanceForwardingNoteDTO grievanceForwardingNoteDTO) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         OfficesGRO officesGRO = this.officesGroService.findOfficesGroByOfficeId(userInformation.getOfficeInformation().getOfficeId());
@@ -1508,8 +1569,12 @@ public class GrievanceForwardingService {
                 RoleType.GRO,
                 userInformation.getUsername()
         );
-        this.grievanceService.saveGrievance(grievance);
-        this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        try {
+            this.grievanceService.saveGrievance(grievance);
+            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
 
         String successMessage = "অভিযোগটি আপিল অফিসারকে সফলভাবে পাঠানো হয়েছে";
         ActionToRole actionToRole = mapTemplateWithActionToRole(userInformation, "FORWARDED_TO_APPEAL_OFFICER", 3L);
@@ -1559,7 +1624,7 @@ public class GrievanceForwardingService {
         return this.officeOrganogramService.getSubOfficesWithOrganograms(nodeId, authentication);
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse giveOpinion(Authentication authentication, OpinionRequestDTO opinionRequestDTO) {
         Grievance grievance = grievanceService.findGrievanceById(opinionRequestDTO.getGrievanceId());
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -1588,7 +1653,12 @@ public class GrievanceForwardingService {
                     RoleType.INV_HEAD,
                     userInformation.getUsername()
             );
-            grievanceForwarding = this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwardingComp);
+            try {
+                grievanceForwarding = this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwardingComp);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
         } else {
             GrievanceForwarding opinionGivenForwarding = this.getGrievanceForwarding(
                     grievance,
@@ -1613,17 +1683,28 @@ public class GrievanceForwardingService {
                 opinionGivenForwarding.setAction("APPEAL_STATEMENT_ANSWERED");
                 if (!grievance.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.APPEAL_GIVE_GUIDANCE)) {
                     grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.APPEAL_STATEMENT_ANSWERED);
-                    this.grievanceService.saveGrievance(grievance);
+                    try {
+                        this.grievanceService.saveGrievance(grievance);
+                    } catch (Throwable t) {
+                        throw new RuntimeException("Internal error. Please contact with admin");
+                    }
                 }
             } else {
                 opinionGivenForwarding.setAction("STATEMENT_ANSWERED");
                 if (!grievance.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.GIVE_GUIDANCE)) {
                     grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.STATEMENT_ANSWERED);
-                    this.grievanceService.saveGrievance(grievance);
+                    try {
+                        this.grievanceService.saveGrievance(grievance);
+                    } catch (Throwable t) {
+                        throw new RuntimeException("Internal error. Please contact with admin");
+                    }
                 }
             }
-
-            grievanceForwarding = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(opinionGivenForwarding);
+            try {
+                grievanceForwarding = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(opinionGivenForwarding);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal error. Please contact with admin");
+            }
         }
         if (opinionRequestDTO.getReferredFiles() != null && opinionRequestDTO.getReferredFiles().size() > 0) {
             List<MovementAttachedFile> attachedFiles = this.attachedFileService.getAttachedFilesByIdList(opinionRequestDTO.getReferredFiles());
@@ -1636,7 +1717,7 @@ public class GrievanceForwardingService {
         return new GenericResponse(true, successMessage);
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse givePermission(Authentication authentication, GrievanceForwardingNoteDTO noteDTO) {
         Grievance grievance = grievanceService.findGrievanceById(noteDTO.getGrievanceId());
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -1664,8 +1745,12 @@ public class GrievanceForwardingService {
                 userInformation.getUsername()
         );
         grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.PERMISSION_REPLIED);
-        this.grievanceService.saveGrievance(grievance);
-        this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(opinionGivenForwarding);
+        try {
+            this.grievanceService.saveGrievance(grievance);
+            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(opinionGivenForwarding);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
 
         String successMessage = "অনুমতির জন্য উত্তরটি সফলভাবে পাঠানো হয়েছে";
         return new GenericResponse(true, successMessage);
@@ -1684,7 +1769,7 @@ public class GrievanceForwardingService {
         return gro;
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse askPermission(Authentication authentication, GrievanceForwardingNoteDTO grievanceForwardingNoteDTO) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         Long fromOfficeId = userInformation.getOfficeInformation().getOfficeId();
@@ -1714,13 +1799,18 @@ public class GrievanceForwardingService {
                 RoleType.HEAD_OF_OFFICE,
                 userInformation.getUsername()
         );
-        this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
-        grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.PERMISSION_ASKED);
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(grievanceForwarding);
+            grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.PERMISSION_ASKED);
+            this.grievanceService.saveGrievance(grievance);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         String successMessage = "অনুমতিপ্রাপ্তির জন্য কার্যালয়ের প্রধানের কাছে পাঠানো হয়েছে";
         return new GenericResponse(true, successMessage);
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse giveGuidanceToGiveService(Authentication authentication, GrievanceForwardingGuidanceForServiceDTO guidanceForServiceDTO) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         Long fromOfficeId = userInformation.getOfficeInformation().getOfficeId();
@@ -1753,8 +1843,11 @@ public class GrievanceForwardingService {
                 RoleType.SERVICE_OFFICER,
                 userInformation.getUsername()
         );
-
-        this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwarding);
+        try {
+            this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwarding);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         if(grievance.getGrievanceCurrentStatus().toString().contains("IN_REVIEW")){
             grievance.setGrievanceCurrentStatus(
                 grievance.getGrievanceCurrentStatus().toString().contains("APPEAL") ?
@@ -1766,11 +1859,16 @@ public class GrievanceForwardingService {
                             GrievanceCurrentStatus.APPEAL_GIVE_GUIDANCE : GrievanceCurrentStatus.GIVE_GUIDANCE
             );
         }
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            this.grievanceService.saveGrievance(grievance);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         String successMessage = "সেবা প্রদানকারী কর্মকর্তাকে সেবা প্রদানের জন্য নির্দেশ দেয়া হয়েছে ";
         return new GenericResponse(true, successMessage);
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse giveRecommendDepartmentalAction(Authentication authentication, Long grievanceId, String departmentalActionNote) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         Grievance grievance = this.grievanceService.findGrievanceById(grievanceId);
@@ -1799,13 +1897,21 @@ public class GrievanceForwardingService {
                 RoleType.HEAD_OF_OFFICE,
                 userInformation.getUsername()
         );
-        this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwarding);
-        this.notificationService.saveNotification(grievanceForwarding, "notification.departmental.action", "/viewGrievances.do?id=" + grievance.getId());
+        try {
+            this.grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwarding);
+            this.notificationService.saveNotification(grievanceForwarding, "notification.departmental.action", "/viewGrievances.do?id=" + grievance.getId());
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         grievance.setGrievanceCurrentStatus(
                 grievance.getGrievanceCurrentStatus().toString().contains("APPEAL") ?
                         GrievanceCurrentStatus.APPEAL_RECOMMMEND_DETARTMENTAL_ACTION : GrievanceCurrentStatus.RECOMMEND_DEPARTMENTAL_ACTION
         );
-        this.grievanceService.saveGrievance(grievance);
+        try {
+            this.grievanceService.saveGrievance(grievance);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal error. Please contact with admin");
+        }
         String successMessage = "বিভাগীয় ব্যবস্থা গ্রহণের সুপারিশ সফলভাবে করা হয়েছে ";
         return new GenericResponse(true, successMessage);
     }
@@ -1848,6 +1954,7 @@ public class GrievanceForwardingService {
         return complaintMovements;
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse confirmReport(Authentication authentication, GrievanceForwardingInvestigationComment messageDTO) {
         Grievance grievance = this.grievanceService.findGrievanceById(messageDTO.getGrievanceId());
         GrievanceForwarding reportForwarding = this.grievanceForwardingDAO.getLastForwadingForGivenGrievanceAndAction(grievance, "%SUBMIT_INVESTIGATION_REPORT%");
@@ -1868,13 +1975,16 @@ public class GrievanceForwardingService {
             String signature = "<div class='col-md-4'> <p>সহমত প্রকাশ করেছেন </p> " + picture;
             report = report + signature;
         }
-
-        this.grievanceForwardingDAO.updateGrievanceForwardingRemovingFromInbox(
-                userInformation.getOfficeInformation().getOfficeId(),
-                userInformation.getOfficeInformation().getOfficeUnitOrganogramId(),
-                grievance,
-                reportForwarding
-        );
+        try {
+            this.grievanceForwardingDAO.updateGrievanceForwardingRemovingFromInbox(
+                    userInformation.getOfficeInformation().getOfficeId(),
+                    userInformation.getOfficeInformation().getOfficeUnitOrganogramId(),
+                    grievance,
+                    reportForwarding
+            );
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal service error. Please contact with admin");
+        }
 
         int count = this.grievanceForwardingDAO.countByIsCurrentAndGrievanceAndIsCommitteeMember(true, grievance, true);
         reportForwarding.setComment(report);
@@ -1890,15 +2000,24 @@ public class GrievanceForwardingService {
             } else {
                 grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.IN_REVIEW);
             }
+
             GrievanceForwarding existingToEntry = this.grievanceForwardingDAO.findByIsCurrentAndToOfficeAndToGROPostAndGrievance(true, reportForwarding.getToOfficeId(), reportForwarding.getToOfficeUnitOrganogramId(), reportForwarding.getGrievance());
-            if (existingToEntry != null) {
-                existingToEntry.setIsCurrent(false);
-                this.grievanceForwardingDAO.save(existingToEntry);
+            try {
+                if (existingToEntry != null) {
+                    existingToEntry.setIsCurrent(false);
+                    this.grievanceForwardingDAO.save(existingToEntry);
+                }
+                this.grievanceService.saveGrievance(grievance);
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal service error. Please contact with admin");
             }
-            this.grievanceService.saveGrievance(grievance);
             reportForwarding.setIsCurrent(true);
         }
-        this.grievanceForwardingDAO.save(reportForwarding);
+        try {
+            this.grievanceForwardingDAO.save(reportForwarding);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal service error. Please contact with admin");
+        }
         return new GenericResponse(true, "সফলভাবে সহমত /দ্বিমত প্রকাশ করা হয়েছে");
     }
 
@@ -1935,6 +2054,7 @@ public class GrievanceForwardingService {
         return this.grievanceForwardingDAO.findByGrievanceAndIsCurrent(grievance, isCurrent);
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public GenericResponse provideNudgeAgainstGrievance(GrievanceForwardingMessageDTO forwardingMessageDTO, Authentication authentication) {
         Grievance grievance = grievanceService.findGrievanceById(forwardingMessageDTO.getGrievanceId());
         List<GrievanceForwarding> currentForwardingList = findByGrievanceAndIsCurrent(grievance, true);
@@ -1962,10 +2082,14 @@ public class GrievanceForwardingService {
                     RoleType.GRO,
                     userInformation.getUsername()
             );
-            grievanceForwarding = grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwarding);
-            if (grievanceForwarding == null) {
-                success = false;
-                break;
+            try {
+                grievanceForwarding = grievanceForwardingDAO.forwardGrievanceKeepingAtInbox(grievanceForwarding);
+                if (grievanceForwarding == null) {
+                    success = false;
+                    break;
+                }
+            } catch (Throwable t) {
+                throw new RuntimeException("Internal service error. Please contact with admin");
             }
             Tagid tagid = Tagid.builder()
                     .complaintId(grievance.getId())
@@ -2062,6 +2186,7 @@ public class GrievanceForwardingService {
         }
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public Boolean retrieveRejectedComplaint(Long grievanceId) {
         Grievance grievance = this.grievanceService.findGrievanceById(grievanceId);
         Long officeId = grievance.getOfficeId();
@@ -2102,14 +2227,17 @@ public class GrievanceForwardingService {
                 .toOfficeUnitId(this.officeService.getOfficeUnitOrganogramById(groOfficeUnitOrganogramId).getOfficeUnitId())
                 .toOfficeUnitOrganogramId(groOfficeUnitOrganogramId)
                 .build();
-
-        GrievanceForwarding ret = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(revivalMovement);
-        if(ret!= null){
-            grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.NEW);
-            this.grievanceService.saveGrievance(grievance);
-            return true;
-        } else {
-            return false;
+        try {
+            GrievanceForwarding ret = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(revivalMovement);
+            if (ret != null) {
+                grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.NEW);
+                this.grievanceService.saveGrievance(grievance);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal service error. Please contact with admin");
         }
     }
 
@@ -2175,6 +2303,7 @@ public class GrievanceForwardingService {
         return flag;
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public Boolean retakeTimeExpiredComplaint(Long grievanceId, Authentication authentication) {
         Grievance grievance = this.grievanceService.findGrievanceById(grievanceId);
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -2206,14 +2335,17 @@ public class GrievanceForwardingService {
                 RoleType.GRO,
                 userInformation.getUsername()
         );
-
-        GrievanceForwarding ret = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(movement);
-        if(ret!= null){
-            grievance.setGrievanceCurrentStatus(grievanceForwarding.getCurrentStatus());
-            this.grievanceService.saveGrievance(grievance);
-            return true;
-        } else {
-            return false;
+        try {
+            GrievanceForwarding ret = this.grievanceForwardingDAO.forwardGrievanceRemovingFromInbox(movement);
+            if (ret != null) {
+                grievance.setGrievanceCurrentStatus(grievanceForwarding.getCurrentStatus());
+                this.grievanceService.saveGrievance(grievance);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal service error. Please contact with admin");
         }
     }
 

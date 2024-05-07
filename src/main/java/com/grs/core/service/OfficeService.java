@@ -452,8 +452,7 @@ public class OfficeService {
                 }
             }
         }
-        OfficesGroDTO officesGroDTO = officesGroService.convertToOfficesGroDTO(officesGRO);
-        return officesGroDTO;
+        return officesGroService.convertToOfficesGroDTO(officesGRO);
     }
 
     public Page<OfficesGroDTO> getOfficeSetUpMissing(Long missingOfficerType,

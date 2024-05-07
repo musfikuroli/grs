@@ -296,4 +296,22 @@ public class Utility {
         }
         return true;
     }
+
+    public static boolean isInList(String name, String ...values) {
+        if (name == null || name.isEmpty()) {
+            return false;
+        }
+        if (values == null) {
+            return false;
+        }
+        for (String val : values) {
+            if (val == null || val.isEmpty()) {
+                continue;
+            }
+            if (val.equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

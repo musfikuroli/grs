@@ -161,8 +161,7 @@ public class GrievanceForwardingDAO {
                 .fromEmployeeUsername(fromInfo.getUsername())
                 .assignedRole(RoleType.GRO)
                 .build();
-        grievanceForwarding = this.grievanceForwardingRepo.save(grievanceForwarding);
-        return grievanceForwarding;
+        return  this.grievanceForwardingRepo.save(grievanceForwarding);
     }
     public GrievanceForwardingDTO convertToGrievanceForwardingDTO(GrievanceForwarding grievanceForwarding) {
         return GrievanceForwardingDTO.builder()

@@ -17,6 +17,7 @@ import com.grs.core.dao.GrievanceDAO;
 import com.grs.core.dao.GrievanceForwardingDAO;
 import com.grs.core.domain.GrievanceCurrentStatus;
 import com.grs.core.domain.IdentificationType;
+import com.grs.core.domain.MediumOfSubmission;
 import com.grs.core.domain.ServiceType;
 import com.grs.core.domain.grs.*;
 import com.grs.core.domain.projapoti.*;
@@ -115,8 +116,18 @@ public class GrievanceService {
         return this.entityManager.findMaxId(sql, params);
     }
 
+
+    public Grievance saveGrievance(Grievance grievance, boolean callHistory) {
+        grievance = this.grievanceDAO.save(grievance);
+        if (callHistory) {
+            boolean historyStatus = this.grievanceDAO.saveHistory(grievance);
+            log.info("====Log Insertion status:{}", historyStatus);
+        }
+        return grievance;
+    }
+
     public Grievance saveGrievance(Grievance grievance) {
-        return this.grievanceDAO.save(grievance);
+        return saveGrievance(grievance, true);
     }
 
     public void SaveGrievancesList(List<Grievance> grievances) {
@@ -573,11 +584,11 @@ public class GrievanceService {
         return complainantInfoDTO;
     }
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public WeakHashMap<String, String> addGrievance(Authentication authentication, GrievanceRequestDTO grievanceRequestDTO) throws Exception {
         boolean isOisfUser = false;
         UserInformation userInformation;
-        WeakHashMap<String, String> returnObject = new WeakHashMap<String, String>();
+        WeakHashMap<String, String> returnObject = new WeakHashMap<>();
         if (authentication == null) {
             userInformation = null;
         } else {
@@ -659,58 +670,36 @@ public class GrievanceService {
 
         GrievanceWithoutLoginRequestDTO grievanceWithoutLoginRequestDTO = gson.fromJson(jsonString, GrievanceWithoutLoginRequestDTO.class);
         grievanceWithoutLoginRequestDTO.setSubmittedThroughApi(0);
-        /*
-        if (grievanceWithoutLoginRequestDTO.getSubmittedThroughApi() == 0 && !isOisfUser
-                && !(grievanceRequestDTO.getIsAnonymous() != null && grievanceRequestDTO.getIsAnonymous())) {
-            try {
-                grievanceWithoutLoginRequestDTO.setUser(SSOPropertyReader.getInstance().getMygovComplainUser());
-                grievanceWithoutLoginRequestDTO.setSecret(SSOPropertyReader.getInstance().getMygovComplainSecret());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-            MyGovComplaintResponseDTO responseDTO = myGovConnectorService.createComplaint(grievanceWithoutLoginRequestDTO);
-
-            if (!(responseDTO.status.equals("success") && responseDTO.code.equals("201"))) {
-                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
-                returnObject.put("status", String.valueOf(601));
-                returnObject.put("error", responseDTO.message);
-                returnObject.put("success", "false");
-                returnObject.put("message", responseDTO.message);
-                return  returnObject;
-            }
-
-            grievanceRequestDTO.setServiceTrackingNumber(responseDTO.application_id);
-        }
-        */
         if (!Utils.isEmpty(grievanceWithoutLoginRequestDTO.getComplainantPhoneNumber())) {
             grievanceRequestDTO.setServiceTrackingNumber(entityManager.getTrackingNumber(grievanceWithoutLoginRequestDTO.getComplainantPhoneNumber()));
         }
+
         Grievance grievance;
         try {
             grievance = this.grievanceDAO.addGrievance(userInformation, grievanceRequestDTO);
         }
-        catch (Exception ex) {
-            if (ex.getMessage() != null && ex.getMessage().contains("Incorrect")) {
-                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
-                returnObject.put("status", String.valueOf(600));
-                returnObject.put("error", ex.getMessage().substring(0, ex.getMessage().indexOf( " at ")));
-                returnObject.put("success", "false");
-                returnObject.put("message", "ভুল ফরমেট");
-                return  returnObject;
-            }
-            else return null;
+        catch (Throwable ex) {
+            throw new RuntimeException("Grievance processing error. Please contact with admin");
         }
 
         if (grievanceRequestDTO.getFiles() != null && grievanceRequestDTO.getFiles().size() > 0) {
-            this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
+            try {
+                this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                throw new RuntimeException("Grievance file processing error. Please contact with admin");
+            }
         }
-        GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
 
-        if (grievanceForwarding == null) {
-            returnObject.put("success", "false");
-            returnObject.put("message", this.messageService.getMessageV2("gro.not.found"));
-            return  returnObject;
+        try {
+            GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
+            if (grievanceForwarding == null) {
+                throw new RuntimeException(this.messageService.getMessageV2("gro.not.found"));
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw  new RuntimeException(this.messageService.getMessageV2("gro.not.found"));
         }
         returnObject.put("trackingNumber", grievance.getTrackingNumber());
 
@@ -736,8 +725,8 @@ public class GrievanceService {
         return grievanceDAO.getSafetyNetGrievanceSummary(request);
     }
 
-    @Transactional("transactionManager")
-    public WeakHashMap<String, Object> addGrievanceWithoutLogin(Authentication authentication, GrievanceWithoutLoginRequestDTO grievanceWithoutLoginRequestDTO) throws Exception {
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
+    public WeakHashMap<String, Object> addGrievanceWithoutLogin(Authentication authentication, GrievanceWithoutLoginRequestDTO grievanceWithoutLoginRequestDTO) {
 
         if (!(grievanceWithoutLoginRequestDTO.getIsAnonymous() != null && grievanceWithoutLoginRequestDTO.getIsAnonymous())) {
             grievanceWithoutLoginRequestDTO.setIsAnonymous(
@@ -806,18 +795,7 @@ public class GrievanceService {
         GrievanceRequestDTO grievanceRequestDTO = gson.fromJson(jsonString, GrievanceRequestDTO.class);
         grievanceRequestDTO.setPhoneNumber(grievanceWithoutLoginRequestDTO.getComplainantPhoneNumber());
 
-//        if (grievanceRequestDTO.getSafetyNetId() >0) {
-//            SafetyNetProgram program = safetyNetProgramService.findById((long) grievanceRequestDTO.getSafetyNetId());
-//            if (program != null) {
-//                grievanceRequestDTO.setOfficeId(program.getOfficeId()+"");
-//                grievanceRequestDTO.setOfficeLayers(program.getOfficeLayer()+"");
-//                grievanceWithoutLoginRequestDTO.setOfficeId(grievanceRequestDTO.getOfficeId());
-//                grievanceWithoutLoginRequestDTO.setOfficeLayers(grievanceRequestDTO.getOfficeLayers());
-//            }
-//        }
-
         UserInformation userInformation = null;
-//        WeakHashMap<String, Object> returnObject = new WeakHashMap<>();
 
         if (grievanceWithoutLoginRequestDTO.getFiles() != null && grievanceWithoutLoginRequestDTO.getFiles().size() >0) {
             if (!storageService.checkFileSize(grievanceWithoutLoginRequestDTO.getFiles())) {
@@ -910,8 +888,7 @@ public class GrievanceService {
         Grievance grievance;
         try {
             grievance = this.grievanceDAO.addGrievance(userInformation, grievanceRequestDTO);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("Incorrect")) {
                 returnObject.put("timestamp", String.valueOf(new Date().getTime()));
                 returnObject.put("status", String.valueOf(600));
@@ -919,23 +896,34 @@ public class GrievanceService {
                 returnObject.put("success", "false");
                 returnObject.put("message", "ভুল ফরমেট");
                 return  returnObject;
+            } else {
+                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
+                returnObject.put("status", String.valueOf(600));
+                returnObject.put("error", "Internal service error. Contact with admin");
+                returnObject.put("success", "false");
+                returnObject.put("message", "Internal service error. Contact with admin");
+                return  returnObject;
             }
-            else return null;
         }
 
         if (grievanceRequestDTO.getFiles() != null && grievanceRequestDTO.getFiles().size() > 0) {
-            this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
+            try {
+                this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
+            } catch (Throwable e) {
+                throw new RuntimeException("Attachment error. Contact with admin!");
+            }
         }
-        GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
-        if (grievanceForwarding == null) {
-            returnObject.put("timestamp", new Date().getTime());
-            returnObject.put("status", 704);
-            returnObject.put("error", "No GRO");
-            returnObject.put("success", "false");
-            returnObject.put("message", this.messageService.getMessageV2("gro.not.found"));
-            return  returnObject;
+        try {
+            GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
+            if (grievanceForwarding == null) {
+                throw new RuntimeException("Movement could not be inserted");
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RuntimeException("Movement could not be inserted");
         }
-        grievanceForwarding.setOfficeLayers(grievance.getOfficeLayers());
+
+        //grievanceForwarding.setOfficeLayers(grievance.getOfficeLayers());
 
         returnObject.put("trackingNumber", grievance.getTrackingNumber());
         returnObject.put("mappedOfficeId", grievance.getOfficeId());
@@ -952,12 +940,11 @@ public class GrievanceService {
             shortMessageService.sendSMS(complainant.getPhoneNumber(), body);
         }
         sendNotificationTOGRO(grievance);
-//        returnObject.put("officeId", grievanceRequestDTO.getOfficeId());
         return returnObject;
     }
 
 
-    @Transactional("transactionManager")
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public WeakHashMap<String, Object> addGrievanceForOthers(Authentication authentication, GrievanceWithoutLoginRequestDTO grievanceWithoutLoginRequestDTO) throws Exception {
         boolean isOisfUser = false;
         boolean isAnGRSUser = false;
@@ -990,13 +977,6 @@ public class GrievanceService {
                     grievanceWithoutLoginRequestDTO.getIsAnonymous());
         }
 
-//        if (grievanceWithoutLoginRequestDTO.getSafetyNetId() >0) {
-//            SafetyNetProgram program = safetyNetProgramService.findById((long) grievanceWithoutLoginRequestDTO.getSafetyNetId());
-//            if (program != null) {
-//                grievanceWithoutLoginRequestDTO.setOfficeId(program.getOfficeId()+"");
-//                grievanceWithoutLoginRequestDTO.setOfficeLayers(program.getOfficeLayer()+"");
-//            }
-//        }
         WeakHashMap<String, Object> returnObject = new WeakHashMap<>();
 
         if (grievanceWithoutLoginRequestDTO.getOfficeId() == null ||
@@ -1054,7 +1034,7 @@ public class GrievanceService {
 
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
 
-        if (!isOisfUser && (grievanceWithoutLoginRequestDTO.getIsAnonymous() == null || !grievanceWithoutLoginRequestDTO.getIsAnonymous())) {
+        if (!isOisfUser && (grievanceWithoutLoginRequestDTO.getIsAnonymous() == null || !grievanceWithoutLoginRequestDTO.getIsAnonymous()) && userInformation != null) {
             Complainant currentComplainant = this.complainantService.findOne(userInformation.getUserId());
             grievanceWithoutLoginRequestDTO.setPhoneNumber(currentComplainant.getPhoneNumber());
             grievanceWithoutLoginRequestDTO.setComplainantPhoneNumber(currentComplainant.getPhoneNumber());
@@ -1069,7 +1049,7 @@ public class GrievanceService {
 
         String sourceOfGrievance = isOisfUser ? UserType.OISF_USER.name() : (isAnGRSUser ? UserType.COMPLAINANT.name() : (isUserOthersComplainant ? GRSUserType.OTHERS_COMPLAINANT.name() : null));
 
-        long userIdFromToken = userInformation.getUserId();
+        long userIdFromToken = userInformation != null ? userInformation.getUserId() : 0;
 
         if(!StringUtil.isValidString(grievanceRequestDTO.getOfficeId())) {
             returnObject.put("timestamp", String.valueOf(new Date().getTime()));
@@ -1146,24 +1126,38 @@ public class GrievanceService {
             }
 
             userInformation = generateUserInformationForComplainant(currentComplainant);
+        } else if(isOisfUser) {
+            userInformation = generateUserInformationForOisfUser(userInformation);
+        } else {
+            userInformation = null;
         }
-        else if(isOisfUser) userInformation = generateUserInformationForOisfUser(userInformation);
-        else userInformation = null;
 
         grievanceRequestDTO.setServiceTrackingNumber(entityManager.getTrackingNumber(grievanceRequestDTO.getPhoneNumber()));
-        Grievance grievance = this.grievanceDAO.addGrievanceForOthers(userInformation, grievanceRequestDTO, userIdFromToken, sourceOfGrievance);
-
+        Grievance grievance;
+        try {
+            grievance = this.grievanceDAO.addGrievanceForOthers(userInformation, grievanceRequestDTO, userIdFromToken, sourceOfGrievance);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException("Grievance movement error. Please contact with admin!");
+        }
 
         if (grievanceRequestDTO.getFiles() != null && grievanceRequestDTO.getFiles().size() > 0) {
-            this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
+            try {
+                this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
+            } catch (Throwable t) {
+                throw new RuntimeException("Grievance File storage error. Please contact with admin!");
+            }
         }
-        GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
+        try {
+            GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
+            if (grievanceForwarding == null) {
+                throw new RuntimeException("Grievance movement error. Please contact with admin!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Grievance movement error. Please contact with admin!");
+        }
 
-        if (grievanceForwarding == null) {
-            returnObject.put("success", "false");
-            returnObject.put("message", this.messageService.getMessageV2("gro.not.found"));
-            return  returnObject;
-        }
 
         returnObject.put("trackingNumber", grievance.getTrackingNumber());
         returnObject.put("mappedOfficeId", grievance.getOfficeId());
@@ -1184,7 +1178,6 @@ public class GrievanceService {
             shortMessageService.sendSMS(complainant.getPhoneNumber(), body);
         }
         sendNotificationTOGRO(grievance);
-//        returnObject.put("officeId", grievanceRequestDTO.getOfficeId());
         return returnObject;
     }
 
@@ -1249,9 +1242,10 @@ public class GrievanceService {
     public UserInformation generateUserInformationForComplainant(Complainant complainant) {
 
         UserInformation userInformation = new UserInformation();
-
-        userInformation.setUserId(complainant.getId());
-        userInformation.setUsername(complainant.getName());
+        if (complainant != null) {
+            userInformation.setUserId(complainant.getId());
+            userInformation.setUsername(complainant.getName());
+        }
         userInformation.setUserType(UserType.COMPLAINANT);
         userInformation.setIsAppealOfficer(false);
         userInformation.setIsOfficeAdmin(false);
@@ -1266,11 +1260,12 @@ public class GrievanceService {
     public UserInformation generateUserInformationForOisfUser(UserInformation userInformationFromToken) {
 
         UserInformation userInformation = new UserInformation();
-
-        userInformation.setUserId(userInformationFromToken.getUserId());
-        userInformation.setUsername(userInformationFromToken.getUsername());
+        if (userInformationFromToken != null) {
+            userInformation.setUserId(userInformationFromToken.getUserId());
+            userInformation.setUsername(userInformationFromToken.getUsername());
+            userInformation.setOfficeInformation(userInformationFromToken.getOfficeInformation());
+        }
         userInformation.setUserType(UserType.OISF_USER);
-        userInformation.setOfficeInformation(userInformationFromToken.getOfficeInformation());
         userInformation.setIsAppealOfficer(false);
         userInformation.setIsOfficeAdmin(false);
         userInformation.setIsCentralDashboardUser(false);
@@ -1294,7 +1289,7 @@ public class GrievanceService {
                 grievance.getTrackingNumber();
         String header = "Grievance Submitted in GRS";
         String body = "A new Grievance is submitted with tracking number:  " + trackingNumber;
-        if(employeeOffice!=null){
+        if(employeeOffice != null){
             emailService.sendEmail(groEmail, header, body);
             shortMessageService.sendSMS(groMobile, body);
         }
@@ -1303,7 +1298,9 @@ public class GrievanceService {
     public GrievanceForwarding addNewHistory(Grievance grievance, UserInformation userInformation) {
         Long officeId = grievance.getOfficeId();
         OfficesGRO officesGRO = this.officesGroService.findOfficesGroByOfficeId(officeId);
-        if (officesGRO == null) return null;
+        if (officesGRO == null) {
+            return null;
+        }
         Long groOrganogramId = officesGRO.getGroOfficeUnitOrganogramId();
         OfficeUnitOrganogram toOfficeUnitOrganogram;
         OfficeUnit toOfficeUnit;
@@ -1313,12 +1310,11 @@ public class GrievanceService {
         if (officeId == 0L) {
             CellMember cellMember = this.cellService.getCellMemberEntry(groOrganogramId);
             toEmployeeRecord = this.getEmployeeRecordById(cellMember.getEmployeeRecordId());
-            if (toEmployeeRecord == null) return null;
-
-            String cellDesignation = "অভিযোগ ব্যবস্থাপনা সেল সদস্য";
-            if (cellMember != null) {
-                cellDesignation = cellMember.getIsAo() ? "সভাপতি" : (cellMember.getIsGro() ? "সদস্য সচিব" : "সদস্য");
+            if (toEmployeeRecord == null) {
+                return null;
             }
+
+            String cellDesignation = cellMember.getIsAo() ? "সভাপতি" : (cellMember.getIsGro() ? "সদস্য সচিব" : "সদস্য");
 
             toInfo = OfficeInformationFullDetails.builder()
                     .officeId(grievance.getOfficeId())
@@ -1333,7 +1329,9 @@ public class GrievanceService {
                     .build();
         } else {
             toOfficeUnitOrganogram = this.officeService.getOfficeUnitOrganogramById(groOrganogramId);
-            if (toOfficeUnitOrganogram == null) return null;
+            if (toOfficeUnitOrganogram == null) {
+                return null;
+            }
             toOfficeUnit = toOfficeUnitOrganogram.getOfficeUnit();
 
             EmployeeOffice employeeOffice = this.officeService.findEmployeeOfficeByOfficeAndOfficeUnitOrganogramAndStatus(
@@ -1341,19 +1339,21 @@ public class GrievanceService {
                     groOrganogramId,
                     true
             );
-            if (employeeOffice == null) return null;
+            if (employeeOffice == null) {
+                return null;
+            }
             toEmployeeRecord = employeeOffice.getEmployeeRecord();
 
             toInfo = OfficeInformationFullDetails.builder()
                     .officeId(grievance.getOfficeId())
-                    .officeUnitId(toOfficeUnit.getId()) //TODO: check null pointer
+                    .officeUnitId(toOfficeUnit != null ? toOfficeUnit.getId() : null)
                     .officeUnitOrganogramId(officesGRO.getGroOfficeUnitOrganogramId())
                     .employeeRecordId(toEmployeeRecord.getId())
                     .employeeDesignation(employeeOffice.getDesignation())
                     .employeeNameBangla(toEmployeeRecord.getNameBangla())
                     .employeeNameEnglish(toEmployeeRecord.getNameEnglish())
                     .officeNameBangla(employeeOffice.getOffice().getNameBangla())
-                    .officeUnitNameBangla(toOfficeUnit.getUnitNameBangla())//TODO: check null pointer
+                    .officeUnitNameBangla(toOfficeUnit != null ? toOfficeUnit.getUnitNameBangla() : null)
                     .build();
         }
 
@@ -1368,14 +1368,14 @@ public class GrievanceService {
 
             fromInfo = OfficeInformationFullDetails.builder()
                     .officeId(userInformation.getOfficeInformation().getOfficeId())
-                    .officeUnitId(fromOfficeUnit.getId()) //TODO: check null pointer
+                    .officeUnitId(fromOfficeUnit != null ? fromOfficeUnit.getId() : null)
                     .officeUnitOrganogramId(userInformation.getOfficeInformation().getOfficeUnitOrganogramId())
                     .employeeRecordId(userInformation.getOfficeInformation().getEmployeeRecordId())
                     .employeeDesignation(userInformation.getOfficeInformation().getDesignation())
                     .employeeNameBangla(fromEmployeeRecord.getNameBangla())
                     .employeeNameEnglish(fromEmployeeRecord.getNameEnglish())
                     .officeNameBangla(userInformation.getOfficeInformation().getOfficeNameBangla())
-                    .officeUnitNameBangla(fromOfficeUnit.getUnitNameBangla())//TODO: check null pointer
+                    .officeUnitNameBangla(fromOfficeUnit != null ? fromOfficeUnit.getUnitNameBangla() : null)
                     .username(userInformation.getUsername())
                     .build();
         } else {

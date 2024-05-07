@@ -33,7 +33,26 @@ public class BaseEntityManager {
         if (params != null && params.size() >0) {
             params.forEach(query::setParameter);
         }
+        query.setFirstResult(0);
+        query.setMaxResults(1);
+        try {
+            List list = query.getResultList();
+            if (list != null && list.size() >0) {
+                return (T) list.get(0);
+            }
+            return null;
+        } catch (Throwable ne) {
+            ne.printStackTrace();
+            return null;
+        }
+    }
 
+    @Transactional(value = "transactionManager")
+    public <T> T  findSingleByQuery(String nativeQuery,Map<String, Object> params) {
+        Query query = entityManager.createNativeQuery(nativeQuery);
+        if (params != null && params.size() >0) {
+            params.forEach(query::setParameter);
+        }
         try {
             return (T) query.getSingleResult();
         } catch (NoResultException ne) {
@@ -94,6 +113,13 @@ public class BaseEntityManager {
     @Transactional(value = "transactionManager")
     public <T> T save(T entity) {
         entityManager.persist(entity);
+        entityManager.flush();
+        return entity;
+    }
+
+    @Transactional(value = "transactionManager")
+    public <T> T merge(T entity) {
+        entityManager.merge(entity);
         entityManager.flush();
         return entity;
     }

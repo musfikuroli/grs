@@ -138,7 +138,6 @@ public class GrievanceForwardingController {
 
     @RequestMapping(value = "/api/grievance/inspection/initiate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponse initiateInvestigation(Authentication authentication, @Valid @RequestBody GrievanceForwardingInvestigationDTO grievanceForwardingInvestigationDTO) {
-        //TODO: prevent unnecessary ajax api call.
         return this.grievanceForwardingService.initiateInvestigation(grievanceForwardingInvestigationDTO, authentication);
     }
 

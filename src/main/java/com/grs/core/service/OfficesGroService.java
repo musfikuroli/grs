@@ -230,7 +230,6 @@ public class OfficesGroService {
                                     ""
                             );
                             Grievance grievance = grievanceForwarding.getGrievance();
-                            //grievance.setGrievanceCurrentStatus(GrievanceCurrentStatus.ACCEPTED);
                             this.grievanceForwardingService.forwardRemovingFromInbox(grievanceForwarding1);
                             grievanceService.saveGrievance(grievance);
                         }
@@ -272,6 +271,7 @@ public class OfficesGroService {
         }
     }
 
+    @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)
     public OfficesGroDTO saveOfficeSetup(Long officeId, OfficesGroDTO officesGroDTO) {
         OfficesGRO officesGROOld = officesGroDAO.findByOfficeId(officeId);
         Office office = this.officeService.getOffice(officeId);
@@ -280,10 +280,14 @@ public class OfficesGroService {
             officesGROOld = OfficesGRO.builder().build();
         } else {
             if(officesGroDTO.getGroOfficeId() != null && officesGroDTO.getGroOfficeUnitOrganogramId() != null){//GRO is being changed
-                this.transferGrievancesOnGroChange(officeId, officesGROOld, officesGroDTO);
-                this.changeChildOfficesAoOnGroChange(officesGroDTO);
-                if(Objects.equals(office.getOfficeLayer().getLayerLevel(), Constant.districtLayerLevel)){
-                    this.setUpazilaOffices(officesGroDTO.getGroOfficeUnitName(), officesGroDTO.getGroOfficeId(), officesGroDTO.getGroOfficeUnitOrganogramId());
+                try {
+                    this.transferGrievancesOnGroChange(officeId, officesGROOld, officesGroDTO);
+                    this.changeChildOfficesAoOnGroChange(officesGroDTO);
+                    if (office != null && Objects.equals(new Long(office.getOfficeLayer().getLayerLevel()), Constant.districtLayerLevel)) {
+                        this.setUpazilaOffices(officesGroDTO.getGroOfficeUnitName(), officesGroDTO.getGroOfficeId(), officesGroDTO.getGroOfficeUnitOrganogramId());
+                    }
+                } catch (Throwable t) {
+                    throw new RuntimeException("Internal service error. Please contact with admin");
                 }
             }
         }
@@ -301,18 +305,21 @@ public class OfficesGroService {
         officesGROOld.setAoOfficeUnitName(officesGroDTO.getAoOfficeUnitName() == null ? officesGROOld.getAoOfficeUnitName() : officesGroDTO.getAoOfficeUnitName());
         officesGROOld.setAdminOfficeUnitName(officesGroDTO.getAdminOfficeUnitName() == null ? officesGROOld.getAdminOfficeUnitName() : officesGroDTO.getAdminOfficeUnitName());
 
-        officesGROOld.setLayerLevel(office.getOfficeLayer() == null || office.getOfficeLayer().getLayerLevel() == null ? null : office.getOfficeLayer().getLayerLevel());
-        officesGROOld.setCustomLayerLevel(customOfficeLayer == null || customOfficeLayer.getLayerLevel() == null ? null : customOfficeLayer.getLayerLevel());
-        officesGROOld.setCustomLayerId(office.getOfficeLayer() == null || office.getOfficeLayer().getCustomLayerId() == null ? null : office.getOfficeLayer().getCustomLayerId());
-        officesGROOld.setOfficeLayerId(office.getOfficeLayer() == null || office.getOfficeLayer().getId() == null ? null : office.getOfficeLayer().getId());
-        officesGROOld.setOfficeOriginId(office.getOfficeOriginId() == null ? null : office.getOfficeOriginId());
-        officesGROOld.setOfficeMinistryId(office.getOfficeMinistry() == null || office.getOfficeMinistry().getId() == null ? null : office.getOfficeMinistry().getId());
-
-        OfficesGRO officesGRO = this.officesGroDAO.save(officesGROOld);
-        if (officesGRO == null) {
-            return null;
+        officesGROOld.setLayerLevel(office != null && office.getOfficeLayer() != null ? office.getOfficeLayer().getLayerLevel() : null);
+        officesGROOld.setCustomLayerLevel(customOfficeLayer != null ? customOfficeLayer.getLayerLevel() : null);
+        officesGROOld.setCustomLayerId(office != null && office.getOfficeLayer() != null ? office.getOfficeLayer().getCustomLayerId() : null);
+        officesGROOld.setOfficeLayerId(office == null || office.getOfficeLayer() == null || office.getOfficeLayer().getId() == null ? null : office.getOfficeLayer().getId());
+        officesGROOld.setOfficeOriginId(office == null || office.getOfficeOriginId() == null ? null : office.getOfficeOriginId());
+        officesGROOld.setOfficeMinistryId(office == null || office.getOfficeMinistry() == null || office.getOfficeMinistry().getId() == null ? null : office.getOfficeMinistry().getId());
+        try {
+            OfficesGRO officesGRO = this.officesGroDAO.save(officesGROOld);
+            if (officesGRO == null) {
+                throw new RuntimeException("Internal service error. Please contact with admin");
+            }
+            return convertToOfficesGroDTO(officesGRO);
+        } catch (Throwable t) {
+            throw new RuntimeException("Internal service error. Please contact with admin");
         }
-        return convertToOfficesGroDTO(officesGRO);
     }
 
     private void setUpazilaOffices(String groOfficeUnitName, Long groOfficeId, Long groOfficeUnitOrganogramId) {

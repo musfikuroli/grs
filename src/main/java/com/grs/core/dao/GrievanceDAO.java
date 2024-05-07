@@ -9,10 +9,7 @@ import com.grs.api.model.response.GenericResponse;
 import com.grs.api.model.response.GrievanceAdminDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.core.domain.*;
-import com.grs.core.domain.grs.CitizenCharter;
-import com.grs.core.domain.grs.Complainant;
-import com.grs.core.domain.grs.Grievance;
-import com.grs.core.domain.grs.SafetyNetGrievance;
+import com.grs.core.domain.grs.*;
 import com.grs.core.domain.projapoti.Office;
 import com.grs.core.model.ListViewType;
 import com.grs.core.repo.grs.BaseEntityManager;
@@ -62,6 +59,9 @@ public class GrievanceDAO {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private CellMemberDAO cellMemberDAO;
+
     private SimpleDateFormat simpleDateFormat;
 
     @PostConstruct
@@ -110,6 +110,12 @@ public class GrievanceDAO {
         Long officeId = Long.valueOf(grievanceRequestDTO.getOfficeId());
         CitizenCharter citizenCharter = this.citizenCharterDAO.findByOfficeIdAndServiceId(Long.valueOf(grievanceRequestDTO.getOfficeId()), Long.valueOf(grievanceRequestDTO.getServiceId()));
         GrievanceCurrentStatus currentStatus = (officeId == 0 ? GrievanceCurrentStatus.CELL_NEW : GrievanceCurrentStatus.NEW);
+        MediumOfSubmission medium = MediumOfSubmission.ONLINE;
+        if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getOfflineGrievanceUpload()) {
+            medium = MediumOfSubmission.CONVENTIONAL_METHOD;
+        } else if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getIsSelfMotivated()) {
+            medium = MediumOfSubmission.SELF_MOTIVATED_ACCEPTANCE;
+        }
         Grievance grievance = Grievance.builder()
                 .details(grievanceRequestDTO.getBody())
                 .subject(grievanceRequestDTO.getSubject())
@@ -132,25 +138,124 @@ public class GrievanceDAO {
                 .isSelfMotivatedGrievance(grievanceRequestDTO.getIsSelfMotivated() != null && grievanceRequestDTO.getIsSelfMotivated())
                 .sourceOfGrievance(grievanceRequestDTO.getSourceOfGrievance())
                 .complaintCategory(grievanceRequestDTO.getGrievanceCategory())
+                .mediumOfSubmission(medium.name())
                 .spProgrammeId(StringUtil.isValidString(grievanceRequestDTO.getSpProgrammeId()) ? Integer.parseInt(grievanceRequestDTO.getSpProgrammeId()) : null)
                 .geoDivisionId(StringUtil.isValidString(grievanceRequestDTO.getDivision()) ? Integer.parseInt(grievanceRequestDTO.getDivision()) : null)
                 .geoDistrictId(StringUtil.isValidString(grievanceRequestDTO.getDistrict()) ? Integer.parseInt(grievanceRequestDTO.getDistrict()) : null)
                 .geoUpazilaId(StringUtil.isValidString(grievanceRequestDTO.getUpazila()) ? Integer.parseInt(grievanceRequestDTO.getUpazila()) : null)
                 .build();
-//        grievance.setSafetyNet(grievanceRequestDTO.getSafetyNetId() >0 && grievanceRequestDTO.getDivisionId() >0 && grievanceRequestDTO.getDistrictId() >0 && grievanceRequestDTO.getUpazilaId() >0);
         grievance.setStatus(true);
-        Grievance grievanceEO = this.save(grievance);
-//        if (grievanceRequestDTO.getSafetyNetId() >0 && grievanceRequestDTO.getDivisionId() >0 && grievanceRequestDTO.getDistrictId() >0 && grievanceRequestDTO.getUpazilaId() >0) {
-//            SafetyNetGrievance safetyNetGrievanceEO = new SafetyNetGrievance();
-//            safetyNetGrievanceEO.setSafetyNetId(grievanceRequestDTO.getSafetyNetId());
-//            safetyNetGrievanceEO.setGrievanceId(grievanceEO.getId());
-//            safetyNetGrievanceEO.setDivisionId(grievanceRequestDTO.getDivisionId());
-//            safetyNetGrievanceEO.setDistrictId(grievanceRequestDTO.getDistrictId());
-//            safetyNetGrievanceEO.setUpazilaId(grievanceRequestDTO.getUpazilaId());
-//            safetyNetGrievanceEO.setStatus(true);
-//            baseEntityManager.save(safetyNetGrievanceEO);
-//        }
-        return grievanceEO;
+        grievance = this.save(grievance);
+        boolean status = this.saveHistory(grievance);
+        log.info("=======Log insertion status:{}", status);
+        return grievance;
+    }
+
+    public boolean saveHistory(Grievance grievanceEO) {
+        log.info("======History called for tracking no:{}", grievanceEO.getTrackingNumber());
+        //Calculate condition later
+        if (!Utility.isInList(grievanceEO.getGrievanceCurrentStatus().name(),
+                GrievanceCurrentStatus.NEW.name(),
+                GrievanceCurrentStatus.FORWARDED_OUT.name(),
+                GrievanceCurrentStatus.REJECTED.name(),
+                GrievanceCurrentStatus.APPEAL.name(),
+                GrievanceCurrentStatus.FORWARDED_IN.name(),
+                GrievanceCurrentStatus.CLOSED_SERVICE_GIVEN.name(),
+                GrievanceCurrentStatus.CLOSED_ANSWER_OK.name(),
+                GrievanceCurrentStatus.CLOSED_INSTRUCTION_EXECUTED.name(),
+                GrievanceCurrentStatus.CLOSED_ACCUSATION_INCORRECT.name(),
+                GrievanceCurrentStatus.CLOSED_OTHERS.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_SERVICE_GIVEN.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_ANSWER_OK.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_INSTRUCTION_EXECUTED.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_ACCUSATION_INCORRECT.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_OTHERS.name(),
+                GrievanceCurrentStatus.APPEAL_REJECTED.name(),
+                GrievanceCurrentStatus.CELL_NEW.name()
+                )) {
+            log.info("===Current Status:{} Need no log:{}", grievanceEO.getGrievanceCurrentStatus().name(), grievanceEO.getTrackingNumber());
+            return false;
+        }
+
+        CellMember cellGro = cellMemberDAO.findByIsGro();
+        boolean sendToCell = StringUtil.isValidString(grievanceEO.getAppealOfficerDecision()) && grievanceEO.getCurrentAppealOfficeId() != null && cellGro != null;
+
+        if (Utility.isInList(grievanceEO.getGrievanceCurrentStatus().name(),
+                GrievanceCurrentStatus.FORWARDED_OUT.name(),
+                GrievanceCurrentStatus.REJECTED.name(),
+                GrievanceCurrentStatus.CLOSED_SERVICE_GIVEN.name(),
+                GrievanceCurrentStatus.CLOSED_ANSWER_OK.name(),
+                GrievanceCurrentStatus.CLOSED_INSTRUCTION_EXECUTED.name(),
+                GrievanceCurrentStatus.CLOSED_ACCUSATION_INCORRECT.name(),
+                GrievanceCurrentStatus.CLOSED_OTHERS.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_SERVICE_GIVEN.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_ANSWER_OK.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_INSTRUCTION_EXECUTED.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_ACCUSATION_INCORRECT.name(),
+                GrievanceCurrentStatus.APPEAL_CLOSED_OTHERS.name(),
+                GrievanceCurrentStatus.APPEAL_REJECTED.name()
+                )) {
+
+            //Need to update previous record
+            String sql = "select * from complain_history where complain_id=:complain_id and office_id=:office_id and current_status=:current_status order by id desc ";
+            Map<String, Object> params = new HashMap<>();
+            params.put("complain_id", grievanceEO.getId());
+            params.put("office_id", grievanceEO.getOfficeId());
+            if (Utility.isInList(grievanceEO.getGrievanceCurrentStatus().name(), GrievanceCurrentStatus.APPEAL_CLOSED_SERVICE_GIVEN.name(),
+                    GrievanceCurrentStatus.APPEAL_CLOSED_ANSWER_OK.name(),
+                    GrievanceCurrentStatus.APPEAL_CLOSED_INSTRUCTION_EXECUTED.name(),
+                    GrievanceCurrentStatus.APPEAL_CLOSED_ACCUSATION_INCORRECT.name(),
+                    GrievanceCurrentStatus.APPEAL_CLOSED_OTHERS.name(),
+                    GrievanceCurrentStatus.APPEAL_REJECTED.name())) {
+                if (sendToCell) {
+                    params.put("current_status", "CELL_APPEAL");
+                } else {
+                    params.put("current_status", GrievanceCurrentStatus.APPEAL.name());
+                }
+            } else {
+                params.put("current_status", GrievanceCurrentStatus.NEW.name());
+            }
+
+            try {
+                ComplainHistory historyEO = baseEntityManager.findSingleByQuery(sql, ComplainHistory.class, params);
+                if (historyEO != null) {
+                    historyEO.setClosedAt(new Date());
+                }
+                baseEntityManager.merge(historyEO);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+
+        String currentStatus = grievanceEO.getGrievanceCurrentStatus().name();
+        if (sendToCell && currentStatus.equals(GrievanceCurrentStatus.APPEAL.name())) {
+            currentStatus = "CELL_APPEAL";
+        }
+        ComplainHistory historyEO = new ComplainHistory();
+        historyEO.setComplainId(grievanceEO.getId());
+        historyEO.setTrackingNumber(grievanceEO.getTrackingNumber());
+        historyEO.setCurrentStatus(currentStatus);
+        historyEO.setOfficeId(grievanceEO.getOfficeId());
+        historyEO.setLayerLevel(grievanceEO.getOfficeLayers() != null ? Utility.getLongValue(grievanceEO.getOfficeLayers()) : null);
+
+        MediumOfSubmission medium = MediumOfSubmission.ONLINE;
+        if (grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW) && grievanceEO.getIsOfflineGrievance() != null && grievanceEO.getIsOfflineGrievance()) {
+            medium = MediumOfSubmission.CONVENTIONAL_METHOD;
+        } else if (grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW) && grievanceEO.getIsSelfMotivatedGrievance() != null && grievanceEO.getIsSelfMotivatedGrievance()) {
+            medium = MediumOfSubmission.SELF_MOTIVATED_ACCEPTANCE;
+        }
+
+        historyEO.setMediumOfSubmission(medium.name());
+        historyEO.setGrievanceType(grievanceEO.getGrievanceType().name());
+        historyEO.setSelfMotivated(grievanceEO.getIsSelfMotivatedGrievance() != null && grievanceEO.getIsSelfMotivatedGrievance() ? 1L : 0L);
+        historyEO.setCreatedAt(new Date());
+        try {
+            baseEntityManager.save(historyEO);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
     }
 
     public com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary(SafetyNetGrievanceSummaryRequest request) {
@@ -292,12 +397,18 @@ public class GrievanceDAO {
         boolean isAnonymous = (grievanceRequestDTO.getIsAnonymous() != null && grievanceRequestDTO.getIsAnonymous());
         if(grievanceRequestDTO.getOfflineGrievanceUpload() != null && grievanceRequestDTO.getOfflineGrievanceUpload() && userInformation != null){
             uploaderGroOfficeUnitOrganogramId = userInformation.getOfficeInformation().getOfficeUnitOrganogramId();
-            if(!isAnonymous){
-            }
         }
         Long officeId = Long.valueOf(grievanceRequestDTO.getOfficeId());
         CitizenCharter citizenCharter = this.citizenCharterDAO.findByOfficeIdAndServiceId(Long.valueOf(grievanceRequestDTO.getOfficeId()), Long.valueOf(grievanceRequestDTO.getServiceId()));
         GrievanceCurrentStatus currentStatus = (officeId == 0 ? GrievanceCurrentStatus.CELL_NEW : GrievanceCurrentStatus.NEW);
+
+        MediumOfSubmission medium = MediumOfSubmission.ONLINE;
+        if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getOfflineGrievanceUpload() != null && grievanceRequestDTO.getOfflineGrievanceUpload()) {
+            medium = MediumOfSubmission.CONVENTIONAL_METHOD;
+        } else if (currentStatus.equals(GrievanceCurrentStatus.NEW) && grievanceRequestDTO.getIsSelfMotivated() != null && grievanceRequestDTO.getIsSelfMotivated()) {
+            medium = MediumOfSubmission.SELF_MOTIVATED_ACCEPTANCE;
+        }
+
         Grievance grievance = Grievance.builder()
                 .details(grievanceRequestDTO.getBody())
                 .subject(grievanceRequestDTO.getSubject())
@@ -319,28 +430,20 @@ public class GrievanceDAO {
                 .uploaderOfficeUnitOrganogramId(uploaderGroOfficeUnitOrganogramId)
                 .isSelfMotivatedGrievance(grievanceRequestDTO.getIsSelfMotivated() != null && grievanceRequestDTO.getIsSelfMotivated())
                 .sourceOfGrievance(sourceOfGrievance)
+                .mediumOfSubmission(medium.name())
                 .complaintCategory(grievanceRequestDTO.getGrievanceCategory())
                 .spProgrammeId(StringUtil.isValidString(grievanceRequestDTO.getSpProgrammeId()) ? Integer.parseInt(grievanceRequestDTO.getSpProgrammeId()) : null)
                 .geoDivisionId(StringUtil.isValidString(grievanceRequestDTO.getDivision()) ? Integer.parseInt(grievanceRequestDTO.getDivision()) : null)
                 .geoDistrictId(StringUtil.isValidString(grievanceRequestDTO.getDistrict()) ? Integer.parseInt(grievanceRequestDTO.getDistrict()) : null)
                 .geoUpazilaId(StringUtil.isValidString(grievanceRequestDTO.getUpazila()) ? Integer.parseInt(grievanceRequestDTO.getUpazila()) : null)
                 .build();
-
-//        grievance.setSafetyNet(grievanceRequestDTO.getSafetyNetId() >0 && grievanceRequestDTO.getDivisionId() >0 && grievanceRequestDTO.getDistrictId() >0 && grievanceRequestDTO.getUpazilaId() >0);
         grievance.setStatus(true);
         grievance.setCreatedBy(userIdFromToken);
-        Grievance grievanceEO = this.save(grievance);
-//        if (grievanceRequestDTO.getSafetyNetId() >0 && grievanceRequestDTO.getDivisionId() >0 && grievanceRequestDTO.getDistrictId() >0 && grievanceRequestDTO.getUpazilaId() >0) {
-//            SafetyNetGrievance safetyNetGrievanceEO = new SafetyNetGrievance();
-//            safetyNetGrievanceEO.setSafetyNetId(grievanceRequestDTO.getSafetyNetId());
-//            safetyNetGrievanceEO.setGrievanceId(grievanceEO.getId());
-//            safetyNetGrievanceEO.setDivisionId(grievanceRequestDTO.getDivisionId());
-//            safetyNetGrievanceEO.setDistrictId(grievanceRequestDTO.getDistrictId());
-//            safetyNetGrievanceEO.setUpazilaId(grievanceRequestDTO.getUpazilaId());
-//            safetyNetGrievanceEO.setStatus(true);
-//            baseEntityManager.save(safetyNetGrievanceEO);
-//        }
-        return grievanceEO;
+
+        grievance = this.save(grievance);
+        boolean status = this.saveHistory(grievance);
+        log.info("=======Log insertion status:{}", status);
+        return grievance;
     }
 
     //add

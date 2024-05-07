@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -167,4 +166,6 @@ public class Grievance extends BaseEntity {
 
     @Column(name = "geo_upazila_id")
     private Integer geoUpazilaId;
+    @Column(name = "medium_of_submission")
+    private String mediumOfSubmission;
 }
