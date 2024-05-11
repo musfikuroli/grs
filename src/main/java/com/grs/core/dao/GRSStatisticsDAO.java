@@ -50,7 +50,7 @@ public class GRSStatisticsDAO {
         int currentMonth = 12 * calendar.get(Calendar.YEAR) + (calendar.get(Calendar.MONTH) + 1);
         long monthDiff = reportMonth - currentMonth;
 
-        MonthlyReport mReport = monthlyReport.findByOfficeIdAndYearAndMonth(officeId, year, month);
+        MonthlyReport mReport = null;//monthlyReport.findByOfficeIdAndYearAndMonth(officeId, year, month);
         if (mReport == null) {
             GrievanceAndAppealMonthlyReportDTO reportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
                     .officeId(officeId)

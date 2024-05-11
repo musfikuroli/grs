@@ -16,6 +16,7 @@ import com.grs.core.repo.grs.BaseEntityManager;
 import com.grs.core.repo.grs.GrievanceForwardingRepo;
 import com.grs.core.repo.grs.GrievanceRepo;
 import com.grs.core.service.ComplainantService;
+import com.grs.core.service.GrievanceMigratorService;
 import com.grs.utils.*;
 import com.grs.api.model.request.SafetyNetGrievanceSummaryRequest;
 import javax.persistence.Query;
@@ -62,6 +63,9 @@ public class GrievanceDAO {
     @Autowired
     private CellMemberDAO cellMemberDAO;
 
+    @Autowired
+    private GrievanceMigratorService migratorService;
+
     private SimpleDateFormat simpleDateFormat;
 
     @PostConstruct
@@ -100,7 +104,7 @@ public class GrievanceDAO {
         boolean isAnonymous = (grievanceRequestDTO.getIsAnonymous() != null && grievanceRequestDTO.getIsAnonymous());
         if(grievanceRequestDTO.getOfflineGrievanceUpload() != null && grievanceRequestDTO.getOfflineGrievanceUpload()){
             offlineGrievanceUploaded = true;
-            uploaderGroOfficeUnitOrganogramId = userInformation.getOfficeInformation().getOfficeUnitOrganogramId();
+            uploaderGroOfficeUnitOrganogramId = userInformation != null && userInformation.getOfficeInformation() != null ? userInformation.getOfficeInformation().getOfficeUnitOrganogramId() : null;
             if(!isAnonymous){
                 Complainant complainant = this.complainantService.findComplainantByPhoneNumber(grievanceRequestDTO.getPhoneNumber());
                 userId = complainant.getId();
@@ -197,10 +201,12 @@ public class GrievanceDAO {
                 )) {
 
             //Need to update previous record
-            String sql = "select * from complain_history where complain_id=:complain_id and office_id=:office_id and current_status=:current_status order by id desc ";
+            String sql = "select * from complain_history where complain_id=:complain_id "+( !grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.FORWARDED_OUT) ? "and office_id=:office_id ": " ")+" and current_status=:current_status order by id desc ";
             Map<String, Object> params = new HashMap<>();
             params.put("complain_id", grievanceEO.getId());
-            params.put("office_id", grievanceEO.getOfficeId());
+            if (!grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.FORWARDED_OUT)) {
+                params.put("office_id", grievanceEO.getOfficeId());
+            }
             if (Utility.isInList(grievanceEO.getGrievanceCurrentStatus().name(), GrievanceCurrentStatus.APPEAL_CLOSED_SERVICE_GIVEN.name(),
                     GrievanceCurrentStatus.APPEAL_CLOSED_ANSWER_OK.name(),
                     GrievanceCurrentStatus.APPEAL_CLOSED_INSTRUCTION_EXECUTED.name(),
@@ -221,12 +227,15 @@ public class GrievanceDAO {
                 if (historyEO != null) {
                     historyEO.setClosedAt(new Date());
                 }
-                baseEntityManager.merge(historyEO);
+                if (historyEO != null) {
+                    baseEntityManager.merge(historyEO);
+                } else {
+                    log.info("===History not found for grievance :{} Current Status: {}", grievanceEO.getId(), grievanceEO.getGrievanceCurrentStatus());
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
-
         String currentStatus = grievanceEO.getGrievanceCurrentStatus().name();
         if (sendToCell && currentStatus.equals(GrievanceCurrentStatus.APPEAL.name())) {
             currentStatus = "CELL_APPEAL";
@@ -236,8 +245,32 @@ public class GrievanceDAO {
         historyEO.setTrackingNumber(grievanceEO.getTrackingNumber());
         historyEO.setCurrentStatus(currentStatus);
         historyEO.setOfficeId(grievanceEO.getOfficeId());
-        historyEO.setLayerLevel(grievanceEO.getOfficeLayers() != null ? Utility.getLongValue(grievanceEO.getOfficeLayers()) : null);
 
+        String sql = "select o.id,ol.layer_level as layer_level, ol.custom_layer_id as custom_layer, o.office_origin_id as office_origin " +
+                "from grs_doptor.offices o " +
+                "left join grs_doptor.office_layers ol on o.office_layer_id = ol.id " +
+                "where o.id =:officeId order by o.id desc ";
+        Map<String, Object> params = new HashMap<>();
+        params.put("officeId", grievanceEO.getOfficeId());
+        try {
+            Object[] officeInfo = baseEntityManager.findSingleByQuery(sql, params);
+            if (officeInfo != null && officeInfo.length >0) {
+                if (Utility.valueExists(officeInfo, 1)) {
+                    historyEO.setLayerLevel(Utility.getLongValue(officeInfo[1]));
+                }
+                if (Utility.valueExists(officeInfo, 2)) {
+                    historyEO.setCustomLayer(Utility.getLongValue(officeInfo[2]));
+                }
+                if (Utility.valueExists(officeInfo, 3)) {
+                    historyEO.setOfficeOrigin(Utility.getLongValue(officeInfo[3]));
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        if (grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.FORWARDED_OUT)) {
+            historyEO.setClosedAt(new Date());
+        }
         MediumOfSubmission medium = MediumOfSubmission.ONLINE;
         if (grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW) && grievanceEO.getIsOfflineGrievance() != null && grievanceEO.getIsOfflineGrievance()) {
             medium = MediumOfSubmission.CONVENTIONAL_METHOD;

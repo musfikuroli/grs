@@ -16,23 +16,7 @@ import java.util.List;
 public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
     //region GRIEVANCE
-
-    //checked
     /*
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data d " +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' " +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE d.complaint_status NOT LIKE '%APPEAL%' " +
-                    "AND d.medium_of_submission=?2 " +
-                    "AND (d.created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH) ,'%Y-%m-01 00:00:00') " +
-                    "   AND DATE_FORMAT((LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH))), '%Y-%m-%d 23:59:59'))  " +
-                    "AND d.office_id=?1 ")
-    */
     @Query(value = "select count(distinct d.complaint_id)\n" +
             "from dashboard_data d, complaints com\n" +
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' AND d.medium_of_submission = ?2" +
@@ -59,6 +43,13 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "        )" +
             "  )\n" +
             "  AND d.office_id = ?1", nativeQuery = true)
+
+     */
+    @Query(value = "select count(distinct id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
+            "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH), '%Y-%m-01 00:00:00') " +
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH)), '%Y-%m-%d 23:59:59')  " +
+            "and medium_of_submission=?2 " +
+            "and office_id=?1;", nativeQuery = true)
     Long countComplaintsByOfficeAndMediumOfSubmission(Long officeId, String mediumOfSubmission, Long monthDiff);
 
 
@@ -1414,36 +1405,6 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
     // grievance region
 
     /*
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data d \n" +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' \n" +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE ((d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND d.complaint_status NOT LIKE 'CLOSED%' \n" +
-                    " and d.complaint_status <> 'REJECTED'\n"+
-                    " AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
-                    " AND (d.created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') \n" +
-                    "  AND DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  \n" +
-                    "OR d.created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') \n" +
-                    "))\n" +
-                    "or\n" +
-                    "(d.complaint_status NOT LIKE '%APPEAL%' \n" +
-                    " AND (\n" +
-                    " d.created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')\n" +
-                    " AND\n" +
-                    " (d.closed_date >= DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') \n" +
-                    " or\n" +
-                    " (d.is_forwarded=true and d.updated_at >= DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') )\n" +
-                    " )\n" +
-                    ")))" +
-                    "AND office_id=?1" +
-                    "")
-
-     */
     @Query(value = "SELECT count(distinct d.complaint_id)\n" +
             "FROM dashboard_data d, complaints com\n" +
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' " +
@@ -1486,6 +1447,14 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "    )\n" +
             "\n" +
             "  and d.office_id = ?1 ", nativeQuery = true)
+
+     */
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
+            "and (( created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id=?1) " +
+            "or (created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and (closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') or closed_at is null) " +
+            "and office_id =?1)); ", nativeQuery = true)
     Long countTotalComplaintsByOfficeIdV2(Long officeId, Long monthDiff);
 
 
@@ -1580,37 +1549,7 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
                     "")
     Long countTotalComplaintsByOfficeIdV2(List<Long> officeIds, Long monthDiff);
 
-
-
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data d \n" +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' " +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE ((d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND d.complaint_status NOT LIKE '%REJECTED%'\n" +
-                    " AND d.complaint_status NOT LIKE 'CLOSED%' \n" +
-                    " AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
-                    " AND (d.created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') \n" +
-                    "))\n" +
-                    "or\n" +
-                    "(d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND (\n" +
-                    "d.created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
-                    "AND\n" +
-                    "  (d.closed_date > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') \n" +
-                    " or\n" +
-                    " (d.is_forwarded=true and d.updated_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  )\n" +
-                    " )\n" +
-                    "))) \n" +
-                    "and office_id =?1" +
-                    "")
-
-    Long countTimeExpiredGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
-
+    /*
     @Query(value = "select count( distinct complaint_id)\n" +
             "from dashboard_data d, complaints com\n" +
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' \n" +
@@ -1637,40 +1576,16 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "    )\n" +
             "\n" +
             "  AND d.office_id = ?1", nativeQuery = true)
-    Long countTimeExpiredGrievancesByOfficeIdV3(Long officeId, Long monthDiff, Long numberOfDays);
-
-    /*
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data d \n" +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' " +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE ((d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND d.complaint_status NOT LIKE '%REJECTED%'\n" +
-                    " AND d.complaint_status NOT LIKE 'CLOSED%' \n" +
-                    " AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
-                    " AND (d.created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') \n" +
-                    "  AND DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  \n" +
-                    "))\n" +
-                    "or\n" +
-                    "(d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND (\n" +
-                    "(d.created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') \n" +
-                    "  AND DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  \n" +
-                    ")\n" +
-                    "AND\n" +
-                    "  (d.closed_date > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') \n" +
-                    " or\n" +
-                    " (d.is_forwarded=true and d.updated_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  )\n" +
-                    " )\n" +
-                    "))) \n" +
-                    "and office_id =?1" +
-                    "")
 
      */
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
+            "and created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and (closed_at is null or closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')) " +
+            "and DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), created_at) > ?3 " +
+            "and office_id =?1 ", nativeQuery = true)
+    Long countTimeExpiredGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long numberOfDays);
+
+    /*
     @Query(value = "select count(distinct d.complaint_id)\n" +
             "from dashboard_data d, complaints com\n" +
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' " +
@@ -1698,39 +1613,17 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "    )\n" +
             "\n" +
             "  AND d.office_id = ?1", nativeQuery = true)
+
+     */
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
+            "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') " +
+            "and (closed_at is null or closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')) " +
+            "and DATEDIFF(closed_at, created_at) < ?3 " +
+            "and office_id =?1", nativeQuery = true)
     Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long days);
 
     /*
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data d \n" +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' " +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE ((d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND d.complaint_status NOT LIKE '%REJECTED%'\n" +
-                    " AND d.complaint_status NOT LIKE 'CLOSED%' \n" +
-                    " AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
-                    " AND (d.created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') \n" +
-                    "  AND DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  \n" +
-                    "OR d.created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') \n" +
-                    "))\n" +
-                    "or\n" +
-                    "(d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                    " AND (\n" +
-                    " d.created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') \n" +
-                    " AND\n" +
-                    "  (d.closed_date > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') \n" +
-                    " or\n" +
-                    " (d.is_forwarded=true and d.updated_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')  )\n" +
-                    " )\n" +
-                    ")))\n" +
-                    "AND office_id=?1" +
-                    "")
-
-     */
     @Query(value = "select count(distinct d.complaint_id)\n" +
             "from dashboard_data d, complaints com\n" +
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' " +
@@ -1752,26 +1645,15 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "            )\n" +
             "    )\n" +
             "  AND d.office_id = ?1", nativeQuery = true)
+
+     */
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
+            "and created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
+            "and (closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') or closed_at is null) " +
+            "and office_id =?1", nativeQuery = true)
     Long getGrievanceAscertainCountOfPreviousMonthV2(Long officeId, Long monthDiff);
 
     /*
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data AS d " +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' " +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE d.complaint_status NOT LIKE '%APPEAL%' " +
-                    "AND (d.complaint_status LIKE '%CLOSED%' " +
-                    "   OR d.complaint_status LIKE '%REJECTED%') " +
-                    "AND (d.closed_date BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') " +
-                    "   AND DATE_FORMAT((LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH))), '%Y-%m-%d 23:59:59'))  " +
-                    "AND office_id=?1" +
-                    "")
-
-     */
     @Query(value = "select count(distinct complaint_id)\n" +
             "from dashboard_data d, complaints com\n" +
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' \n" +
@@ -1795,6 +1677,10 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "    )\n" +
             "\n" +
             "  AND d.office_id = ?1", nativeQuery = true)
+
+     */
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status='CLOSED' and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
+            "    and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id=?1", nativeQuery = true)
     Long countResolvedGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
 
     @Query(nativeQuery = true,
@@ -1814,24 +1700,7 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
                     "")
     Long countResolvedGrievancesByOfficeIdV3(Long officeId, Long dayDiff);
 
-
     /*
-    @Query(nativeQuery = true,
-            value = "SELECT COUNT(DISTINCT d.id) " +
-                    "FROM dashboard_data AS d " +
-                    "cross join complaint_movements cm \n" +
-                    "on cm.complaint_id = d.complaint_id \n" +
-                    "and cm.is_current = 1\n" +
-                    "and cm.`action` not like '%APPEAL%' " +
-                    "and cm.current_status not like '%APPEAL%' " +
-                    "WHERE d.complaint_status NOT LIKE '%APPEAL%' " +
-                    "AND d.complaint_status LIKE 'FORWARDED%' " +
-                    "AND (d.updated_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH) ,'%Y-%m-01 00:00:00') " +
-                    "   AND DATE_FORMAT((LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH))), '%Y-%m-%d 23:59:59'))  " +
-                    "AND office_id=?1" +
-                    "")
-
-     */
     @Query(value = "select count(distinct d.complaint_id)\n" +
             "from dashboard_data d\n" +
             "where (d.complaint_status LIKE '%FORWARDED_OUT'\n" +
@@ -1851,7 +1720,13 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "        )\n" +
             "    )\n" +
             "  AND d.office_id = ?1", nativeQuery = true)
-    Long countDeclinedGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
+
+     */
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status='FORWARDED_OUT' " +
+            "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') " +
+            "and office_id=?1", nativeQuery = true)
+    Long countForwardedGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
 
     @Query(nativeQuery = true,
             value = "SELECT COUNT(DISTINCT d.id) " +

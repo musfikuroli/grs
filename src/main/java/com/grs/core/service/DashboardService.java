@@ -1559,6 +1559,7 @@ public class DashboardService {
         return dashboardDataDAO.countTotalComplaintsByOfficeIdV2(officeId, monthDiff);
     }
 
+
     public Long countResolvedComplaintsByOfficeIdV2(Long officeId, Long monthDiff) {
         return dashboardDataDAO.countResolvedComplaintsByOfficeIdV2(officeId, monthDiff);
     }
@@ -1570,7 +1571,7 @@ public class DashboardService {
         Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
         log.info("===New TIME:{} Days:{}", calendar.getTime(), days);
         try {
-            return dashboardDataDAO.countTimeExpiredComplaintsByOfficeIdV3(officeId, monthDiff, days);
+            return dashboardDataDAO.countTimeExpiredComplaintsByOfficeIdV2(officeId, monthDiff, days);
         } catch (Throwable t) {
             t.printStackTrace();
             return 0L;
@@ -1580,8 +1581,8 @@ public class DashboardService {
         return dashboardDataDAO.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
     }
 
-    public Long countDeclinedGrievancesByOfficeIdV2(Long officeId, Long monthDiff) {
-        return dashboardDataDAO.countDeclinedGrievancesByOfficeIdV2(officeId, monthDiff);
+    public Long countForwardedGrievancesByOfficeIdV2(Long officeId, Long monthDiff) {
+        return dashboardDataDAO.countForwardedGrievancesByOfficeIdV2(officeId, monthDiff);
     }
 
     public Long countTotalAppealsByOfficeIdV2(Long officeId, Long monthDiff) {

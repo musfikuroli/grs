@@ -79,6 +79,105 @@ public class AppConfig {
         return exec;
     }
 
+    @Bean("migrate1")
+    public Executor syncMigrate1() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate1-");
+        exec.initialize();
+        return exec;
+    }
 
+    @Bean("migrate2")
+    public Executor syncMigrate2() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate2-");
+        exec.initialize();
+        return exec;
+    }
+
+    @Bean("migrate3")
+    public Executor syncMigrate3() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate3-");
+        exec.initialize();
+        return exec;
+    }
+
+    @Bean("migrate4")
+    public Executor syncMigrate4() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate4-");
+        exec.initialize();
+        return exec;
+    }
+
+    @Bean("migrate5")
+    public Executor syncMigrate5() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate5-");
+        exec.initialize();
+        return exec;
+    }
+
+    @Bean("migrate6")
+    public Executor syncMigrate6() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate6-");
+        exec.initialize();
+        return exec;
+    }
+
+    @Bean("migrate7")
+    public Executor syncMigrate7() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate7-");
+        exec.initialize();
+        return exec;
+    }
+
+
+    @Bean("migrate8")
+    public Executor syncMigrate8() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate8-");
+        exec.initialize();
+        return exec;
+    }
+
+
+    @Bean("migrate9")
+    public Executor syncMigrate9() {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(1);
+        exec.setMaxPoolSize(1);
+        exec.setQueueCapacity(10);
+        exec.setThreadNamePrefix("migrate9-");
+        exec.initialize();
+        return exec;
+    }
 
 }

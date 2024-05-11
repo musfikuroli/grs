@@ -168,7 +168,7 @@ public class ReportsService {
         Long resolvedCount = dashboardService.countResolvedComplaintsByOfficeIdV2(officeId, monthDiff);
         Long timeExpiredCount = dashboardService.countTimeExpiredComplaintsByOfficeIdV3(officeId, monthDiff);
         Long runningGrievanceCount = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
-        Long sentToOtherOfficeCount = dashboardService.countDeclinedGrievancesByOfficeIdV2(officeId, monthDiff);
+        Long sentToOtherOfficeCount = dashboardService.countForwardedGrievancesByOfficeIdV2(officeId, monthDiff);
         Long onlineSubmission = dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(officeId, MediumOfSubmission.ONLINE, monthDiff);
         while (resolvedCount + sentToOtherOfficeCount >totalSubmitted) {
             onlineSubmission += 1;
