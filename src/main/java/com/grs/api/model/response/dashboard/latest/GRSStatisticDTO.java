@@ -44,7 +44,7 @@ public class GRSStatisticDTO {
             this.officeId = monthlyReport.getOfficeId();
             this.month = monthlyReport.getMonth();
             this.year = monthlyReport.getYear();
-            this.totalSubmittedGrievance = monthlyReport.getTotalCount();
+            this.totalSubmittedGrievance = 0;//monthlyReport.getTotalCount();
             this.currentMonthAcceptance = 0;
             if (monthlyReport.getOnlineSubmissionCount() != null) {
                 this.currentMonthAcceptance += monthlyReport.getOnlineSubmissionCount();
@@ -60,18 +60,31 @@ public class GRSStatisticDTO {
             this.forwardedGrievances = monthlyReport.getSentToOtherCount();
             this.timeExpiredGrievances = monthlyReport.getTimeExpiredCount();
             this.resolvedGrievances = monthlyReport.getResolvedCount();
-
+            this.totalSubmittedGrievance = this.currentMonthAcceptance + this.ascertainOfLastMonth;
             Double rate = 0d;
-            if (monthlyReport.getTotalCount() > 0) {
-                while (monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount() > monthlyReport.getTotalCount()) {
+            if (this.totalSubmittedGrievance > 0) {
+                while (monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount() > this.totalSubmittedGrievance) {
                     monthlyReport.setTotalCount(monthlyReport.getTotalCount()+1);
                     monthlyReport.setOnlineSubmissionCount(1+ (monthlyReport.getOnlineSubmissionCount() != null ? monthlyReport.getOnlineSubmissionCount() : 0));
                     this.totalSubmittedGrievance +=1;
                     this.currentMonthAcceptance +=1;
                 }
+            }
+
+            if (this.totalSubmittedGrievance < monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount() + monthlyReport.getRunningCount() + monthlyReport.getTimeExpiredCount()) {
+                this.runningGrievances -=1;
+            }
+            if (this.runningGrievances <0) {
+                this.runningGrievances = 0;
+            }
+
+            if (this.totalSubmittedGrievance >0) {
                 Long totalDecided = monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount();
-                rate = ((double) totalDecided / (double) monthlyReport.getTotalCount()) * 100;
+                rate = ((double) totalDecided / (double) this.totalSubmittedGrievance) * 100;
                 rate = (double) Math.round(rate * 100) / 100;
+                if (rate >100) {
+                    rate = 100d;
+                }
             }
 
             this.resolveRate = rate.floatValue();

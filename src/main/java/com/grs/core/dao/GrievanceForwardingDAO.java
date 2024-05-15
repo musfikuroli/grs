@@ -267,7 +267,7 @@ public class GrievanceForwardingDAO {
                                             builder.notEqual(root.get("fromOfficeUnitOrganogramId"), officeOrganogramId)
                                     )
                             ),
-                            builder.not(builder.in(root.get("action")).value(new ArrayList<String>(Arrays.asList("REJECTED", "FORWARDED_TO_AO", "FORWARD_TO_ANOTHER_OFFICE"))))
+                            builder.not(builder.in(root.get("action")).value(new ArrayList<>(Arrays.asList("REJECTED", "FORWARDED_TO_AO", "FORWARD_TO_ANOTHER_OFFICE"))))
                     ));
 
                     Subquery<Long> subquery = query.subquery(Long.class);

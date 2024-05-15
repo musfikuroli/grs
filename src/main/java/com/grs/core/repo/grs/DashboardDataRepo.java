@@ -1560,9 +1560,9 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' \n" +
             "  AND (\n" +
             "        (\n" +
-            "                    d.complaint_status NOT LIKE 'CLOSED_%'\n" +
-            "                AND d.complaint_status NOT LIKE '%REJECTED%'\n" +
-            "                AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
+            "                    d.complaint_status NOT LIKE 'CLOSED_%' and com.current_status NOT LIKE 'CLOSED_%' \n" +
+            "                AND d.complaint_status NOT LIKE '%REJECTED%' AND com.current_status NOT LIKE '%REJECTED%'\n" +
+            "                AND d.complaint_status NOT LIKE '%FORWARDED%' AND com.current_status NOT LIKE '%FORWARDED%'\n" +
             "                AND DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), d.created_at) > 0\n" +
             "                AND DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), d.created_at) > ?3\n" +
             "            )\n" +
@@ -1580,7 +1580,7 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "            )\n" +
             "    )\n" +
             "\n" +
-            "  AND d.office_id = ?1", nativeQuery = true)
+            "  AND d.office_id = ?1 and com.office_id= ?1", nativeQuery = true)
 
      /*
     @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
@@ -1639,9 +1639,9 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' " +
             "  AND (\n" +
             "        (\n" +
-            "                d.complaint_status NOT LIKE '%REJECTED%'\n" +
-            "                AND d.complaint_status NOT LIKE 'CLOSED%'\n" +
-            "                AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
+            "                d.complaint_status NOT LIKE '%REJECTED%' and com.current_status NOT LIKE '%REJECTED%'\n" +
+            "                AND d.complaint_status NOT LIKE 'CLOSED%' and com.current_status NOT LIKE 'CLOSED%'\n" +
+            "                AND d.complaint_status NOT LIKE '%FORWARDED%' and com.current_status NOT LIKE '%FORWARDED%' \n" +
             "                AND d.created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
             "            )\n" +
             "        OR\n" +
@@ -1654,7 +1654,7 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "                d.closed_date >= DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
             "            )\n" +
             "    )\n" +
-            "  AND d.office_id = ?1", nativeQuery = true)
+            "  AND d.office_id = ?1 and com.office_id= ?1", nativeQuery = true)
 
 
     /*
@@ -1814,7 +1814,7 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
 
     @Query(nativeQuery = true,
-            value = "SELECT count(*) \n" +
+            value = "SELECT count(distinct d.complaint_id) \n" +
                     "FROM dashboard_data d \n" +
                     "WHERE ((d.complaint_status LIKE '%APPEAL%'\n" +
                     "AND d.complaint_status NOT LIKE 'APPEAL\\_CLOSED%' \n" +
@@ -1836,7 +1836,7 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
 
     @Query(nativeQuery = true,
-            value = "SELECT count(*) \n" +
+            value = "SELECT count(distinct d.complaint_id) \n" +
                     "FROM dashboard_data d \n" +
                     "WHERE ((d.complaint_status LIKE '%APPEAL%'\n" +
                     "AND d.complaint_status NOT LIKE 'APPEAL\\_CLOSED%' \n" +

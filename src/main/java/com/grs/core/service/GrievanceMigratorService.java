@@ -20,8 +20,8 @@ public class GrievanceMigratorService {
     public GrievanceMigratorService(BaseEntityManager entityManager) {
         this.entityManager = entityManager;
     }
-    @Scheduled(fixedDelay = Long.MAX_VALUE)
-    @Async("migrate1")
+    //@Scheduled(fixedDelay = Long.MAX_VALUE)
+    //@Async("migrate1")
     public void migrate() {
         //---------Migration code--------
 

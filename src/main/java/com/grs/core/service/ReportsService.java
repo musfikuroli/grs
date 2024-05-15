@@ -180,12 +180,13 @@ public class ReportsService {
             rate = (double) totalDecided / (double)totalSubmitted * 100;
             rate = (double) Math.round(rate * 100) / 100;
         }
+        Long inherited = dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
         return MonthlyReportDTO.builder()
                 .officeId(officeId)
                 .onlineSubmissionCount(onlineSubmission)
                 .conventionalMethodSubmissionCount(dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(officeId, MediumOfSubmission.CONVENTIONAL_METHOD, monthDiff))
                 .selfMotivatedAccusationCount(dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(officeId, MediumOfSubmission.SELF_MOTIVATED_ACCEPTANCE, monthDiff))
-                .inheritedFromLastMonthCount(dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff))
+                .inheritedFromLastMonthCount(inherited)
                 .totalCount(totalSubmitted)
                 .sentToOtherCount(sentToOtherOfficeCount)
                 .resolvedCount(resolvedCount)
