@@ -88,15 +88,35 @@ public class GRSStatisticDTO {
             }
 
             this.resolveRate = rate.floatValue();
+            if (this.officeId == 28) {
+                this.appealTotal = 0;//monthlyReport.getAppealTotalCount();
+                this.appealCurrentMonthAcceptance = 0;// monthlyReport.getAppealOnlineSubmissionCount();
+                this.appealAscertain = 0;//monthlyReport.getAppealInheritedFromLastMonthCount();
+                this.appealRunning = 0;//monthlyReport.getAppealRunningCount();
+                this.appealTimeExpired = 0;//monthlyReport.getAppealTimeExpiredCount();
+                this.appealResolved = 0;//monthlyReport.getAppealResolvedCount();
 
-            this.appealTotal = monthlyReport.getAppealTotalCount();
-            this.appealCurrentMonthAcceptance =  monthlyReport.getAppealOnlineSubmissionCount();
-            this.appealAscertain = monthlyReport.getAppealInheritedFromLastMonthCount();
-            this.appealRunning = monthlyReport.getAppealRunningCount();
-            this.appealTimeExpired = monthlyReport.getAppealTimeExpiredCount();
-            this.appealResolved = monthlyReport.getAppealResolvedCount();
+                Double appealRate = 0d;
+//            if (monthlyReport.getAppealTotalCount() > 0) {
+//                if (monthlyReport.getAppealResolvedCount() > monthlyReport.getAppealTotalCount()) {
+//                    this.appealTotal +=1;
+//                    this.appealRunning +=1;
+//                    monthlyReport.setAppealTotalCount(monthlyReport.getAppealTotalCount()+1);
+//                }
+//                appealRate = ((double) monthlyReport.getAppealResolvedCount() / ((double) monthlyReport.getAppealTotalCount())) * 100;
+//                appealRate = (double) Math.round(appealRate * 100) / 100;
+//            }
 
-            Double appealRate = 0d;
+                this.appealResolveRate = appealRate.floatValue();
+            } else {
+                this.appealTotal = monthlyReport.getAppealTotalCount();
+                this.appealCurrentMonthAcceptance = monthlyReport.getAppealOnlineSubmissionCount();
+                this.appealAscertain = monthlyReport.getAppealInheritedFromLastMonthCount();
+                this.appealRunning = monthlyReport.getAppealRunningCount();
+                this.appealTimeExpired = monthlyReport.getAppealTimeExpiredCount();
+                this.appealResolved = monthlyReport.getAppealResolvedCount();
+
+                Double appealRate = 0d;
             if (monthlyReport.getAppealTotalCount() > 0) {
                 if (monthlyReport.getAppealResolvedCount() > monthlyReport.getAppealTotalCount()) {
                     this.appealTotal +=1;
@@ -107,7 +127,8 @@ public class GRSStatisticDTO {
                 appealRate = (double) Math.round(appealRate * 100) / 100;
             }
 
-            this.appealResolveRate = appealRate.floatValue();
+                this.appealResolveRate = appealRate.floatValue();
+            }
         }
     }
 }
