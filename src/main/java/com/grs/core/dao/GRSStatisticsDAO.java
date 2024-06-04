@@ -50,19 +50,21 @@ public class GRSStatisticsDAO {
         int currentMonth = 12 * calendar.get(Calendar.YEAR) + (calendar.get(Calendar.MONTH) + 1);
         long monthDiff = reportMonth - currentMonth;
 
+        /*
         MonthlyReport mReport = monthlyReport.findByOfficeIdAndYearAndMonth(officeId, year, month);
         if (mReport == null) {
-            GrievanceAndAppealMonthlyReportDTO reportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
-                    .officeId(officeId)
-                    .year(year)
-                    .month(month)
-                    .monthlyGrievanceReport(reportsService.getGrievanceMonthlyReportForGenerate(officeId, monthDiff))
-                    .monthlyAppealReport(reportsService.getAppealMonthlyReportForGenerate(officeId, monthDiff))
-                    .build();
-            mReport = monthlyReport.convertToMonthlyReport(reportDTO);
+
 
         }
-
+        */
+        GrievanceAndAppealMonthlyReportDTO reportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
+                .officeId(officeId)
+                .year(year)
+                .month(month)
+                .monthlyGrievanceReport(reportsService.getGrievanceMonthlyReportForGenerate(officeId, monthDiff))
+                .monthlyAppealReport(reportsService.getAppealMonthlyReportForGenerate(officeId, monthDiff))
+                .build();
+        MonthlyReport mReport = monthlyReport.convertToMonthlyReport(reportDTO);
         GRSStatisticDTO dto = new GRSStatisticDTO(mReport);
         this.aggregateAppealData(dto, officeId, monthDiff);
         return dto;

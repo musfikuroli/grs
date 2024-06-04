@@ -1689,8 +1689,11 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
     */
 
-    @Query(value = "select count(distinct complain_id) from complain_history where current_status='CLOSED' and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
-            "    and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id=?1", nativeQuery = true)
+    @Query(value = "select count(distinct complain_id) from complain_history where ((current_status='CLOSED'\n" +
+            "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
+            "    and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')) or (current_status='NEW'\n" +
+            "    and closed_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
+            "        and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59'))) and office_id=?1", nativeQuery = true)
 
 
     Long countResolvedGrievancesByOfficeIdV2(Long officeId, Long monthDiff);

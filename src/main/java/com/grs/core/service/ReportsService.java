@@ -100,7 +100,6 @@ public class ReportsService {
                 .collect(toList());
         return grievanceMonthlyReportsDTOList;
     }
-
     public MonthlyReportDTO getGrievanceMonthlyReport(Long officeId, Long monthDiff) {
         Long totalSubmitted = dashboardService.countTotalComplaintsByOfficeIdV2(officeId, monthDiff);
         Long resolvedCount = dashboardService.countResolvedComplaintsByOfficeId(officeId, monthDiff);
@@ -232,16 +231,16 @@ public class ReportsService {
         OfficesGRO officesGRO = this.officesGroService.findOfficesGroByOfficeId(officeId);
         String officeName = officesGRO == null ? "" : officesGRO.getOfficeNameBangla();
         Boolean hasAppealReport = layerLevel < Constant.districtLayerLevel && officeService.hasChildOffice(officeId);
-        if (monthDiff == 0 ) {
+        if (1==1) { //monthDiff == 0  //TODO:: OLD condition to ignore now
             MonthlyReportDTO appealReportDTO = null;
             if (hasAppealReport) {
-                appealReportDTO = getAppealMonthlyReport(officeId, 0L);
+                appealReportDTO = getAppealMonthlyReport(officeId, (long) monthDiff);
             }
             grievanceAndAppealMonthlyReportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
                     .officeId(officeId)
                     .year(year)
                     .month(month)
-                    .monthlyGrievanceReport(getGrievanceMonthlyReport(officeId, 0L))
+                    .monthlyGrievanceReport(getGrievanceMonthlyReportForGenerate(officeId, (long) monthDiff)) //getGrievanceMonthlyReport TODO:: OLD METHOD
                     .monthlyAppealReport(appealReportDTO)
                     .officeName(officeName)
                     .build();
