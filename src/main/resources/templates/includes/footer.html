@@ -207,12 +207,12 @@
                             <div class="form-group">
                                 <table class="table table-hover table-bordered" id="grievanceStatus" style="display: none">
                                     <thead>
-                                    <tr>
-                                        <td>অভিযোগের তারিখ</td>
-                                        <td>সংশ্লিষ্ট সেবা</td>
-                                        <td>অভিযোগের অবস্থা</td>
-                                        <td>নিষ্পত্তির সম্ভাব্য তারিখ</td>
-                                    </tr>
+                                        <tr>
+                                            <td>অভিযোগের তারিখ</td>
+                                            <td>সংশ্লিষ্ট সেবা</td>
+                                            <td>অভিযোগের অবস্থা</td>
+                                            <td>নিষ্পত্তির সম্ভাব্য তারিখ</td>
+                                        </tr>
                                     </thead>
                                     <tbody></tbody>
                                 </table>
@@ -516,19 +516,20 @@
                 </div>
                 <div class="modal-body text-center font-purple">
                     <div><span th:text="#{email.colon}"></span>&nbsp;<a href="mailto:grs@cabinet.gov.bd"
-                                                                        class="blueLink"
-                                                                        th:text="#{index.footer.contact.helpdesk.email}">grs@cabinet.gov.bd</a>
+                                                                        class="blueLink" th:text="#{index.footer.contact.helpdesk.email}">grs@cabinet.gov.bd</a>
                     </div>
 
-                    <div><span th:text="#{mobile.colon}"></span>&nbsp;<a href="tel:+880 1534-693661"
-                                                                         class="blueLink">+880 1534-693661 , +880 1712-653379</a>
-                    </div>
+                    <div><span th:text="#{mobile.colon}"></span>&nbsp;<a href="tel:+8801746126187"
+                                                                        class="blueLink">
+                        +8801746126187
 
+                    </a>
+
+                        <h3> <strong> যোগাযোগের সময়ঃ সকাল ৯টা - বিকাল ৪টা পর্যন্ত (সকল কর্মদিবস)। </strong> </h3>
+                    </div>
                     <th:block
-                            th:include="includes/email_contact_guidance_message">
+                              th:include="includes/email_contact_guidance_message">
                     </th:block>
-
-
                     <br>
                 </div>
                 <div class="modal-footer">
