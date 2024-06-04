@@ -1619,12 +1619,13 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
     */
 
-    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
-            "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
-            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') " +
-            "and (closed_at is null or closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')) " +
-            "and (DATEDIFF(closed_at, created_at) < ?3 or DATEDIFF(closed_at, created_at) is null) " +
-            "and office_id =?1", nativeQuery = true)
+    @Query(value = "select count(distinct complain_id) from complain_history where (current_status in ('NEW', 'FORWARDED_IN')\n" +
+            "                                 and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
+            "                                     and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')\n" +
+            "                                 and (closed_at is null or closed_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59'))\n" +
+            "                                 and office_id =?1) or (current_status in ('NEW', 'FORWARDED_IN') and created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00')\n" +
+            "    and (closed_at is null or closed_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59'))\n" +
+            "    and DATEDIFF(created_at, current_timestamp) < ?3 and office_id = ?1)", nativeQuery = true)
 
 
     Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long days);

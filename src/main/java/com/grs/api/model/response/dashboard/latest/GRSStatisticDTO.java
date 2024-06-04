@@ -44,7 +44,6 @@ public class GRSStatisticDTO {
             this.officeId = monthlyReport.getOfficeId();
             this.month = monthlyReport.getMonth();
             this.year = monthlyReport.getYear();
-            this.totalSubmittedGrievance = 0;//monthlyReport.getTotalCount();
             this.currentMonthAcceptance = 0;
             if (monthlyReport.getOnlineSubmissionCount() != null) {
                 this.currentMonthAcceptance += monthlyReport.getOnlineSubmissionCount();
@@ -76,6 +75,10 @@ public class GRSStatisticDTO {
             }
             if (this.runningGrievances <0) {
                 this.runningGrievances = 0;
+            }
+            if (this.forwardedGrievances + this.resolvedGrievances + this.runningGrievances < this.totalSubmittedGrievance)
+            while (this.forwardedGrievances + this.resolvedGrievances + this.runningGrievances != this.totalSubmittedGrievance) {
+                this.runningGrievances += 1;
             }
 
             if (this.totalSubmittedGrievance >0) {
