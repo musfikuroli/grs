@@ -163,10 +163,11 @@ public class GrievanceForwardingService {
             if (!grievanceForwarding.getIsSeen()) {
                 grievanceForwarding.setIsSeen(true);
                 this.grievanceForwardingDAO.save(grievanceForwarding);
+                boolean historyStatus = grievanceForwardingDAO.saveHistory(grievanceForwarding);
+                log.info("====History status:{}", historyStatus);
                 return;
             }
         }
-        return;
     }
 
     @Transactional(value = "transactionManager", rollbackFor = RuntimeException.class)

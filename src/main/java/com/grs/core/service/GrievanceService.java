@@ -119,10 +119,6 @@ public class GrievanceService {
 
     public Grievance saveGrievance(Grievance grievance, boolean callHistory) {
         grievance = this.grievanceDAO.save(grievance);
-        if (callHistory) {
-            boolean historyStatus = this.grievanceDAO.saveHistory(grievance);
-            log.info("====Log Insertion status:{}", historyStatus);
-        }
         return grievance;
     }
 

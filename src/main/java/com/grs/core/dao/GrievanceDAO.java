@@ -56,15 +56,7 @@ public class GrievanceDAO {
     @Autowired
     private ComplainantService complainantService;
     @Autowired
-    private BaseEntityManager baseEntityManager;
-    @Autowired
     private EntityManager entityManager;
-
-    @Autowired
-    private CellMemberDAO cellMemberDAO;
-
-    @Autowired
-    private GrievanceMigratorService migratorService;
 
     private SimpleDateFormat simpleDateFormat;
 
@@ -150,11 +142,10 @@ public class GrievanceDAO {
                 .build();
         grievance.setStatus(true);
         grievance = this.save(grievance);
-        boolean status = this.saveHistory(grievance);
-        log.info("=======Log insertion status:{}", status);
         return grievance;
     }
 
+    /*
     public boolean saveHistory(Grievance grievanceEO) {
         log.info("======History called for tracking no:{}", grievanceEO.getTrackingNumber());
         //Calculate condition later
@@ -290,7 +281,7 @@ public class GrievanceDAO {
             return false;
         }
     }
-
+    */
     public com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary(SafetyNetGrievanceSummaryRequest request) {
 
         String sql = "";
@@ -474,8 +465,6 @@ public class GrievanceDAO {
         grievance.setCreatedBy(userIdFromToken);
 
         grievance = this.save(grievance);
-        boolean status = this.saveHistory(grievance);
-        log.info("=======Log insertion status:{}", status);
         return grievance;
     }
 

@@ -1569,7 +1569,6 @@ public class DashboardService {
         calendar.add(Calendar.MONTH, monthDiff.intValue());
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
-        log.info("===New TIME:{} Days:{}", calendar.getTime(), days);
         try {
             return dashboardDataDAO.countTimeExpiredComplaintsByOfficeIdV2(officeId, monthDiff, days);
         } catch (Throwable t) {
