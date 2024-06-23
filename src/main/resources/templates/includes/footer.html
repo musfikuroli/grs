@@ -519,14 +519,18 @@
                                                                         class="blueLink" th:text="#{index.footer.contact.helpdesk.email}">grs@cabinet.gov.bd</a>
                     </div>
 
-                    <div><span th:text="#{mobile.colon}"></span>&nbsp;<a href="tel:+8801746126187"
-                                                                        class="blueLink">
-                        +8801746126187
-
-                    </a>
-
-                        <h3> <strong> যোগাযোগের সময়ঃ সকাল ৯টা - বিকাল ৪টা পর্যন্ত (সকল কর্মদিবস)। </strong> </h3>
+                    <div>
+<!--                        <span th:text="#{phone.colon}"></span>&nbsp;-->
+                        <br>
+                        <span>ফোন নাম্বারঃ</span>
+                        <a href="tel:88-02-41050998" class="blueLink">
+                        <h1 style="font-size: 2em;">88-02-41050998</h1
+                        </a> <a href="tel:88-02-48315684" class="blueLink">
+                        <h1 style="font-size: 2em;">88-02-48315684</h1>
+                        </a>
+                        <h3><strong><h2 style="font-size: 1.5em;">যোগাযোগের সময়ঃ সকাল ৯টা - বিকাল ৪টা পর্যন্ত (সকল কর্মদিবস)।</h2></strong></h3>
                     </div>
+
                     <th:block
                               th:include="includes/email_contact_guidance_message">
                     </th:block>
