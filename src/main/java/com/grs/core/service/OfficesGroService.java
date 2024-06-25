@@ -9,6 +9,7 @@ import com.grs.core.domain.grs.Grievance;
 import com.grs.core.domain.grs.GrievanceForwarding;
 import com.grs.core.domain.grs.OfficesGRO;
 import com.grs.core.domain.projapoti.*;
+import com.grs.core.repo.grs.BaseEntityManager;
 import com.grs.utils.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class OfficesGroService {
     private GrievanceForwardingService grievanceForwardingService;
     @Autowired
     private GrievanceService grievanceService;
+
+    @Autowired
+    private BaseEntityManager baseEntityManager;
 
     public OfficesGRO findOfficesGroByOfficeId(Long id) {
         return this.officesGroDAO.findOfficesGROByOfficeId(id);
@@ -136,11 +140,27 @@ public class OfficesGroService {
     }
 
     public void transferGrievancesOnGroChange(Long officeId, OfficesGRO old, OfficesGroDTO officesGroDTO) {
-        List<GrievanceForwarding> grievanceForwardings = this.grievanceForwardingService.getAllMovementsOfPreviousGRO(old);
+        //List<GrievanceForwarding> grievanceForwardings = this.grievanceForwardingService.getAllMovementsOfPreviousGRO(old);
         Long groOfficeId = old.getGroOfficeId();
         Long groOfficeUnitOrganogramId = old.getGroOfficeUnitOrganogramId();
         EmployeeOffice nextGroEmployeeOffice = this.officeService.findEmployeeOfficeByOfficeAndOfficeUnitOrganogramAndStatus(officesGroDTO.getGroOfficeId(), officesGroDTO.getGroOfficeUnitOrganogramId(), true);
         if(nextGroEmployeeOffice != null) {
+            String sql = "update complaint_movements set to_employee_record_id=:to_employee_record_id ," +
+                    " to_employee_designation_bng=:to_employee_designation_bng," +
+                    " to_employee_name_bng=:to_employee_name_bng, to_employee_name_eng=:to_employee_name_eng," +
+                    " to_office_unit_organogram_id=:to_office_unit_organogram_id, to_office_unit_id=:to_office_unit_id," +
+                    "modified_at=:modified_at where to_office_id=:to_office_id and is_current=1 and assigned_role='GRO' ";
+            Map<String, Object> params = new HashMap<>();
+            params.put("to_employee_record_id",nextGroEmployeeOffice.getEmployeeRecord().getId());
+            params.put("to_employee_designation_bng", nextGroEmployeeOffice.getDesignation());
+            params.put("to_employee_name_bng", nextGroEmployeeOffice.getEmployeeRecord().getNameBangla());
+            params.put("to_employee_name_eng", nextGroEmployeeOffice.getEmployeeRecord().getNameEnglish());
+            params.put("to_office_unit_organogram_id", officesGroDTO.getGroOfficeUnitOrganogramId());
+            params.put("to_office_unit_id", nextGroEmployeeOffice.getOfficeUnit().getId());
+            params.put("modified_at", new Date());
+            params.put("to_office_id", groOfficeId);
+            baseEntityManager.updateByQuery(sql, params);
+            /*
             grievanceForwardings.forEach(
                     grievanceForwarding -> {
                         try {
@@ -235,6 +255,8 @@ public class OfficesGroService {
                         }
                     }
             );
+
+             */
         }
     }
 

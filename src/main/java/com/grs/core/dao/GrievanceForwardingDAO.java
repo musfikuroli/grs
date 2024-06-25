@@ -702,7 +702,11 @@ public class GrievanceForwardingDAO {
                 }
             }
             ComplainHistory historyEO = getHistory(movement.getGrievance(), status, movement.getToOfficeId());
-            baseEntityManager.save(historyEO);
+            try {
+                baseEntityManager.save(historyEO);
+            } catch (Throwable t) {
+                log.error("===ERROR:{}", t.getMessage());
+            }
         }
 
         if (movement.getAction().equalsIgnoreCase("APPEAL")) {
@@ -718,17 +722,29 @@ public class GrievanceForwardingDAO {
             boolean sendToCell = StringUtil.isValidString(movement.getGrievance().getAppealOfficerDecision()) && movement.getGrievance().getCurrentAppealOfficeId() != null && cellGro != null;
             if (sendToCell) {
                 ComplainHistory historyEO = getHistory(movement.getGrievance(), "CELL_APPEAL", movement.getToOfficeId());
-                baseEntityManager.save(historyEO);
+                try {
+                    baseEntityManager.save(historyEO);
+                } catch (Throwable t) {
+                    log.error("===ERROR:{}", t.getMessage());
+                }
             } else {
                 ComplainHistory historyEO = getHistory(movement.getGrievance(), "APPEAL", movement.getToOfficeId());
-                baseEntityManager.save(historyEO);
+                try {
+                    baseEntityManager.save(historyEO);
+                } catch (Throwable t) {
+                    log.error("===ERROR:{}", t.getMessage());
+                }
             }
 
         }
 
         if (Utility.isInList(movement.getAction(), "NEW", "CELL_NEW")) {
             ComplainHistory historyEO = getHistory(movement.getGrievance(), movement.getAction(), movement.getToOfficeId());
-            baseEntityManager.save(historyEO);
+            try {
+                baseEntityManager.save(historyEO);
+            } catch (Throwable t) {
+                log.error("==ERROR:{}", t.getMessage());
+            }
         }
 
         return true;
