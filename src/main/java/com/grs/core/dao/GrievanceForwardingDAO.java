@@ -761,7 +761,7 @@ public class GrievanceForwardingDAO {
 
     public ComplainHistory getHistory(Grievance grievanceEO, String currentStatus, Long officeId) {
         Map<String, Object> params = new HashMap<>();
-        String select = "select count(id) from complain_history where complain_id=:complain_id and current_status=:current_status and office_id=:office_id ";
+        String select = "select * from complain_history where complain_id=:complain_id and current_status=:current_status and office_id=:office_id ";
         params.put("complain_id", grievanceEO.getId());
         params.put("current_status", currentStatus);
         params.put("office_id", officeId);
