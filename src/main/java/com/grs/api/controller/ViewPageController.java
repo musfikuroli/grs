@@ -118,7 +118,7 @@ public class ViewPageController {
                 LoginResponse loginResponse = mapper.readValue(jsonData, LoginResponse.class);
                 afterLoginDoptorResponse(loginResponse, request, response);
             } catch (Exception e) {
-                log.error("Message:", e);
+                //log.error("Message:", e);
             }
         }
         return modelViewService.returnViewsForNormalPages(authentication, model, request, "index");
@@ -165,7 +165,7 @@ public class ViewPageController {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
             String lastSavedUrl = (String) request.getSession(false).getAttribute("prev_url");
-            log.info(lastSavedUrl);
+            //log.info(lastSavedUrl);
             if (userInformation.getUserType().equals(UserType.OISF_USER)) {
                 if ((StringUtil.isValidString(lastSavedUrl) && lastSavedUrl.contains("/addStaffGrievances.do"))) {
                     request.getSession().setAttribute("prev_url", "");
@@ -196,14 +196,14 @@ public class ViewPageController {
 
     @RequestMapping(value = "/login/success", method = RequestMethod.GET)
     public void redirectAfterLoginSuccess(HttpServletResponse response, HttpServletRequest request, Authentication authentication) throws IOException {
-        log.info("/login/success : authentication: {}",authentication);
+        //log.info("/login/success : authentication: {}",authentication);
 
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-            log.info("userInformation: {}",userInformation);
+            //log.info("userInformation: {}",userInformation);
             boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
             String lastSavedUrl = (String) request.getSession(false).getAttribute("prev_url");
-            log.info(lastSavedUrl);
+            //log.info(lastSavedUrl);
             if (userInformation.getUserType().equals(UserType.OISF_USER)) {
                 if ((StringUtil.isValidString(lastSavedUrl) && lastSavedUrl.contains("/addStaffGrievances.do"))) {
                     request.getSession().setAttribute("prev_url", "");
@@ -347,11 +347,11 @@ public class ViewPageController {
         SubMenuDTO subMenuUsernameDTO, subMenuPasswordDTO, formTitleDTO;
         RedirectMap redirectMap = RedirectMap.DASHBOARD;
         if (StringUtil.isValidString(previousUrl)) {
-            log.info("previous url from cookie: " + previousUrl);
+            //log.info("previous url from cookie: " + previousUrl);
             redirectMap = RedirectMap.get(previousUrl);
 
             request.getSession().setAttribute("prev_url", previousUrl);
-            log.info(request.getSession().getAttribute("prev_url").toString());
+            //log.info(request.getSession().getAttribute("prev_url").toString());
 
         }
 

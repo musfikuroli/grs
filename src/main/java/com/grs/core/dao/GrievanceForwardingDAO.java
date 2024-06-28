@@ -703,7 +703,9 @@ public class GrievanceForwardingDAO {
             }
             ComplainHistory historyEO = getHistory(movement.getGrievance(), status, movement.getToOfficeId());
             try {
-                baseEntityManager.save(historyEO);
+                if (historyEO != null) {
+                    baseEntityManager.save(historyEO);
+                }
             } catch (Throwable t) {
                 log.error("===ERROR:{}", t.getMessage());
             }
@@ -723,14 +725,18 @@ public class GrievanceForwardingDAO {
             if (sendToCell) {
                 ComplainHistory historyEO = getHistory(movement.getGrievance(), "CELL_APPEAL", movement.getToOfficeId());
                 try {
-                    baseEntityManager.save(historyEO);
+                    if (historyEO != null) {
+                        baseEntityManager.save(historyEO);
+                    }
                 } catch (Throwable t) {
                     log.error("===ERROR:{}", t.getMessage());
                 }
             } else {
                 ComplainHistory historyEO = getHistory(movement.getGrievance(), "APPEAL", movement.getToOfficeId());
                 try {
-                    baseEntityManager.save(historyEO);
+                    if (historyEO != null) {
+                        baseEntityManager.save(historyEO);
+                    }
                 } catch (Throwable t) {
                     log.error("===ERROR:{}", t.getMessage());
                 }
@@ -741,7 +747,9 @@ public class GrievanceForwardingDAO {
         if (Utility.isInList(movement.getAction(), "NEW", "CELL_NEW")) {
             ComplainHistory historyEO = getHistory(movement.getGrievance(), movement.getAction(), movement.getToOfficeId());
             try {
-                baseEntityManager.save(historyEO);
+                if (historyEO != null) {
+                    baseEntityManager.save(historyEO);
+                }
             } catch (Throwable t) {
                 log.error("==ERROR:{}", t.getMessage());
             }
@@ -752,6 +760,21 @@ public class GrievanceForwardingDAO {
     }
 
     public ComplainHistory getHistory(Grievance grievanceEO, String currentStatus, Long officeId) {
+        Map<String, Object> params = new HashMap<>();
+        String select = "select count(id) from complain_history where complain_id=:complain_id and current_status=:current_status and office_id=:office_id ";
+        params.put("complain_id", grievanceEO.getId());
+        params.put("current_status", currentStatus);
+        params.put("office_id", officeId);
+
+        try {
+            ComplainHistory his = baseEntityManager.findSingleByQuery(select, ComplainHistory.class, params);
+            if (his != null) {
+                return null;
+            }
+        } catch (Throwable t) {
+
+        }
+
         ComplainHistory historyEO = new ComplainHistory();
         historyEO.setComplainId(grievanceEO.getId());
         historyEO.setTrackingNumber(grievanceEO.getTrackingNumber());
@@ -762,7 +785,7 @@ public class GrievanceForwardingDAO {
                 "from grs_doptor.offices o " +
                 "left join grs_doptor.office_layers ol on o.office_layer_id = ol.id " +
                 "where o.id =:officeId order by o.id desc ";
-        Map<String, Object> params = new HashMap<>();
+        params.clear();
         params.put("officeId", officeId);
         try {
             Object[] officeInfo = baseEntityManager.findSingleByQuery(sql, params);
