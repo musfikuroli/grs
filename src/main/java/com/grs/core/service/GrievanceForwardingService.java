@@ -412,7 +412,11 @@ public class GrievanceForwardingService {
         return files.size();
     }
 
+    //TODO:: FIX Issue
     public List<GrievanceForwarding> getAllUserRelatedForwardings(Grievance grievance, UserInformation userInformation){
+        if (userInformation.getOfficeInformation() == null) {
+            return new ArrayList<>();
+        }
         List<GrievanceForwarding> grievanceForwardings;
         Long officeId = userInformation.getOfficeInformation().getOfficeId();
         Long officeUnitOrganogramId = userInformation.getOfficeInformation().getOfficeUnitOrganogramId();
@@ -439,12 +443,15 @@ public class GrievanceForwardingService {
             ));
         } else if (userInformation.getOisfUserType().equals(OISFUserType.HEAD_OF_OFFICE)) {
             OfficesGRO officesGRO = this.officesGroService.findOfficesGroByOfficeId(userInformation.getOfficeInformation().getOfficeId());
+            List<Long> orgUnitList = new ArrayList<>();
+            if (officesGRO.getGroOfficeUnitOrganogramId() != null) {
+                orgUnitList.add(officesGRO.getGroOfficeUnitOrganogramId());
+            }
+            if (userInformation.getOfficeInformation() != null && userInformation.getOfficeInformation().getOfficeUnitOrganogramId() != null) {
+                orgUnitList.add(userInformation.getOfficeInformation().getOfficeUnitOrganogramId());
+            }
             grievanceForwardings = this.grievanceForwardingDAO.getAllRelatedComplaintMovements(grievance.getId(),
-                    officesGRO.getOfficeId(),
-                    new ArrayList<Long>() {{
-                        add(officesGRO.getGroOfficeUnitOrganogramId());
-                        add(userInformation.getOfficeInformation().getOfficeUnitOrganogramId());
-                    }},
+                    officesGRO.getOfficeId(),orgUnitList,
                     "");
         } else {
             grievanceForwardings = this.grievanceForwardingDAO.getAllRelatedComplaintMovements(

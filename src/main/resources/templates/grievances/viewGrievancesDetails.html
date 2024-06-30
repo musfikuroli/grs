@@ -3513,7 +3513,7 @@
             summerNoteId = 'summernote' + context,
             fileuploadId = 'fileupload' + context,
             dateId = 'date' + context;
-
+        console.log("=====ID:"+dateId);
         var receiverNodes = [];
         $('input[name="toNodesSendToSubOfficeGRO"]:checked').map(function (index, elm) {
             receiverNodes.push(elm.defaultValue);
@@ -3528,6 +3528,7 @@
         var content = $("#" + summerNoteId).summernote('code');
         var cleanText = $("#" + summerNoteId).summernote('code').replace(/<\/?[^>]+(>|$)/g, "");
         var deadline = $('#' + dateId).datepicker('getDate');
+        console.log("===Deadline:"+deadline+" Submitted to:"+receiverNodes);
         if (deadline == null || receiverNodes.length == 0) {
             toastr.error("তারিখ এবং ব্যক্তি নির্বাচন করুন");
             return;
@@ -3599,6 +3600,7 @@
         var cleanText = $("#" + summerNoteId).summernote('code').replace(/<\/?[^>]+(>|$)/g, "");
         var deadline = $('#' + dateId).datepicker('getDate');
         if (deadline == null) {
+            toastr.error("Send for option why?")
             toastr.error("তারিখ এবং ব্যক্তি নির্বাচন করুন");
             return;
         }

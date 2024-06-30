@@ -536,6 +536,7 @@
                         </div>
                     </div>
 
+
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
@@ -1509,9 +1510,9 @@
                         type = "Audio/Video";
                     }
 
-                    $select.append('<tr><td><span class=\"uppercase\"><a ' + attrib + ' href=\"http://' + document.location.host + val.url + '\\" data-asset=\"false\">' +
-                        val.name + '</a></span></td><td>' + type + '</td><td style=\"text-align: center;\"><a ' + attrib + ' href=\"http://' + document.location.host + val.url + '\\"><i class=\"fa fa-television\"></i></a></td>' +
-                        '<td style=\"text-align: center;\"><a href=\"http://' + document.location.host + val.url + '\\" target=\"_blank\"><i class=\"fa fa-download\"></i></a></td></tr>');
+                    $select.append('<tr><td><span class=\"uppercase\"><a ' + attrib + ' href=\"https://' + document.location.host + val.url + '\\" data-asset=\"false\">' +
+                        val.name + '</a></span></td><td>' + type + '</td><td style=\"text-align: center;\"><a ' + attrib + ' href=\"https://' + document.location.host + val.url + '\\"><i class=\"fa fa-television\"></i></a></td>' +
+                        '<td style=\"text-align: center;\"><a href=\"https://' + document.location.host + val.url + '\\" target=\"_blank\"><i class=\"fa fa-download\"></i></a></td></tr>');
                 });
             }
         }
@@ -1522,8 +1523,8 @@
         if (e) {
             e.preventDefault();
         }
-        var domainURL = "http://" + document.location.host;
-        if ($(clickedLink).attr("href").startsWith("http://")) {
+        var domainURL = "https://" + document.location.host;
+        if ($(clickedLink).attr("href").startsWith("https://")) {
             domainURL = "";
         }
         if ($(clickedLink).hasClass("media-embed")) {
@@ -1534,7 +1535,8 @@
             if(isEmbed){
                 $("#fileViewerModal .modal-body").html('<embed src="' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;"></embed>');
             } else {
-                $("#fileViewerModal .modal-body").html('<iframe src="http://docs.google.com/gview?embedded=true&url=' + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;" frameborder="0"></iframe>');
+                let uri = "https://docs.google.com/gview?embedded=true&url=";
+                $("#fileViewerModal .modal-body").html('<iframe src="'+uri + domainURL + $(clickedLink).attr("href") + '" style="width:100%; height:800px;" frameborder="0"></iframe>');
             }
             $("#fileViewerModal").modal("show");
             return false;
@@ -2229,7 +2231,7 @@
                         }
                         a_file.setAttribute('onclick', 'javascript:previewFile(this, event);');
                     }
-                    var href_file = 'http://' + document.location.host + val.url;
+                    var href_file = 'https://' + document.location.host + val.url;
                     a_file.setAttribute('href', href_file);
                     a_file.setAttribute('data-asset', false);
                     a_file.innerHTML = '' + val.name + '';
@@ -2397,6 +2399,7 @@
         var cleanText = $("#" + summerNoteId).summernote('code').replace(/<\/?[^>]+(>|$)/g, "");
         var deadline = $('#' + dateId).datepicker('getDate');
         if (deadline == null || receiverNodes.length == 0) {
+            toastr.error('Appeal Why I am here?');
             toastr.error("তারিখ এবং ব্যক্তি নির্বাচন করুন");
             return;
         }

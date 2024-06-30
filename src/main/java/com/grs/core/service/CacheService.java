@@ -199,7 +199,7 @@ public class CacheService {
         log.info("Ended updateGeneralDashboardData cache at" + (new Date()));
     }
 
-    @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 86400000)
+   // @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 86400000)
     public void updateGrsStatistics() {
         log.info("Started updateGrsStatistics cache at" + (new Date()));
         Calendar cal = Calendar.getInstance();

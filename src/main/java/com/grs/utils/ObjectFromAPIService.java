@@ -43,7 +43,7 @@ public class ObjectFromAPIService {
             log.error(e.getMessage());
             log.error(entity.toString());
         }
-        log.info(responseEntity.getStatusCode().getReasonPhrase());
+//        log.info(responseEntity.getStatusCode().getReasonPhrase());
         return responseEntity.getBody();
     }
 }
