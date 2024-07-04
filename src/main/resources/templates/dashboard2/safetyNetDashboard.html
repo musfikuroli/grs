@@ -263,7 +263,6 @@
             language: jsLangCodeForLibs,
             onSelect: function (dateText, instance) {
                 date = $.datepicker.parseDate(instance.settings.dateFormat, dateText, instance.settings);
-                // date.setDay(1);
                 $(this).datepicker("setDate", date);
             },
             beforeShowDay: function (date) {

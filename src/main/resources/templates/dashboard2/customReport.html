@@ -13,7 +13,6 @@
                 </div>
                 <div class="row">
                     <label class="control-label col-sm-1 font-lg text-center">
-                        <!--                        <span>মাস</span>-->
                     </label>
                     <div class="col-sm-3">
                         <div class='input-group date' id="customReportFrom">
@@ -204,14 +203,14 @@
                     officeId = 9999;
                 }
 
-                if (layerLevel == 3) {
+                if (layerLevel === 3) {
                     customLayer = $("#firstSelection").val();
                     officeOrigin = 9999;
 
                 } else if (layerLevel >= 0 && layerLevel <= 2) {
                     customLayer = 9999;
                     officeOrigin = 9999;
-                } else if (layerLevel == 9999) {
+                } else if (layerLevel === 9999) {
                     customLayer = 9999;
                     officeOrigin = 9999;
                 } else {
@@ -219,8 +218,62 @@
                     officeOrigin = $("#firstSelection").val();
                 }
 
-                // loadCustomReportData(officeId, layerLevel, dateFrom, dateTo);
-                loadCustomReportDailyData(layerLevel, customLayer, officeOrigin, officeId, dateFrom, dateTo);
+                let url = "/api/layer-level/" + layerLevel + "/officeOrigin/" + officeOrigin + "/customLayer/" + customLayer + "/offices/" + officeId +
+                    "/reports/from/" + dateFrom.getFullYear() + "/" + (dateFrom.getMonth() + 1) + "/" + dateFrom.getDate()
+                    + "/to/" + dateTo.getFullYear() + "/" + (dateTo.getMonth() + 1) + "/" + dateTo.getDate();
+                blockUI();
+                $.getJSON(url, function (response) {
+                    var grievanceReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td><td>(ঞ)</td></tr>";
+                    var appealReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td></tr>";
+                    var hasAppealReportFlag = false;
+                    response.forEach(function (item, index) {
+                        var monthlyGrievanceReport = item.dailyGrievanceReport;
+                        var monthlyAppealReport = item.dailyAppealReport;
+                        if (monthlyGrievanceReport) {
+                            grievanceReportBody += "<tr class='text-center'>" +
+                                "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["selfMotivatedAccusationCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + (isNaN(monthlyGrievanceReport["rate"]) ? "" : monthlyGrievanceReport["rate"].toFixed(2))).toBanglaNumber() + "</td>" +
+                                "</tr>";
+                        } else {
+                            grievanceReportBody += "<tr class='text-center'>" +
+                                "<td colspan='10'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
+                                "</tr>";
+                        }
+                        if (monthlyAppealReport) {
+                            appealReportBody += "<tr class='text-center'>" +
+                                "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
+                                "<td>" + ("" + (isNaN(monthlyAppealReport["rate"]) ? "" : monthlyAppealReport["rate"].toFixed(2))).toBanglaNumber() + "</td>" +
+                                "</tr>";
+                            hasAppealReportFlag = true;
+                        } else {
+                            appealReportBody += "<tr class='text-center'>" +
+                                "<td colspan='7'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
+                                "</tr>";
+                        }
+                    });
+                    $("#grievanceCustomReportTable tbody").empty().html(grievanceReportBody);
+                    if (hasAppealReportFlag) {
+                        $("#appealCustomReportTable tbody").empty().html(appealReportBody);
+                        $("#appealCustomReportTable").closest(".panel").show();
+                    } else {
+                        $("#appealCustomReportTable").closest(".panel").hide();
+                    }
+                }).always(function () {
+                    unblockUI();
+                });
             }
 
             return;
@@ -239,211 +292,6 @@
             mywindow.document.write('</body></html>');
             mywindow.print();
             mywindow.close();
-            /*$("#customReport").clone()
-                .css("padding-top", "50px")
-                .find(".remove-on-print")
-                .remove()
-                .end()
-                .printThis({
-                    importStyle: true,
-                    importCSS: true,
-                    formValues: false
-                });*/
-        });
-    }
-
-    function calculateAggregatedResultOfCustomReport(response) {
-        var totalNew = 0,
-            totalInherited = -1,
-            sendToOtherOffices = 0,
-            totalResolved = 0,
-            totalRunning = 0,
-            timeExpired = 0;
-        var totalNewAppeal = 0,
-            totalInheritedAppeal = -1,
-            totalResolvedAppeal = 0,
-            totalRunningAppeal = 0,
-            timeExpiredAppeal = 0,
-            hasAppealReportFlag = false;
-        response.forEach(function (item, index) {
-            var monthlyGrievanceReport = item.monthlyGrievanceReport;
-            var monthlyAppealReport = item.monthlyAppealReport;
-            if (monthlyGrievanceReport) {
-                if (totalInherited == -1) {
-                    totalInherited = monthlyGrievanceReport["inheritedFromLastMonthCount"];
-                }
-                totalNew += (monthlyGrievanceReport["onlineSubmissionCount"]
-                    + monthlyGrievanceReport["conventionalMethodSubmissionCount"]
-                    + monthlyGrievanceReport["selfMotivatedAccusationCount"]);
-                sendToOtherOffices += monthlyGrievanceReport["sentToOtherCount"];
-                totalResolved += monthlyGrievanceReport["resolvedCount"];
-                totalRunning = monthlyGrievanceReport["runningCount"];
-                timeExpired = monthlyGrievanceReport["timeExpiredCount"];
-            }
-            if (monthlyAppealReport) {
-                if (totalInheritedAppeal == -1) {
-                    totalInheritedAppeal = monthlyAppealReport["inheritedFromLastMonthCount"];
-                }
-                totalNewAppeal += (monthlyAppealReport["onlineSubmissionCount"]
-                    + monthlyAppealReport["conventionalMethodSubmissionCount"]
-                    + monthlyAppealReport["selfMotivatedAccusationCount"]);
-                totalResolvedAppeal += monthlyAppealReport["resolvedCount"];
-                totalRunningAppeal = monthlyAppealReport["runningCount"];
-                timeExpiredAppeal = monthlyAppealReport["timeExpiredCount"];
-                hasAppealReportFlag = true;
-            }
-        });
-        var aggregatedRow = "<tr class='text-center bold' style='background: #00ffff;'>" +
-            "<td>সর্বমোট</td>" +
-            "<td colspan='3'>" + ("" + totalNew).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + totalInherited).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + (totalNew + totalInherited)).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + sendToOtherOffices).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + totalResolved).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + totalRunning).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + timeExpired).toBanglaNumber() + "</td>" +
-            "<td>" + ("" + ((totalResolved + sendToOtherOffices) * 100 / (totalNew + totalInherited)).toFixed(2)).toBanglaNumber() + "</td>" +
-            "</tr>";
-        $("#grievanceCustomReportTable tbody").append(aggregatedRow);
-        if (hasAppealReportFlag) {
-            var aggregatedAppealRow = "<tr class='text-center bold' style='background: #00ffff;'>" +
-                "<td>সর্বমোট</td>" +
-                "<td>" + ("" + totalNewAppeal).toBanglaNumber() + "</td>" +
-                "<td>" + ("" + totalInheritedAppeal).toBanglaNumber() + "</td>" +
-                "<td>" + ("" + (totalNewAppeal + totalInheritedAppeal)).toBanglaNumber() + "</td>" +
-                "<td>" + ("" + totalResolvedAppeal).toBanglaNumber() + "</td>" +
-                "<td>" + ("" + totalRunningAppeal).toBanglaNumber() + "</td>" +
-                "<td>" + ("" + timeExpiredAppeal).toBanglaNumber() + "</td>" +
-                "<td>" + ("" + (totalResolvedAppeal * 100 / (totalNewAppeal + totalInheritedAppeal)).toFixed(2)).toBanglaNumber() + "</td>" +
-                "</tr>";
-            $("#appealCustomReportTable tbody").append(aggregatedAppealRow);
-        }
-    }
-
-    function loadCustomReportData(officeId, layerLevel, dateFrom, dateTo) {
-
-        var url = "/api/layer-level/" + layerLevel + "/offices/" + officeId + "/reports/from/" + dateFrom.getFullYear() + "/" + (dateFrom.getMonth() + 1) + "/to/" + dateTo.getFullYear() + "/" + (dateTo.getMonth() + 1);
-        blockUI();
-        $.getJSON(url, function (response) {
-            var grievanceReportBody = "<tr class='text-center'><td></td><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td><td>(ঞ)</td></tr>";
-            var appealReportBody = "<tr class='text-center'><td></td><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td></tr>";
-            var hasAppealReportFlag = false;
-            response.forEach(function (item, index) {
-                var monthlyGrievanceReport = item.monthlyGrievanceReport;
-                var monthlyAppealReport = item.monthlyAppealReport;
-                if (monthlyGrievanceReport) {
-                    grievanceReportBody += "<tr class='text-center'>" +
-                        "<td>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["selfMotivatedAccusationCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + (isNaN(monthlyGrievanceReport["rate"]) ? "" : monthlyGrievanceReport["rate"].toFixed(2))).toBanglaNumber() + "</td>" +
-                        "</tr>";
-                } else {
-                    grievanceReportBody += "<tr class='text-center'>" +
-                        "<td colspan='1'>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td colspan='10'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
-                        "</tr>";
-                }
-                if (monthlyAppealReport) {
-                    appealReportBody += "<tr class='text-center'>" +
-                        "<td>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + (isNaN(monthlyAppealReport["rate"]) ? "" : monthlyAppealReport["rate"].toFixed(2))).toBanglaNumber() + "</td>" +
-                        "</tr>";
-                    hasAppealReportFlag = true;
-                } else {
-                    appealReportBody += "<tr class='text-center'>" +
-                        "<td colspan='1'>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td colspan='7'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
-                        "</tr>";
-                }
-            });
-            $("#grievanceCustomReportTable tbody").empty().html(grievanceReportBody);
-            if (hasAppealReportFlag) {
-                $("#appealCustomReportTable tbody").empty().html(appealReportBody);
-                $("#appealCustomReportTable").closest(".panel").show();
-            } else {
-                $("#appealCustomReportTable").closest(".panel").hide();
-            }
-            calculateAggregatedResultOfCustomReport(response);
-        }).always(function () {
-            unblockUI();
-        });
-    }
-
-    function loadCustomReportDailyData(layerLevel, customLayer, officeOrigin, officeId, dateFrom, dateTo) {
-        var url = "/api/layer-level/" + layerLevel + "/officeOrigin/" + officeOrigin + "/customLayer/" + customLayer + "/offices/" + officeId +
-            "/reports/from/" + dateFrom.getFullYear() + "/" + (dateFrom.getMonth() + 1) + "/" + dateFrom.getDate()
-            + "/to/" + dateTo.getFullYear() + "/" + (dateTo.getMonth() + 1) + "/" + dateTo.getDate();
-        blockUI();
-        $.getJSON(url, function (response) {
-            var grievanceReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td><td>(জ)</td><td>(ঝ)</td><td>(ঞ)</td></tr>";
-            var appealReportBody = "<tr class='text-center'><td>(ক)</td><td>(খ)</td><td>(গ)</td><td>(ঘ)</td><td>(ঙ)</td><td>(চ)</td><td>(ছ)</td></tr>";
-            var hasAppealReportFlag = false;
-            response.forEach(function (item, index) {
-                var monthlyGrievanceReport = item.dailyGrievanceReport;
-                var monthlyAppealReport = item.dailyAppealReport;
-                if (monthlyGrievanceReport) {
-                    grievanceReportBody += "<tr class='text-center'>" +
-                        // "<td>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["conventionalMethodSubmissionCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["selfMotivatedAccusationCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["totalCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["sentToOtherCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["resolvedCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["runningCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyGrievanceReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + (isNaN(monthlyGrievanceReport["rate"]) ? "" : monthlyGrievanceReport["rate"].toFixed(2))).toBanglaNumber() + "</td>" +
-                        "</tr>";
-                } else {
-                    grievanceReportBody += "<tr class='text-center'>" +
-                        // "<td colspan='1'>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td colspan='10'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
-                        "</tr>";
-                }
-                if (monthlyAppealReport) {
-                    appealReportBody += "<tr class='text-center'>" +
-                        // "<td>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["onlineSubmissionCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["inheritedFromLastMonthCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["totalCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["resolvedCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["runningCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + monthlyAppealReport["timeExpiredCount"]).toBanglaNumber() + "</td>" +
-                        "<td>" + ("" + (isNaN(monthlyAppealReport["rate"]) ? "" : monthlyAppealReport["rate"].toFixed(2))).toBanglaNumber() + "</td>" +
-                        "</tr>";
-                    hasAppealReportFlag = true;
-                } else {
-                    appealReportBody += "<tr class='text-center'>" +
-                        // "<td colspan='1'>" + MONTH_NAME_BANGLA[item.month - 1] + "," + ("" + item.year).toBanglaNumber() + "</td>" +
-                        "<td colspan='7'>" + "কোনো তথ্য পাওয়া যায়নি" + "</td>" +
-                        "</tr>";
-                }
-            });
-            $("#grievanceCustomReportTable tbody").empty().html(grievanceReportBody);
-            if (hasAppealReportFlag) {
-                $("#appealCustomReportTable tbody").empty().html(appealReportBody);
-                $("#appealCustomReportTable").closest(".panel").show();
-            } else {
-                $("#appealCustomReportTable").closest(".panel").hide();
-            }
-            //calculateAggregatedResultOfCustomReport(response);
-        }).always(function () {
-            unblockUI();
         });
     }
 
@@ -667,7 +515,6 @@
             language: jsLangCodeForLibs,
             onSelect: function (dateText, instance) {
                 date = $.datepicker.parseDate(instance.settings.dateFormat, dateText, instance.settings);
-                // date.setDay(1);
                 $(this).datepicker("setDate", date);
             },
             beforeShowDay: function (date) {
@@ -856,12 +703,8 @@
     }
 
     function initCustomReportTabContents() {
-        // initReportDatepicker($("#customReportFrom"));
-        // initReportDatepicker($("#customReportTo"));
         initReportDatepickerDDMMYY($("#customReportFrom"));
         initReportDatepickerDDMMYY($("#customReportTo"));
-        // initReportDatepickerOnlyYear($("#graphReportYear"));
-        //bindOfficeLayersChangeActions("");
         bindOfficeLayersChangeActionsForReport("", "appendAllIfExist");
         $("#customReport").find(".form-inline").removeClass("form-inline");
         bindInputFieldChangeEvents();
