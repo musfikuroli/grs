@@ -61,26 +61,6 @@ public class GRSStatisticDTO {
             this.resolvedGrievances = monthlyReport.getResolvedCount();
             this.totalSubmittedGrievance = this.currentMonthAcceptance + this.ascertainOfLastMonth;
             Double rate = 0d;
-//            if (this.totalSubmittedGrievance > 0) {
-//                while (monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount() > this.totalSubmittedGrievance) {
-//                    monthlyReport.setTotalCount(monthlyReport.getTotalCount()+1);
-//                    monthlyReport.setOnlineSubmissionCount(1+ (monthlyReport.getOnlineSubmissionCount() != null ? monthlyReport.getOnlineSubmissionCount() : 0));
-//                    this.totalSubmittedGrievance +=1;
-//                    this.currentMonthAcceptance +=1;
-//                }
-//            }
-//
-//            if (this.totalSubmittedGrievance < monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount() + monthlyReport.getRunningCount() + monthlyReport.getTimeExpiredCount()) {
-//                this.runningGrievances -=1;
-//            }
-//            if (this.runningGrievances <0) {
-//                this.runningGrievances = 0;
-//            }
-//            if (this.forwardedGrievances + this.resolvedGrievances + this.runningGrievances < this.totalSubmittedGrievance)
-//            while (this.forwardedGrievances + this.resolvedGrievances + this.runningGrievances != this.totalSubmittedGrievance) {
-//                this.runningGrievances += 1;
-//            }
-
             if (this.totalSubmittedGrievance >0) {
                 Long totalDecided = monthlyReport.getResolvedCount() + monthlyReport.getSentToOtherCount();
                 rate = ((double) totalDecided / (double) this.totalSubmittedGrievance) * 100;
@@ -109,7 +89,7 @@ public class GRSStatisticDTO {
                 appealRate = ((double) monthlyReport.getAppealResolvedCount() / ((double) monthlyReport.getAppealTotalCount())) * 100;
                 appealRate = (double) Math.round(appealRate * 100) / 100;
             }
-            this.runningGrievances = this.currentMonthAcceptance + this.ascertainOfLastMonth - this.resolvedGrievances - this.forwardedGrievances;
+            //this.runningGrievances = this.currentMonthAcceptance + this.ascertainOfLastMonth - this.resolvedGrievances - this.forwardedGrievances;
             this.appealResolveRate = appealRate.floatValue();
         }
     }

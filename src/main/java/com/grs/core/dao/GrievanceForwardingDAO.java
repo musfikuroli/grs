@@ -815,6 +815,9 @@ public class GrievanceForwardingDAO {
         historyEO.setGrievanceType(grievanceEO.getGrievanceType().name());
         historyEO.setSelfMotivated(grievanceEO.getIsSelfMotivatedGrievance() != null && grievanceEO.getIsSelfMotivatedGrievance() ? 1L : 0L);
         historyEO.setCreatedAt(new Date());
+        if (currentStatus.contains("CLOSED")) {
+            historyEO.setClosedAt(new Date());
+        }
         return historyEO;
     }
 }
