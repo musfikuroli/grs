@@ -151,8 +151,8 @@ public class DashboardDataDAO {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, monthDiff.intValue());
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
-        return dashboardDataRepo.countRunningGrievancesByOfficeIdV2(officeId, monthDiff, days);
+        //Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
+        return dashboardDataRepo.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
     }
 
     public Long countDeclinedGrievancesByOfficeId(Long officeId, Long monthDiff) {

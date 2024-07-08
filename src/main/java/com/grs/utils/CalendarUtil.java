@@ -92,6 +92,7 @@ public class CalendarUtil {
             body.add("year", "" + year);
             ObjectFromAPIService objectFromAPIService = new ObjectFromAPIService();
             Object listOfDays = objectFromAPIService.getObject(baseUrl, Object.class, body);
+
             Object allYearMap = ((LinkedHashMap) listOfDays).get("Calender");
 
             for (Date date = start.getTime(); start.before(end); start.add(Calendar.DATE, 1), date = start.getTime()) {

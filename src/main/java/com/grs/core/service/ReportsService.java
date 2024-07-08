@@ -166,20 +166,20 @@ public class ReportsService {
         Long totalSubmitted = dashboardService.countTotalComplaintsByOfficeIdV2(officeId, monthDiff);
         Long resolvedCount = dashboardService.countResolvedComplaintsByOfficeIdV2(officeId, monthDiff);
         Long timeExpiredCount = dashboardService.countTimeExpiredComplaintsByOfficeIdV3(officeId, monthDiff);
-        Long runningGrievanceCount = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
+        //Long runningGrievanceCount = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
         Long sentToOtherOfficeCount = dashboardService.countForwardedGrievancesByOfficeIdV2(officeId, monthDiff);
         Long onlineSubmission = dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(officeId, MediumOfSubmission.ONLINE, monthDiff);
-        while (resolvedCount + sentToOtherOfficeCount >totalSubmitted) {
-            onlineSubmission += 1;
-            totalSubmitted +=1;
-        }
+//        while (resolvedCount + sentToOtherOfficeCount >totalSubmitted) {
+//            onlineSubmission += 1;
+//            totalSubmitted +=1;
+//        }
         Double rate = 0d;
         Long totalDecided = resolvedCount + sentToOtherOfficeCount;
         if (totalSubmitted > 0) {
             rate = (double) totalDecided / (double)totalSubmitted * 100;
             rate = (double) Math.round(rate * 100) / 100;
         }
-        Long inherited = dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
+        Long inherited = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff-1);//dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
         return MonthlyReportDTO.builder()
                 .officeId(officeId)
                 .onlineSubmissionCount(onlineSubmission)
@@ -189,7 +189,7 @@ public class ReportsService {
                 .totalCount(totalSubmitted)
                 .sentToOtherCount(sentToOtherOfficeCount)
                 .resolvedCount(resolvedCount)
-                .runningCount(runningGrievanceCount)
+                .runningCount(0L)
                 .timeExpiredCount(timeExpiredCount)
                 .rate(rate)
                 .build();

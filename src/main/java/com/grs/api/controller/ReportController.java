@@ -116,7 +116,7 @@ public class ReportController {
     @RequestMapping(value = "/api/layer-level/{layerLevel}/officeOrigin/{officeOrigin}/customLayer/{customLayer}/offices/{officeId}/reports/from/{fromYear}/{fromMonth}/{fromDay}/to/{toYear}/{toMonth}/{toDay}", method = RequestMethod.GET)
     public List<GrievanceAndAppealDailyReportDTO> getCustomReport(Authentication authentication,
                                                                   @PathVariable("layerLevel") Long layerLevel,
-                                                                  @PathVariable("officeOrigin") Long officeOrigin,
+                                                                  @PathVariable("officeOrigin") String officeOrigin,
                                                                   @PathVariable("customLayer") Long customLayer,
                                                                   @PathVariable("officeId") Long officeId,
                                                                   @PathVariable("fromYear") Integer fromYear,
@@ -129,7 +129,11 @@ public class ReportController {
         log.info("View Page Request : /api/layer-level/{}/officeOrigin/{}/customLayer/{}" +
                         "/offices/{}/reports/from/{}/{}/{}/to/{}/{}/{}",
                 layerLevel, officeOrigin, customLayer, officeId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
-        return reportsService.getCustomReportDaily(layerLevel, officeOrigin, customLayer, officeId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
+        Long org = null;
+        if (!officeOrigin.equalsIgnoreCase("null")) {
+            org = Utility.getLongValue(officeOrigin);
+        }
+        return reportsService.getCustomReportDaily(layerLevel, org, customLayer, officeId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
     }
 
     @RequestMapping(value = "/api/ministry/{officeId}/reports/from/{fromYear}/{fromMonth}/to/{toYear}/{toMonth}", method = RequestMethod.GET)
