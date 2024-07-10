@@ -885,30 +885,35 @@ public class GrievanceService {
         try {
             grievance = this.grievanceDAO.addGrievance(userInformation, grievanceRequestDTO);
         } catch (Exception ex) {
-            if (ex.getMessage() != null && ex.getMessage().contains("Incorrect")) {
-                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
-                returnObject.put("status", String.valueOf(600));
-                returnObject.put("error", ex.getMessage().substring(0, ex.getMessage().indexOf( " at ")));
-                returnObject.put("success", "false");
-                returnObject.put("message", "ভুল ফরমেট");
-                return  returnObject;
-            } else {
-                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
-                returnObject.put("status", String.valueOf(600));
-                returnObject.put("error", "Internal service error. Contact with admin");
-                returnObject.put("success", "false");
-                returnObject.put("message", "Internal service error. Contact with admin");
-                return  returnObject;
-            }
+            ex.printStackTrace();
+            throw new RuntimeException("Complain insertion error. Please contact with admin!");
+//            if (ex.getMessage() != null && ex.getMessage().contains("Incorrect")) {
+//                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
+//                returnObject.put("status", String.valueOf(600));
+//                returnObject.put("error", ex.getMessage().substring(0, ex.getMessage().indexOf( " at ")));
+//                returnObject.put("success", "false");
+//                returnObject.put("message", "ভুল ফরমেট");
+//                return  returnObject;
+//            } else {
+//                returnObject.put("timestamp", String.valueOf(new Date().getTime()));
+//                returnObject.put("status", String.valueOf(600));
+//                returnObject.put("error", "Internal service error. Contact with admin");
+//                returnObject.put("success", "false");
+//                returnObject.put("message", "Internal service error. Contact with admin");
+//                return  returnObject;
+//            }
         }
-
+        log.info("===Going to Insert Attachment for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
         if (grievanceRequestDTO.getFiles() != null && grievanceRequestDTO.getFiles().size() > 0) {
             try {
                 this.attachedFileService.addAttachedFiles(grievance, grievanceRequestDTO);
             } catch (Throwable e) {
+                e.printStackTrace();
                 throw new RuntimeException("Attachment error. Contact with admin!");
             }
         }
+        log.info("===Insert Attachment Done for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
+        log.info("===Going to add movement and history for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
         try {
             GrievanceForwarding grievanceForwarding = this.addNewHistory(grievance, userInformation);
             if (grievanceForwarding == null) {
@@ -918,9 +923,7 @@ public class GrievanceService {
             e.printStackTrace();
             throw new RuntimeException("Movement could not be inserted");
         }
-
-        //grievanceForwarding.setOfficeLayers(grievance.getOfficeLayers());
-
+        log.info("===Done for movement and history for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
         returnObject.put("trackingNumber", grievance.getTrackingNumber());
         returnObject.put("mappedOfficeId", grievance.getOfficeId());
 
@@ -928,6 +931,7 @@ public class GrievanceService {
         String body = "আপনার অভিযোগটি গৃহীত হয়েছে। ট্র্যাকিং নম্বর " + grievanceRequestDTO.getServiceTrackingNumber();
         Long complainantId = grievance.getComplainantId();
 
+        log.info("===Going to add Email and SMS for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
         if (userInformation != null && userInformation.getUserType().equals(UserType.COMPLAINANT) && complainantId > 0L) {
             Complainant complainant = this.complainantService.findOne(complainantId);
             if (complainant.getEmail() != null) {
@@ -935,7 +939,10 @@ public class GrievanceService {
             }
             shortMessageService.sendSMS(complainant.getPhoneNumber(), body);
         }
+        log.info("===Email and SMS Done for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
+        log.info("===Going to Send GRO Notification for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
         sendNotificationTOGRO(grievance);
+        log.info("===GRO Notification Done for Tracking:{} Grievance Id:{}", grievance.getTrackingNumber(), grievance.getId());
         return returnObject;
     }
 

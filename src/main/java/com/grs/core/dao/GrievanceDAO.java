@@ -13,6 +13,7 @@ import com.grs.core.domain.grs.*;
 import com.grs.core.domain.projapoti.Office;
 import com.grs.core.model.ListViewType;
 import com.grs.core.repo.grs.BaseEntityManager;
+import com.grs.core.repo.grs.ComplainHistoryRepository;
 import com.grs.core.repo.grs.GrievanceForwardingRepo;
 import com.grs.core.repo.grs.GrievanceRepo;
 import com.grs.core.service.ComplainantService;
@@ -57,6 +58,9 @@ public class GrievanceDAO {
     private ComplainantService complainantService;
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private ComplainHistoryRepository complainHistoryRepository;
 
     private SimpleDateFormat simpleDateFormat;
 

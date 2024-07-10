@@ -4,11 +4,9 @@ import com.google.gson.Gson;
 import com.grs.api.exception.DuplicateEmailException;
 import com.grs.api.exception_handler.ApiErrorEnum;
 import com.grs.api.model.request.ComplainantDTO;
-import com.grs.api.model.request.GrievanceWithoutLoginRequestDTO;
 import com.grs.api.myGov.*;
 import com.grs.api.sso.SSOPropertyReader;
 import com.grs.core.repo.grs.TempGrievanceRepository;
-import com.grs.utils.BanglaConverter;
 import com.grs.utils.Constant;
 import com.grs.utils.DisableSSLCertificateCheckUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +22,6 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.WeakHashMap;
-
-//import com.grs.utils.DisableSSLCertificateCheckUtil;
 
 /**
  * Created by Acer on 03-Jan-18.

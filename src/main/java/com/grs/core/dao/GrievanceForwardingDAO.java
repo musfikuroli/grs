@@ -9,6 +9,7 @@ import com.grs.core.domain.RoleType;
 import com.grs.core.domain.grs.*;
 import com.grs.core.model.ListViewType;
 import com.grs.core.repo.grs.BaseEntityManager;
+import com.grs.core.repo.grs.ComplainHistoryRepository;
 import com.grs.core.repo.grs.GrievanceForwardingRepo;
 import com.grs.core.service.ComplainantService;
 import com.grs.utils.*;
@@ -41,6 +42,9 @@ public class GrievanceForwardingDAO {
 
     @Autowired
     private BaseEntityManager baseEntityManager;
+
+    @Autowired
+    private ComplainHistoryRepository complainHistoryRepository;
 
     public GrievanceForwarding save(GrievanceForwarding grievanceForwarding) {
         return this.grievanceForwardingRepo.save(grievanceForwarding);
@@ -175,7 +179,7 @@ public class GrievanceForwardingDAO {
                 .build();
         grievanceForwarding =  this.grievanceForwardingRepo.save(grievanceForwarding);
         boolean historyStatus = this.saveHistory(grievanceForwarding);
-        log.info("====History status:{}", historyStatus);
+        log.info("====History status:{} For Grievance Id:{} Tracking:{}", historyStatus, grievance.getId(), grievance.getTrackingNumber());
         return grievanceForwarding;
     }
     public GrievanceForwardingDTO convertToGrievanceForwardingDTO(GrievanceForwarding grievanceForwarding) {
@@ -653,6 +657,7 @@ public class GrievanceForwardingDAO {
     }
 
     public boolean saveHistory(GrievanceForwarding movement) {
+        log.info("===Writing history for Tacking:{} Grievance:{} Status:{} and Action:{}", movement.getGrievance().getTrackingNumber(), movement.getGrievance().getId(), movement.getGrievance().getGrievanceCurrentStatus(), movement.getAction());
         if (!Utility.isInList(movement.getAction(),
                 "NEW",
                 "FORWARD_TO_ANOTHER_OFFICE",
@@ -704,7 +709,7 @@ public class GrievanceForwardingDAO {
             ComplainHistory historyEO = getHistory(movement.getGrievance(), status, movement.getToOfficeId());
             try {
                 if (historyEO != null) {
-                    baseEntityManager.save(historyEO);
+                    this.complainHistoryRepository.save(historyEO);
                 }
             } catch (Throwable t) {
                 log.error("===ERROR:{}", t.getMessage());
@@ -726,7 +731,7 @@ public class GrievanceForwardingDAO {
                 ComplainHistory historyEO = getHistory(movement.getGrievance(), "CELL_APPEAL", movement.getToOfficeId());
                 try {
                     if (historyEO != null) {
-                        baseEntityManager.save(historyEO);
+                        this.complainHistoryRepository.save(historyEO);
                     }
                 } catch (Throwable t) {
                     log.error("===ERROR:{}", t.getMessage());
@@ -735,7 +740,7 @@ public class GrievanceForwardingDAO {
                 ComplainHistory historyEO = getHistory(movement.getGrievance(), "APPEAL", movement.getToOfficeId());
                 try {
                     if (historyEO != null) {
-                        baseEntityManager.save(historyEO);
+                        this.complainHistoryRepository.save(historyEO);
                     }
                 } catch (Throwable t) {
                     log.error("===ERROR:{}", t.getMessage());
@@ -748,7 +753,7 @@ public class GrievanceForwardingDAO {
             ComplainHistory historyEO = getHistory(movement.getGrievance(), movement.getAction(), movement.getToOfficeId());
             try {
                 if (historyEO != null) {
-                    baseEntityManager.save(historyEO);
+                    this.complainHistoryRepository.save(historyEO);
                 }
             } catch (Throwable t) {
                 log.error("==ERROR:{}", t.getMessage());
