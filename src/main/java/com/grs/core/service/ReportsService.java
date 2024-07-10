@@ -170,13 +170,20 @@ public class ReportsService {
         Long sentToOtherOfficeCount = dashboardService.countForwardedGrievancesByOfficeIdV2(officeId, monthDiff);
         Long onlineSubmission = dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(officeId, MediumOfSubmission.ONLINE, monthDiff);
 
+        Long inherited = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff-1);//dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
+        if (totalSubmitted == null ) {
+            totalSubmitted = 0L;
+        }
+        if (inherited != null && inherited >0) {
+            totalSubmitted +=inherited;
+        }
         Double rate = 0d;
         Long totalDecided = resolvedCount + sentToOtherOfficeCount;
         if (totalSubmitted > 0) {
             rate = (double) totalDecided / (double)totalSubmitted * 100;
             rate = (double) Math.round(rate * 100) / 100;
         }
-        Long inherited = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff-1);//dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
+
         return MonthlyReportDTO.builder()
                 .officeId(officeId)
                 .onlineSubmissionCount(onlineSubmission)
