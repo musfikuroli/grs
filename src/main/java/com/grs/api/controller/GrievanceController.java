@@ -9,6 +9,7 @@ import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
+import com.grs.core.config.CaptchaSettings;
 import com.grs.core.domain.ServicePair;
 import com.grs.core.domain.ServiceType;
 import com.grs.core.domain.grs.Grievance;
@@ -66,7 +67,10 @@ public class GrievanceController {
     private com.grs.core.service.SpProgrammeService spProgrammeService;
 
     @Autowired
-    SpProgrammeDAO spProgrammeDAO;
+    private SpProgrammeDAO spProgrammeDAO;
+
+    @Autowired
+    private CaptchaSettings captchaSettings;
 
 
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET)
@@ -424,6 +428,7 @@ public class GrievanceController {
         model.addAttribute("sn", sn);
         model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
         model.addAttribute("complaintType", ServiceType.NAGORIK.name());
+        model.addAttribute("captchaSettings", captchaSettings);
 
         List<Long> blackLiterOffice = new ArrayList<>();
 
