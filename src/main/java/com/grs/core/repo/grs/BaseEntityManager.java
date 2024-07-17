@@ -245,85 +245,26 @@ public class BaseEntityManager {
     //TODO:: Date wise report
     public Long[] getDailyReport(Long layerLevel, Long officeOrigin, Long customLayer, Long officeId, Date fromDate, Date toDate) {
 
-//        String sql = "SELECT COUNT(DISTINCT d.id) FROM dashboard_data d " +
-//                "cross join complaint_movements cm " +
-//                "on cm.complaint_id = d.complaint_id " +
-//                "and cm.is_current = 1 " +
-//                "and cm.`action` not like '%APPEAL%' " +
-//                "and cm.current_status not like '%APPEAL%' " +
-//                "WHERE ((d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND d.complaint_status NOT LIKE '%REJECTED%' " +
-//                "AND d.complaint_status NOT LIKE 'CLOSED%' " +
-//                "AND d.complaint_status NOT LIKE '%FORWARDED%' " +
-//                "AND (d.created_at BETWEEN :fromDate " +
-//                "AND :toDate OR d.created_at <:fromDate )) " +
-//                "or (d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND (d.created_at < :toDate " +
-//                "AND (d.closed_date >= :fromDate " +
-//                "or (d.is_forwarded=true and d.updated_at >= :fromDate ))))) ";
-
-
-        String sql = "SELECT  COUNT(DISTINCT d.complaint_id )   " +
-                "FROM dashboard_data d,\n" +
-                "                               complaints com\n" +
-                "                          where d.complaint_id = com.id\n" +
-                "                            and d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                "                            and com.current_status NOT LIKE '%APPEAL%'  " +
-                "  AND (  " +
-//                "#       Running case  " +
-                "        (  " +
-                "                    d.complaint_status NOT LIKE '%REJECTED%'  " +
-                "                AND d.complaint_status NOT LIKE 'CLOSED%'  " +
-                "                AND d.complaint_status NOT LIKE '%FORWARDED%'  " +
-                "                AND d.created_at <=  :toDate   " +
-                "            )  " +
-                "        OR  " +
-//                "#         carry forwarded  " +
-                "        (  " +
-                "                (d.complaint_status LIKE '%REJECTED%'  " +
-                "                    OR d.complaint_status LIKE 'CLOSED%'  " +
-                "                    OR d.complaint_status LIKE '%FORWARDED%')  " +
-                "                AND d.created_at <  :fromDate   " +
-                "                AND d.closed_date is not null AND  " +
-                "                d.closed_date >=  :fromDate   " +
-                "            )  " +
-                "        OR  " +
-                "        (  " +
-                "                (d.complaint_status LIKE '%REJECTED%'  " +
-                "                    OR d.complaint_status LIKE 'CLOSED%'  " +
-                "                    OR d.complaint_status LIKE '%FORWARDED%')  " +
-                "                AND d.created_at BETWEEN  :fromDate  AND  :toDate   " +
-                "                AND  d.closed_date BETWEEN  :fromDate  AND  :toDate   " +
-                "         )  " +
-                "         OR " +
-                "         (  " +
-                "                (d.complaint_status LIKE '%REJECTED%' " +
-                "                   OR d.complaint_status LIKE 'CLOSED%' " +
-                "                   OR d.complaint_status LIKE 'FORWARDED_OUT') " +
-                "                AND ((d.created_at BETWEEN :fromDate  AND  :toDate \n" +
-                "                AND d.closed_date is NULL) OR (d.created_at <:fromDate AND d.closed_date BETWEEN :fromDate AND :toDate))\n" +
-                "         )" +
-                "    )  ";
-
+        String sql = "select count(distinct complain_id) from complain_history where current_status ='NEW' and created_at BETWEEN :fromDate and :toDate ";
 
         String where = " ";
         Map<String, Object> params = new HashMap<>();
         if (officeId != null && officeId != 9999) {
-            where += " and d.office_id =:officeId ";
+            where += " and office_id =:officeId ";
             params.put("officeId", officeId);
         }
-        if (layerLevel != null && !layerLevel.equals(9999L)) {
-            where += " and d.layer_level=:layerLevel ";
-            params.put("layerLevel", layerLevel);
-        }
-        if (officeOrigin != null && !officeOrigin.equals(9999L)) {
-            where += " and d.office_origin=:officeOrigin ";
-            params.put("officeOrigin", officeOrigin);
-        }
-        if (customLayer != null && !customLayer.equals(9999L)) {
-            where += " and d.custom_layer=:customLayer ";
-            params.put("customLayer", customLayer);
-        }
+//        if (layerLevel != null && !layerLevel.equals(9999L)) {
+//            where += " and layer_level=:layerLevel ";
+//            params.put("layerLevel", layerLevel);
+//        }
+//        if (officeOrigin != null && !officeOrigin.equals(9999L)) {
+//            where += " and office_origin=:officeOrigin ";
+//            params.put("officeOrigin", officeOrigin);
+//        }
+//        if (customLayer != null && !customLayer.equals(9999L)) {
+//            where += " and custom_layer=:customLayer ";
+//            params.put("customLayer", customLayer);
+//        }
 
         Query query = entityManager.createNativeQuery(sql + where);
         query.setParameter("fromDate", fromDate);
@@ -353,42 +294,9 @@ public class BaseEntityManager {
             t.printStackTrace();
         }
 
-//        sql = "SELECT COUNT(DISTINCT d.complaint_id ) FROM dashboard_data AS d " +
-//                "cross join complaint_movements cm on cm.complaint_id = d.complaint_id " +
-//                "and cm.is_current = 1 " +
-//                "and cm.`action` not like '%APPEAL%' " +
-//                "and cm.current_status not like '%APPEAL%' " +
-//                "WHERE d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND (d.complaint_status LIKE '%CLOSED%' OR d.complaint_status LIKE '%REJECTED%') " +
-//                "AND (d.closed_date BETWEEN :fromDate AND :toDate ) ";
 
-
-        sql = "select COUNT(DISTINCT d.complaint_id )  " +
-                "from dashboard_data d,\n" +
-                "                               complaints com\n" +
-                "                          where d.complaint_id = com.id\n" +
-                "                            and d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                "                            and com.current_status NOT LIKE '%APPEAL%'  " +
-                "  AND (  " +
-                "        (  " +
-                "                (d.complaint_status LIKE 'CLOSED_%'  " +
-                "                    OR d.complaint_status LIKE '%REJECTED%')  " +
-                "                AND d.closed_date IS NOT NULL  " +
-                "                AND d.created_at BETWEEN :fromDate AND  :toDate   " +
-                "                AND  " +
-                "                d.closed_date BETWEEN :fromDate AND  :toDate   " +
-                "            )  " +
-                "        OR  " +
-                "        (  " +
-                "                (d.complaint_status LIKE 'CLOSED_%'  " +
-                "                    OR d.complaint_status LIKE '%REJECTED%')  " +
-                "                AND d.created_at < :fromDate  " +
-                "                AND d.closed_date IS NOT NULL  " +
-                "                AND  " +
-                "                d.closed_date BETWEEN :fromDate AND  :toDate   " +
-                "            )  " +
-                "    )  ";
-
+        sql = "select count(distinct complain_id) from complain_history where current_status ='CLOSED' " +
+                "and created_at BETWEEN :fromDate and :toDate ";
 
         query = entityManager.createNativeQuery(sql + where)
                 .setParameter("fromDate", fromDate)
@@ -402,56 +310,17 @@ public class BaseEntityManager {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-
-//        sql = "SELECT COUNT(DISTINCT d.id) FROM dashboard_data d " +
-//                "cross join complaint_movements cm " +
-//                "on cm.complaint_id = d.complaint_id " +
-//                "and cm.is_current = 1 " +
-//                "and cm.`action` not like '%APPEAL%' " +
-//                "and cm.current_status not like '%APPEAL%' " +
-//                "WHERE ((d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND d.complaint_status NOT LIKE '%REJECTED%' " +
-//                "AND d.complaint_status NOT LIKE 'CLOSED%' " +
-//                "AND d.complaint_status NOT LIKE '%FORWARDED%' " +
-//                "AND (d.created_at < :fromDate )) " +
-//                "or " +
-//                "(d.complaint_status NOT LIKE '%APPEAL%' AND (d.created_at < :fromDate AND (d.closed_date > :toDate or (d.is_forwarded=true and d.updated_at > :toDate  ) )))) ";
 //
         Long workDaysCountBefore = CalendarUtil.getWorkDaysCountBefore(fromDate, (int) Constant.GRIEVANCE_EXPIRATION_TIME);
 
-        sql = "select  COUNT(DISTINCT d.complaint_id )    " +
-                "from dashboard_data d,\n" +
-                "                               complaints com\n" +
-                "                          where d.complaint_id = com.id\n" +
-                "                            and d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                "                            and com.current_status NOT LIKE '%APPEAL%'  " +
-                "  AND (  " +
-                "        ( " +
-//                "#Still pending  " +
-                "                    d.complaint_status NOT LIKE 'CLOSED_%'  " +
-                "                AND d.complaint_status NOT LIKE '%REJECTED%'  " +
-                "                AND d.complaint_status NOT LIKE '%FORWARDED%'  " +
-                "                AND DATEDIFF(:fromDate, d.created_at) > 0  " +
-                "                AND DATEDIFF(:fromDate, d.created_at) >    " + workDaysCountBefore +
-                "            )  " +
-                "        OR  " +
-                "        ( " +
-//                "#closed by were pending at that time  " +
-                "                (  " +
-                "                            d.complaint_status LIKE 'CLOSED%'  " +
-                "                        OR d.complaint_status LIKE '%REJECTED%'  " +
-                "                        OR d.complaint_status LIKE '%FORWARDED%'  " +
-                "                    )  " +
-                "                AND DATEDIFF(:fromDate, d.created_at) > 0  " +
-                "                AND DATEDIFF(:fromDate, d.created_at) >    " + workDaysCountBefore +
-                "                AND d.closed_date IS NOT NULL  " +
-                "                AND d.closed_date >=  :toDate    " +
-                "            )  " +
-                "    ) ";
+        sql = "select count(distinct complain_id) from complain_history " +
+                "where current_status in ('NEW', 'CLOSED') and created_at <:fromDate " +
+                "and ((closed_at >:toDate or closed_at is null) and DATEDIFF(created_at, closed_at) > 0 and DATEDIFF(created_at, closed_at) >:workDaysCountBefore)";
 
         query = entityManager.createNativeQuery(sql + where)
                 .setParameter("fromDate", fromDate)
-                .setParameter("toDate", toDate);
+                .setParameter("toDate", toDate)
+                .setParameter("workDaysCountBefore", workDaysCountBefore);
 
         if (params.size() > 0) {
             params.forEach(query::setParameter);
@@ -463,56 +332,10 @@ public class BaseEntityManager {
         }
 
 
-//        sql = "SELECT COUNT(DISTINCT d.id) FROM dashboard_data d " +
-//                "cross join complaint_movements cm " +
-//                "on cm.complaint_id = d.complaint_id " +
-//                "and cm.is_current = 1 " +
-//                "and cm.`action` not like '%APPEAL%' " +
-//                "and cm.current_status not like '%APPEAL%' " +
-//                "WHERE ((d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND d.complaint_status NOT LIKE '%REJECTED%' " +
-//                "AND d.complaint_status NOT LIKE 'CLOSED%' " +
-//                "AND d.complaint_status NOT LIKE '%FORWARDED%' " +
-//                "AND (d.created_at BETWEEN :fromDate " +
-//                "AND :toDate  )) " +
-//                "or (d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND ((d.created_at BETWEEN :fromDate AND :toDate ) " +
-//                "AND (d.closed_date > :toDate or (d.is_forwarded=true and d.updated_at > :toDate )))))";
-
-
-        sql = "select  COUNT(DISTINCT d.complaint_id )    " +
-                "from dashboard_data d,\n" +
-                "                               complaints com\n" +
-                "                          where d.complaint_id = com.id\n" +
-                "                            and d.complaint_status NOT LIKE '%APPEAL%'\n" +
-                "                            and com.current_status NOT LIKE '%APPEAL%'  " +
-                "  AND (  " +
-                "        ( " +
-//                "#Still pending  " +
-                "                    d.complaint_status NOT LIKE 'CLOSED_%'  " +
-                "                AND d.complaint_status NOT LIKE '%REJECTED%'  " +
-                "                AND d.complaint_status NOT LIKE '%FORWARDED%'  " +
-                "                AND DATEDIFF( :toDate , d.created_at) > 0  " +
-                "                AND DATEDIFF( :toDate , d.created_at) <   " + workDaysCountBefore +
-                "            )  " +
-                "        OR  " +
-                "        ( " +
-//                "#closed by were pending at that time  " +
-                "                (  " +
-                "                            d.complaint_status LIKE 'CLOSED%'  " +
-                "                        OR d.complaint_status LIKE '%REJECTED%'  " +
-                "                        OR d.complaint_status LIKE '%FORWARDED%'  " +
-                "                    )  " +
-                "                AND DATEDIFF(:fromDate, d.created_at) > 0  " +
-                "                AND DATEDIFF(:fromDate, d.created_at) <   " + workDaysCountBefore +
-                "                AND d.closed_date IS NOT NULL  " +
-                "                AND  " +
-                "                d.closed_date BETWEEN :fromDate AND  :toDate    " +
-                "            )  " +
-                "    )";
+        sql = "select count(distinct complain_id) from complain_history where current_status = 'NEW' " +
+                "and (closed_at is null or closed_at >:toDate) and created_at < :toDate ";
 
         query = entityManager.createNativeQuery(sql + where)
-                .setParameter("fromDate", fromDate)
                 .setParameter("toDate", toDate);
 
         if (params.size() > 0) {
@@ -524,36 +347,9 @@ public class BaseEntityManager {
             t.printStackTrace();
         }
 
-//        sql = "SELECT COUNT(DISTINCT d.complaint_id) " +
-//                "FROM dashboard_data AS d " +
-//                "cross join complaint_movements cm  " +
-//                "on cm.complaint_id = d.complaint_id  " +
-//                "and cm.is_current = 1 " +
-//                "and cm.`action` not like '%APPEAL%' " +
-//                "and cm.current_status not like '%APPEAL%' " +
-//                "WHERE d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND d.complaint_status LIKE 'FORWARDED%' " +
-//                "AND (d.updated_at BETWEEN :fromDate AND :toDate )  "
-//        ;
 
-
-        sql = "\n" +
-                "select count(distinct d.complaint_id)\n" +
-                "from dashboard_data d\n" +
-                "where (d.complaint_status LIKE '%FORWARDED_OUT'\n" +
-                "  AND ((d.created_at BETWEEN :fromDate AND :toDate \n" +
-                "    OR (d.created_at < :fromDate \n" +
-                "            and d.closed_date BETWEEN :fromDate AND :toDate \n" +
-                "      and d.closed_date IS NOT NULL\n" +
-                "    )\n" +
-                "    OR (\n" +
-                "        d.complaint_status LIKE 'FORWARDED_IN'\n" +
-                "            AND (\n" +
-                "                (\n" +
-                "                    d.created_at < :toDate AND d.closed_date BETWEEN :fromDate and :toDate) \n" +
-                "                )\n" +
-                "        )\n" +
-                "    )))";
+        sql = "select count(distinct complain_id) from complain_history where current_status='FORWARDED_OUT' " +
+                "and created_at BETWEEN :fromDate and :toDate ";
         query = entityManager.createNativeQuery(sql + where)
                 .setParameter("fromDate", fromDate)
                 .setParameter("toDate", toDate);
@@ -568,60 +364,8 @@ public class BaseEntityManager {
         }
 
 
-//        sql = "SELECT COUNT(DISTINCT d.id) FROM dashboard_data d " +
-//                "cross join complaint_movements cm " +
-//                "on cm.complaint_id = d.complaint_id " +
-//                "and cm.is_current = 1 " +
-//                "and cm.`action` not like '%APPEAL%' " +
-//                "and cm.current_status not like '%APPEAL%' " +
-//                "WHERE d.complaint_status NOT LIKE '%APPEAL%' " +
-//                "AND d.medium_of_submission=:mediumOfSubmission " +
-//                "AND ((d.complaint_status NOT LIKE '%APPEAL%' AND d.complaint_status NOT LIKE '%REJECTED%' AND     " +
-//                "        d.complaint_status NOT LIKE 'CLOSED%' AND d.complaint_status NOT LIKE '%FORWARDED%' AND     " +
-//                "        (d.created_at BETWEEN :fromDate AND :toDate     " +
-//                "            OR d.created_at < :fromDate)     " +
-//                "           ) or     " +
-//                "       (d.complaint_status NOT LIKE '%APPEAL%' AND (     " +
-//                "               d.created_at < :toDate AND     " +
-//                "               (d.closed_date >= :fromDate or (d.is_forwarded = true and d.updated_at >= :fromDate)     " +
-//                "                   )     " +
-//                "           )     " +
-//                "           )     " +
-//                "    )";
-
-
-        sql = "  " +
-                "select   COUNT(DISTINCT d.complaint_id )   " +
-                "from dashboard_data d, complaints com where d.complaint_id=com.id " +
-                "and d.complaint_status NOT LIKE '%APPEAL%' " +
-                "and com.current_status NOT LIKE '%APPEAL%' " +
-                "AND d.medium_of_submission = :mediumOfSubmission" +
-                "  AND (  " +
-                "        (  " +
-                "                    d.complaint_status NOT LIKE '%REJECTED%'  " +
-                "                AND d.complaint_status NOT LIKE 'CLOSED%'  " +
-                "                AND d.complaint_status NOT LIKE '%FORWARDED%'  " +
-                "                AND d.created_at BETWEEN  :fromDate  AND  :toDate   " +
-                "            )  " +
-                "        OR  " +
-                "        (  " +
-                "                (  " +
-                "                            d.complaint_status LIKE '%REJECTED%'  " +
-                "                        OR d.complaint_status LIKE 'CLOSED%' OR  " +
-                "                            d.complaint_status LIKE '%FORWARDED%')  " +
-                "                AND d.created_at BETWEEN  :fromDate  AND  :toDate   " +
-                "                AND  d.closed_date BETWEEN  :fromDate  AND  :toDate   " +
-                "            )  " +
-                "         OR " +
-                "         (" +
-                "               (" +
-                "                   d.complaint_status LIKE '%REJECTED%' " +
-                "                   OR d.complaint_status LIKE 'CLOSED%' " +
-                "                   OR d.complaint_status LIKE 'FORWARDED_OUT')\n" +
-                "                   AND d.created_at BETWEEN :fromDate  AND  :toDate \n" +
-                "                   AND d.closed_date is NULL\n" +
-                "         )" +
-                "    ) ";
+        sql = "select count(distinct complain_id) from complain_history where current_status ='NEW' " +
+                "and created_at BETWEEN :fromDate and :toDate and medium_of_submission=:mediumOfSubmission ";
 
 
         params.put("mediumOfSubmission", "ONLINE");
@@ -671,46 +415,13 @@ public class BaseEntityManager {
         }
         params.remove("mediumOfSubmission");
 
-//        sql = "SELECT COUNT(DISTINCT d.complaint_id )    " +
-//                "FROM dashboard_data d    " +
-//                "         cross join complaint_movements cm    " +
-//                "                    on cm.complaint_id = d.complaint_id    " +
-//                "                        and cm.is_current = 1    " +
-//                "                        and cm.`action` not like '%APPEAL%'    " +
-//                "                        and cm.current_status not like '%APPEAL%'    " +
-//                "WHERE d.complaint_status NOT LIKE '%APPEAL%'    " +
-//                "  AND d.complaint_status NOT LIKE '%REJECTED%'    " +
-//                "  AND d.complaint_status NOT LIKE 'CLOSED%'    " +
-//                "  AND d.complaint_status NOT LIKE '%FORWARDED%'    " +
-//                "  AND d.created_at <= :fromDate ";
 
-
-        sql = "select COUNT(DISTINCT d.complaint_id )   " +
-                "from dashboard_data d, complaints com " +
-                "where d.complaint_id=com.id " +
-                "and d.complaint_status NOT LIKE '%APPEAL%' " +
-                "and com.current_status NOT LIKE '%APPEAL%'  " +
-                "  AND (  " +
-                "        (  " +
-                "                    d.complaint_status NOT LIKE '%REJECTED%'  " +
-                "                AND d.complaint_status NOT LIKE 'CLOSED%'  " +
-                "                AND d.complaint_status NOT LIKE '%FORWARDED%'  " +
-                "                AND d.created_at <  :fromDate   " +
-                "            )  " +
-                "        OR  " +
-                "        (  " +
-                "                (d.complaint_status LIKE '%REJECTED%'  " +
-                "                    OR d.complaint_status LIKE 'CLOSED%'  " +
-                "                    OR d.complaint_status LIKE '%FORWARDED%')  " +
-                "                AND d.created_at <  :fromDate   " +
-                "                AND d.closed_date is not null and  " +
-                "                d.closed_date >=  :fromDate   " +
-                "            )  " +
-                "    ) ";
+        sql = "select count(distinct complain_id) from complain_history where current_status = 'NEW' " +
+                "and (closed_at is null or closed_at > :fromDate) and created_at < :fromDate ";
 
 
         query = entityManager.createNativeQuery(sql + where)
-                .setParameter("fromDate", (fromDate));
+                .setParameter("fromDate", fromDate);
 
         if (params.size() > 0) {
             params.forEach(query::setParameter);
@@ -855,10 +566,8 @@ public class BaseEntityManager {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        while (resolvedCount + sentToOtherOfficeCount > totalSubmitted) {
-            totalSubmitted +=1;
-            onlineSubmissionCount +=1;
-        }
+
+        totalSubmitted += inheritedFromLastMonthCount;
         return new Long[]{totalSubmitted, resolvedCount, timeExpiredCount,
                 runningGrievanceCount, sentToOtherOfficeCount,
                 onlineSubmissionCount, conventionalMethodSubmissionCount,

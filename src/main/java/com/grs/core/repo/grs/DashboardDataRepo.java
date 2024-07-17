@@ -46,7 +46,10 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
     */
 
-    @Query(value = "select count(distinct id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH), '%Y-%m-01 00:00:00') and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH)), '%Y-%m-%d 23:59:59')  and medium_of_submission=?2 and office_id=?1", nativeQuery = true)
+    @Query(value = "select count(distinct id) from complain_history where current_status in ('NEW', 'FORWARDED_IN') " +
+            "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH), '%Y-%m-01 00:00:00') " +
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH)), '%Y-%m-%d 23:59:59')  " +
+            "and medium_of_submission=?2 and office_id=?1", nativeQuery = true)
 
 
     Long countComplaintsByOfficeAndMediumOfSubmission(Long officeId, String mediumOfSubmission, Long monthDiff);
