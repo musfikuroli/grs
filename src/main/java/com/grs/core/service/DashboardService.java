@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -306,11 +305,11 @@ public class DashboardService {
     }
 
     private List<Long> getOfficeIdsByOfficeOrigin(Integer layerLevel, Long officeOrigin, Long officeId, boolean grsEnabled, List<Long> officeIds) {
-        if (officeOrigin.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
+        if (officeOrigin.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
             List<OfficeOrigin> officeOrigins = officeService.getOfficeOriginsByLayerLevel(layerLevel, grsEnabled, false);
             List<Office> officesByOfficeOriginIds = officeService.findByOfficeOriginIds(officeOrigins.stream().map(e -> e.getId()).collect(Collectors.toList()), grsEnabled, false);
             officeIds = officesByOfficeOriginIds.stream().map(e -> e.getId()).collect(Collectors.toList());
-        } else if (officeId.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
+        } else if (officeId.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
             List<Office> officesByOfficeOriginIds = officeService.findByOfficeOriginIds(Arrays.asList(officeOrigin), grsEnabled, false);
             officeIds = officesByOfficeOriginIds.stream().map(e -> e.getId()).collect(Collectors.toList());
         } else {
@@ -320,7 +319,7 @@ public class DashboardService {
     }
 
     private List<Long> getOfficeIdsByOfficeLayerLevel(Integer layerLevel, Long officeId, boolean grsEnabled, List<Long> officeIds) {
-        if (officeId.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
+        if (officeId.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
             List<Office> officesByLayerLevel = officeService.getOfficesByLayerLevel(layerLevel, grsEnabled, false);
             officeIds = officesByLayerLevel.stream().map(e -> e.getId()).collect(Collectors.toList());
         } else {

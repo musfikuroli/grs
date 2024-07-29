@@ -315,8 +315,8 @@ public class DashboardController {
         if (layerLevel >= 0 && layerLevel <= 2) {
             officeOrigin = null;
         } else {
-            if (officeOrigin.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
-                officeId = CacheUtil.SELLECT_ALL_OPTION_VALUE;
+            if (officeOrigin.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
+                officeId = CacheUtil.SELECT_ALL_OPTION_VALUE;
             }
         }
 
@@ -350,8 +350,8 @@ public class DashboardController {
         if (layerLevel >= 0 && layerLevel <= 2) {
             officeOrigin = null;
         } else {
-            if (officeOrigin.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
-                officeId = CacheUtil.SELLECT_ALL_OPTION_VALUE;
+            if (officeOrigin.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
+                officeId = CacheUtil.SELECT_ALL_OPTION_VALUE;
             }
         }
         return dashboardService.getTotalResolvedGrievancesByMonthOfCurrentYear(layerLevel, officeOrigin, officeId, year, month, grsEnabled);
@@ -393,8 +393,8 @@ public class DashboardController {
         if (layerLevel >= 0 && layerLevel <= 2) {
             officeOrigin = null;
         } else {
-            if (officeOrigin.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
-                officeId = CacheUtil.SELLECT_ALL_OPTION_VALUE;
+            if (officeOrigin.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
+                officeId = CacheUtil.SELECT_ALL_OPTION_VALUE;
             }
         }
 
@@ -428,8 +428,8 @@ public class DashboardController {
         if (layerLevel >= 0 && layerLevel <= 2) {
             officeOrigin = null;
         } else {
-            if (officeOrigin.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
-                officeId = CacheUtil.SELLECT_ALL_OPTION_VALUE;
+            if (officeOrigin.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
+                officeId = CacheUtil.SELECT_ALL_OPTION_VALUE;
             }
         }
         return dashboardService.getTotalResolvedAppealByMonthOfCurrentYear(layerLevel, officeOrigin, officeId, year, month, grsEnabled);

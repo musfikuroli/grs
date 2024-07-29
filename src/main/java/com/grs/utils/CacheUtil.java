@@ -2,7 +2,6 @@ package com.grs.utils;
 
 import com.grs.api.model.response.officeSelection.OfficeSearchDTO;
 
-import javax.validation.constraints.Null;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,7 @@ public class CacheUtil {
     private static List<OfficeSearchDTO> allOfficeSearchDTOList = new ArrayList();
     private static List<Date> yearlyHolidayMapping = new ArrayList<>();
     private static Long trackingNumber = 0L;
-    public static final Long SELLECT_ALL_OPTION_VALUE = 9999L;
+    public static final Long SELECT_ALL_OPTION_VALUE = 9999L;
 
     public static Long getOfficeOrder(Long officeId) {
 

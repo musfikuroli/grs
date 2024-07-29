@@ -1579,50 +1579,24 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "  AND d.office_id = ?1 and com.office_id= ?1", nativeQuery = true)
         */
 
-    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW') " +
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status='NEW' " +
             "and created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
-            "and closed_at is null and DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), created_at) > ?3 " +
+            "and closed_at is null and (DATEDIFF(closed_at, created_at) >0 and DATEDIFF(closed_at, created_at) > ?3 )" +
             "and office_id =?1 ", nativeQuery = true)
 
     Long countTimeExpiredGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long numberOfDays);
 
-    /*
-    @Query(value = "select count(distinct d.complaint_id)\n" +
-            "from dashboard_data d, complaints com\n" +
-            "where d.complaint_id=com.id and d.complaint_status NOT LIKE '%APPEAL%' and com.current_status NOT LIKE '%APPEAL%' " +
-            "  AND (\n" +
-            "        (\n" +
-            "                d.complaint_status NOT LIKE 'CLOSED_%'\n" +
-            "                AND d.complaint_status NOT LIKE '%REJECTED%'\n" +
-            "                AND d.complaint_status NOT LIKE '%FORWARDED%'\n" +
-            "                AND DATEDIFF(DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59'), d.created_at) > 0\n" +
-            "                AND DATEDIFF(DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59'), d.created_at) < ?3\n" +
-            "            )\n" +
-            "        OR\n" +
-            "        ( \n" +
-            "                (\n" +
-            "                        d.complaint_status LIKE 'CLOSED%'\n" +
-            "                        OR d.complaint_status LIKE '%REJECTED%'\n" +
-            "                        OR d.complaint_status LIKE '%FORWARDED%'\n" +
-            "                    )\n" +
-            "                AND DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), d.created_at) > 0\n" +
-            "                AND DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), d.created_at) < ?3\n" +
-            "                AND d.closed_date IS NOT NULL\n" +
-            "                AND\n" +
-            "                d.closed_date BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') AND DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')\n" +
-            "            )\n" +
-            "    )\n" +
-            "\n" +
-            "  AND d.office_id = ?1", nativeQuery = true)
-
-    */
-
     @Query(value = "select count(distinct complain_id) from complain_history where current_status = 'NEW' " +
-            "and (closed_at is null or closed_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')) " +
-            "and office_id = ?1 and created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')", nativeQuery = true)
+            "and (" +
+            "(closed_at is null or closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and office_id =?1 and created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') " +
+            ") " +
+            "or " +
+            "(created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') and closed_at between DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id =?1 and datediff(closed_at,created_at) >1 and datediff(closed_at,created_at) >=?3)) and office_id =?1", nativeQuery = true)
 
 
-    Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
+    Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long days);
 
     /*
     @Query(value = "select count(distinct d.complaint_id)\n" +

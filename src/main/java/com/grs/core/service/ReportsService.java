@@ -5,7 +5,6 @@ import com.grs.api.model.SafetyNetSummaryResponse;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.response.grievance.GrievanceComplainantInfoDTO;
 import com.grs.api.model.response.reports.*;
-import com.grs.core.dao.DailyReportDAO;
 import com.grs.core.dao.MonthlyReportDAO;
 import com.grs.core.dao.ReportsDAO;
 import com.grs.core.domain.MediumOfSubmission;
@@ -234,33 +233,19 @@ public class ReportsService {
         int monthDiff = reportMonth - currentMonth;
         OfficesGRO officesGRO = this.officesGroService.findOfficesGroByOfficeId(officeId);
         String officeName = officesGRO == null ? "" : officesGRO.getOfficeNameBangla();
-        Boolean hasAppealReport = layerLevel < Constant.districtLayerLevel && officeService.hasChildOffice(officeId);
-        if (1==1) { //monthDiff == 0  //TODO:: OLD condition to ignore now
-            MonthlyReportDTO appealReportDTO = null;
-            if (hasAppealReport) {
-                appealReportDTO = getAppealMonthlyReport(officeId, (long) monthDiff);
-            }
-            grievanceAndAppealMonthlyReportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
-                    .officeId(officeId)
-                    .year(year)
-                    .month(month)
-                    .monthlyGrievanceReport(getGrievanceMonthlyReportForGenerate(officeId, (long) monthDiff)) //getGrievanceMonthlyReport TODO:: OLD METHOD
-                    .monthlyAppealReport(appealReportDTO)
-                    .officeName(officeName)
-                    .build();
-        } else {
-            MonthlyReport report = monthlyReportDAO.findByOfficeIdAndYearAndMonth(officeId, year, month);
-            if (report != null) {
-                grievanceAndAppealMonthlyReportDTO = monthlyReportDAO.convertToGrievanceAndAppealMonthlyReportDTO(report, hasAppealReport);
-            } else {
-                grievanceAndAppealMonthlyReportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
-                        .officeId(officeId)
-                        .officeName(officeName)
-                        .year(year)
-                        .month(month)
-                        .build();
-            }
+        boolean hasAppealReport = layerLevel < Constant.districtLayerLevel && officeService.hasChildOffice(officeId);
+        MonthlyReportDTO appealReportDTO = null;
+        if (hasAppealReport) {
+            appealReportDTO = getAppealMonthlyReport(officeId, (long) monthDiff);
         }
+        grievanceAndAppealMonthlyReportDTO = GrievanceAndAppealMonthlyReportDTO.builder()
+                .officeId(officeId)
+                .year(year)
+                .month(month)
+                .monthlyGrievanceReport(getGrievanceMonthlyReportForGenerate(officeId, (long) monthDiff))
+                .monthlyAppealReport(appealReportDTO)
+                .officeName(officeName)
+                .build();
         return grievanceAndAppealMonthlyReportDTO;
     }
     public List<GrievanceAndAppealMonthlyReportDTO> getChildOfficesLastMonthReport(Long officeId) {
@@ -402,7 +387,7 @@ public class ReportsService {
         int from = 12 * fromYear + fromMonth;
         int to = 12 * toYear + toMonth;
         for (; from <= to; from++) {
-            if (officeId.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
+            if (officeId.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
                 List<Office> childOffices = this.officeService.getOfficesByLayerLevel(new Long(layerLevel).intValue(), true);
                 if (childOffices != null && childOffices.size() > 0) {
                     for (Office office : childOffices) {
@@ -422,7 +407,7 @@ public class ReportsService {
             }
         }
 
-        if (officeId.equals(CacheUtil.SELLECT_ALL_OPTION_VALUE)) {
+        if (officeId.equals(CacheUtil.SELECT_ALL_OPTION_VALUE)) {
 
             Map<String, List<GrievanceAndAppealMonthlyReportDTO>> peopleBySomeKey = reportList.stream().collect(Collectors.groupingBy(this::getGroupingByKey, Collectors.mapping((GrievanceAndAppealMonthlyReportDTO p) -> p, toList())));
 
@@ -843,11 +828,12 @@ public class ReportsService {
         if (Utility.isUserAnOisfUser(authentication)) {
             OfficeInformation currentUserOfficeInformation = this.officeService.getCurrentLoggedInUserInformation();
 
-            if (currentUserOfficeInformation.getOfficeId() != 28)
+            if (currentUserOfficeInformation.getOfficeId() != 28) {
                 childOffices = childOffices
                         .stream()
                         .filter(office -> Objects.equals(currentUserOfficeInformation.getOfficeId(), office.getId()))
                         .collect(toList());
+            }
 
 
         }
@@ -855,8 +841,6 @@ public class ReportsService {
 
         List<GrievanceAndAppealMonthlyReportDTO> reportDTOS = getMultipleOfficesMergedReport(childOffices, fromYear, fromMonth, toYear, toMonth);
         if (level.equals(1)) {
-
-
             return reportDTOS.stream()
                     .filter(e -> CacheUtil.getOfficeOrder(e.getOfficeId()) != null)
                     .map(r -> {
