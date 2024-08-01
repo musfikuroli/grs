@@ -1579,24 +1579,18 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "  AND d.office_id = ?1 and com.office_id= ?1", nativeQuery = true)
         */
 
-    @Query(value = "select count(distinct complain_id) from complain_history where current_status='NEW' " +
+    @Query(value = "select count(distinct complain_id) from complain_history where current_status in ('NEW') " +
             "and created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
-            "and closed_at is null and (DATEDIFF(closed_at, created_at) >0 and DATEDIFF(closed_at, created_at) > ?3 )" +
+            "and closed_at is null and DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), created_at) > ?3 " +
             "and office_id =?1 ", nativeQuery = true)
 
     Long countTimeExpiredGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long numberOfDays);
 
     @Query(value = "select count(distinct complain_id) from complain_history where current_status = 'NEW' " +
-            "and (" +
-            "(closed_at is null or closed_at > DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
-            "and office_id =?1 and created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') " +
-            ") " +
-            "or " +
-            "(created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') and closed_at between DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
-            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id =?1 and datediff(closed_at,created_at) >1 and datediff(closed_at,created_at) >=?3)) and office_id =?1", nativeQuery = true)
+            "and (closed_at is null or closed_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')) " +
+            "and office_id = ?1 and created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')", nativeQuery = true)
 
-
-    Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long days);
+    Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
 
     /*
     @Query(value = "select count(distinct d.complaint_id)\n" +

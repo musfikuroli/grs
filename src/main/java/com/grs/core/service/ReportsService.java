@@ -285,7 +285,7 @@ public class ReportsService {
 
     // second minute hour day-of-month month day-of-week
     //@Scheduled(cron = "0 5 6 1 */1 *")
-    @Scheduled(initialDelay = 60*1000, fixedDelay = 24*60*60*1000L)
+    //@Scheduled(initialDelay = 60*1000, fixedDelay = 24*60*60*1000L)
     public void generateReportsAtEndOfMonth() {
         List<OfficesGRO> grsIncorporatedOffices = officesGroService.getCurrentlyGrsEnabledOffices();
         log.info("Monthly report generation started at " + (new Date()).toString());
@@ -325,13 +325,13 @@ public class ReportsService {
                 log.error(e.getMessage());
             }
         });
-        if (reportGeneratedForOffices.size() > 0) {
-            emailService.sendEmail(email, "GRS monthly reports", "Report of last month has been generated for \n\n" + String.join("\n", reportGeneratedForOffices));
-            shortMessageService.sendSMS(phoneNumber, "GRS monthly reports generated for " + reportGeneratedForOffices.size() + " Offices (Please check email for details)");
-        } else {
-            emailService.sendEmail(email, "GRS monthly reports", "Cannot generate monthly report");
-            shortMessageService.sendSMS(phoneNumber, "Cannot generate monthly report");
-        }
+//        if (reportGeneratedForOffices.size() > 0) {
+//            emailService.sendEmail(email, "GRS monthly reports", "Report of last month has been generated for \n\n" + String.join("\n", reportGeneratedForOffices));
+//            shortMessageService.sendSMS(phoneNumber, "GRS monthly reports generated for " + reportGeneratedForOffices.size() + " Offices (Please check email for details)");
+//        } else {
+//            emailService.sendEmail(email, "GRS monthly reports", "Cannot generate monthly report");
+//            shortMessageService.sendSMS(phoneNumber, "Cannot generate monthly report");
+//        }
         log.info("Monthly report generation finished at " + (new Date()).toString());
     }
 
