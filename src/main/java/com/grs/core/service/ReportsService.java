@@ -853,7 +853,10 @@ public class ReportsService {
 
 
         } else {
-
+            for (int i=0;i<reportDTOS.size();i++) {
+                reportDTOS.get(i).setSl(new Long(i+1));
+                reportDTOS.get(i).getMonthlyGrievanceReport().setSl(new Long(i+1));
+            }
             return reportDTOS.stream()
                     .collect(Collectors.toList());
         }

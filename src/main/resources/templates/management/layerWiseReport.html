@@ -423,7 +423,6 @@
                 toastr.error("মাস ও বছরের সীমা নির্বাচন সঠিক নয়", null, {positionClass: 'toast-top-center'});
             } else {
                 var url = "/api/layerWiseWithChildOffices/" + level + "/reports/from/" + dateFrom.getFullYear() + "/" + (dateFrom.getMonth() + 1) + "/to/" + dateTo.getFullYear() + "/" + (dateTo.getMonth() + 1);
-//                loadlayerWiseReportData(level, dateFrom, dateTo);
                 loadAdditionalReportData(url, "grievanceLayerWiseReportTable", "appealLayerWiseReportTable");
             }
             return;
