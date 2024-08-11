@@ -121,6 +121,10 @@
         <div th:replace="dashboard2/customReport :: customReport"></div>
     </div>
 
+    <div class="tab-container" id="tabDCOfficeWiseReport_body">
+        <div th:replace="dashboard2/dcOfficeWiseReport :: dcOfficeWiseReport"></div>
+    </div>
+
 <!--    <div class="tab-container" id="tabSafetyNetDashboard_body">-->
 <!--        <div th:replace="dashboard2/safetyNetDashboard :: safetyNetDashboard"></div>-->
 <!--    </div>-->
@@ -147,6 +151,8 @@
     <th:block th:replace="dashboard2/locationBasedReport :: locationBasedReportScript"></th:block>
     <th:block th:replace="dashboard2/safetyNetDashboard :: safetyNetDashboardScript"></th:block>
     <th:block th:replace="dashboard2/upazilaWiseSafetynetGrievanceReport :: upazilaWiseSafetynetGrievanceReportScript"></th:block>
+    <th:block th:replace="dashboard2/dcOfficeWiseReport :: dcOfficeWiseReportScript"></th:block>
+
 </div>
 
 <script type="text/javascript" th:fragment="hooDashboardScript">
@@ -154,6 +160,8 @@
     initReportDatepickerOnlyYear($("#customReportMonthYear1"));
     initReportDatepicker($("#customReportMonthYear2"));
     initReportDatepicker($("#customReportMonthYear4"));
+    initReportDatepickerDDMMYY($("#dcOfficeReportFrom"));
+    initReportDatepickerDDMMYY($("#dcOfficeReportTo"));
 
     function changeCurrentMonthYear(val) {
         let dateFrom = $("#customReportMonthYear").datepicker("getDate");
@@ -1564,6 +1572,10 @@
         $("body").on("tabSafetyNetDashboard-opened", function () {
             loadSafetyNetDashboard();
         });
+
+        $("body").on("tabDCOfficeWiseReport-opened", function () {
+            loadAppealedComplaints(1);
+        });
     }
 
     function initLeftMenu() {
@@ -1709,6 +1721,7 @@
         initLeftMenu();
         initMonthlyReportTabContents();
         initCustomReportTabContents();
+        initDCOfficeReportTabContents();
         initSafetyNetDashboard();
         initGrievanceRegisterTable();
         initAppealRegisterTable();
