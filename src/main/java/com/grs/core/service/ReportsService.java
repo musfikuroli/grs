@@ -595,9 +595,58 @@ public class ReportsService {
 
     }
 
+
     private String getGroupingByKey(GrievanceAndAppealMonthlyReportDTO p) {
         return p.getYear() + "_" + p.getMonth();
     }
+
+
+    public List<GrievanceAndAppealMonthlyReportDTO> getDcOfficeWiseReport(Long officeId, Integer fromYear, Integer fromMonth, Integer toYear, Integer toMonth) {
+        if (officeId.equals(9999L)) { // Assuming 9999 is the ID for "সকল অফিস"
+            List<Office> offices = this.officeService.findByOfficeOriginId(16L, true, false); // Assuming the method is called without an officeOriginId for all offices
+            List<GrievanceAndAppealMonthlyReportDTO> reportDTOS = getMultipleOfficesMergedReport(offices, fromYear, fromMonth, toYear, toMonth);
+
+            // Sort the list based on the rate of monthlyGrievanceReport in descending order
+            Collections.sort(reportDTOS, Comparator.comparingDouble(dto -> {
+                MonthlyReportDTO monthlyGrievanceReport = ((GrievanceAndAppealMonthlyReportDTO) dto).getMonthlyGrievanceReport();
+                return monthlyGrievanceReport != null ? monthlyGrievanceReport.getRate() : 0.0;
+            }).reversed());
+
+            // Set the serial number (sl) after sorting
+            long serialNumber = 1;
+            for (GrievanceAndAppealMonthlyReportDTO dto : reportDTOS) {
+                dto.setSl(serialNumber);
+                if (dto.getMonthlyGrievanceReport() != null) {
+                    dto.getMonthlyGrievanceReport().setSl(serialNumber);
+                }
+                if (dto.getMonthlyAppealReport() != null) {
+                    dto.getMonthlyAppealReport().setSl(serialNumber);
+                }
+                serialNumber++;
+            }
+
+            return reportDTOS;
+        } else {
+            // Fetch report for a single office
+            List<GrievanceAndAppealMonthlyReportDTO> reportDTOS =getCustomReport(5, officeId, fromYear, fromMonth, toYear, toMonth);
+
+            // Set the serial number (sl) after sorting
+            long serialNumber = 1;
+            for (GrievanceAndAppealMonthlyReportDTO dto : reportDTOS) {
+                dto.setSl(serialNumber);
+                if (dto.getMonthlyGrievanceReport() != null) {
+                    dto.getMonthlyGrievanceReport().setSl(serialNumber);
+                }
+                if (dto.getMonthlyAppealReport() != null) {
+                    dto.getMonthlyAppealReport().setSl(serialNumber);
+                }
+                serialNumber++;
+            }
+
+            return reportDTOS;
+        }
+    }
+
 
     public List<GrievanceAndAppealMonthlyReportDTO> getMultipleOfficesMergedReport(List<Office> childOffices, Integer fromYear, Integer fromMonth, Integer toYear, Integer toMonth) {
         List<GrievanceAndAppealMonthlyReportDTO> grievanceAndAppealMonthlyReportDTOS = new ArrayList<>();

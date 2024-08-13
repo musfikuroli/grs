@@ -217,6 +217,26 @@ public class ReportController {
         }
     }
 
+
+    @RequestMapping (value = "/api/dcOfficeWise/office/{officeId}/reports/from/{fromYear}/{fromMonth}/to/{toYear}/{toMonth}", method = RequestMethod.GET)
+    public List<GrievanceAndAppealMonthlyReportDTO> getDcOfficeWiseReport(
+            Authentication authentication,
+            @PathVariable("officeId") Long officeId,
+            @PathVariable("fromYear") Integer fromYear,
+            @PathVariable("fromMonth") Integer fromMonth,
+            @PathVariable("toYear") Integer toYear,
+            @PathVariable("toMonth") Integer toMonth
+    ) {
+        if(authentication != null){
+            return reportsService.getDcOfficeWiseReport(officeId, fromYear, fromMonth, toYear, toMonth);
+        }
+        else {
+            return null;
+        }
+
+    }
+
+
     @RequestMapping(value = "/api/report/regenerate/{year}/{month}", method = RequestMethod.GET)
     public void regenerateRepoort(Authentication authentication, @PathVariable("year") String year, @PathVariable("month") String month) {
         log.info("View Page Request : /api/report/regenerate/{}/{}", year, month);

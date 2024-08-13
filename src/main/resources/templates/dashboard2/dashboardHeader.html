@@ -70,16 +70,16 @@
                         <span class="app-menu__label">স্তরভিত্তিক </span>
                     </a>
                 </li>
-                <li>
-                    <a href="javascript:;" class="app-menu__item" id="tabLocationBasedReport">
-                        <i class="app-menu__icon fa fa-angle-right"></i>
-                        <span class="app-menu__label">ভৌগোলিক অবস্থান ভিত্তিক</span>
-                    </a>
-                </li>
                 <li th:if="${isCentralDashboardRecipient || isMinistryLevelGro}">
                     <a href="javascript:;" class="app-menu__item" id="tabDCOfficeWiseReport">
                         <i class="app-menu__icon fa fa-angle-right"></i>
                         <span class="app-menu__label">জেলা প্রশাসকের কার্যালয় ভিত্তিক</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" class="app-menu__item" id="tabLocationBasedReport">
+                        <i class="app-menu__icon fa fa-angle-right"></i>
+                        <span class="app-menu__label">ভৌগোলিক অবস্থান ভিত্তিক</span>
                     </a>
                 </li>
                 <li th:if="${isCentralDashboardRecipient || isMinistryLevelGro}">
