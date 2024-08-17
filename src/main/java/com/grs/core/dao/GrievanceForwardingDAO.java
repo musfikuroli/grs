@@ -670,15 +670,14 @@ public class GrievanceForwardingDAO {
                 "APPEAL_CLOSED_ACCUSATION_INCORRECT",
                 "APPEAL_CLOSED_ACCUSATION_PROVED",
                 "APPEAL_CLOSED_OTHERS",
-                "CELL_NEW"
+                "CELL_NEW",
+                "RETAKE"
         )) {
             log.info("===Current Action:{} Need no log:{}", movement.getAction(), movement.getGrievance().getTrackingNumber());
             return false;
         }
 
-        if (Utility.isInList(movement.getAction(),
-                "FORWARD_TO_ANOTHER_OFFICE",
-                "REJECTED",
+        if (Utility.isInList(movement.getAction(),"REJECTED",
                 "CLOSED_ACCUSATION_INCORRECT",
                 "CLOSED_ACCUSATION_PROVED",
                 "CLOSED_ANSWER_OK",
@@ -695,17 +694,16 @@ public class GrievanceForwardingDAO {
 
             baseEntityManager.updateByQuery(sql, params);
 
-            String status = "NEW";
+            String status;
 
-            if (!movement.getAction().equalsIgnoreCase("FORWARD_TO_ANOTHER_OFFICE")) {
-                if (Utility.isInList(movement.getAction(),"APPEAL_CLOSED_ACCUSATION_INCORRECT",
-                        "APPEAL_CLOSED_ACCUSATION_PROVED",
-                        "APPEAL_CLOSED_OTHERS")) {
-                    status = "APPEAL_CLOSED";
-                } else {
-                    status = "CLOSED";
-                }
+            if (Utility.isInList(movement.getAction(),"APPEAL_CLOSED_ACCUSATION_INCORRECT",
+                    "APPEAL_CLOSED_ACCUSATION_PROVED",
+                    "APPEAL_CLOSED_OTHERS")) {
+                status = "APPEAL_CLOSED";
+            } else {
+                status = "CLOSED";
             }
+
             ComplainHistory historyEO = getHistory(movement.getGrievance(), status, movement.getToOfficeId());
             try {
                 if (historyEO != null) {
@@ -714,6 +712,39 @@ public class GrievanceForwardingDAO {
             } catch (Throwable t) {
                 log.error("===ERROR:{}", t.getMessage());
             }
+        }
+
+        if (movement.getAction().equalsIgnoreCase("FORWARD_TO_ANOTHER_OFFICE")) {
+            String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and current_status=:current_status and closed_at is null ";
+            Map<String, Object> params = new HashMap<>();
+            params.put("closedAt", new Date());
+            params.put("complain_id", movement.getGrievance().getId());
+            params.put("current_status", "NEW");
+
+            baseEntityManager.updateByQuery(sql, params);
+
+            ComplainHistory historyEO = prepareHistory(movement.getGrievance(), "FORWARDED_OUT", movement.getFromOfficeId());
+            historyEO.setClosedAt(movement.getUpdatedAt());
+            this.complainHistoryRepository.save(historyEO);
+
+            ComplainHistory historyNew = prepareHistory(movement.getGrievance(), "NEW", movement.getToOfficeId());
+            this.complainHistoryRepository.save(historyNew);
+
+
+
+        }
+
+        if (movement.getAction().equalsIgnoreCase("RETAKE")) {
+            ComplainHistory historyEO = prepareHistory(movement.getGrievance(), "RETAKE", movement.getToOfficeId());
+            this.complainHistoryRepository.save(historyEO);
+
+            String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and current_status=:current_status and closed_at is null ";
+            Map<String, Object> params = new HashMap<>();
+            params.put("closedAt", new Date());
+            params.put("complain_id", movement.getGrievance().getId());
+            params.put("current_status", "NEW");
+
+            baseEntityManager.updateByQuery(sql, params);
         }
 
         if (movement.getAction().equalsIgnoreCase("APPEAL")) {
@@ -762,6 +793,52 @@ public class GrievanceForwardingDAO {
 
         return true;
 
+    }
+
+    public ComplainHistory prepareHistory(Grievance grievanceEO, String currentStatus, Long officeId) {
+        ComplainHistory historyEO = new ComplainHistory();
+        historyEO.setComplainId(grievanceEO.getId());
+        historyEO.setTrackingNumber(grievanceEO.getTrackingNumber());
+        historyEO.setCurrentStatus(currentStatus);
+        historyEO.setOfficeId(officeId);
+        Map<String, Object> params = new HashMap<>();
+        String sql = "select o.id,ol.layer_level as layer_level, ol.custom_layer_id as custom_layer, o.office_origin_id as office_origin " +
+                "from grs_doptor.offices o " +
+                "left join grs_doptor.office_layers ol on o.office_layer_id = ol.id " +
+                "where o.id =:officeId order by o.id desc ";
+        params.put("officeId", officeId);
+        try {
+            Object[] officeInfo = baseEntityManager.findSingleByQuery(sql, params);
+            if (officeInfo != null && officeInfo.length >0) {
+                if (Utility.valueExists(officeInfo, 1)) {
+                    historyEO.setLayerLevel(Utility.getLongValue(officeInfo[1]));
+                }
+                if (Utility.valueExists(officeInfo, 2)) {
+                    historyEO.setCustomLayer(Utility.getLongValue(officeInfo[2]));
+                }
+                if (Utility.valueExists(officeInfo, 3)) {
+                    historyEO.setOfficeOrigin(Utility.getLongValue(officeInfo[3]));
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        MediumOfSubmission medium = MediumOfSubmission.ONLINE;
+        if (grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW) && grievanceEO.getIsOfflineGrievance() != null && grievanceEO.getIsOfflineGrievance()) {
+            medium = MediumOfSubmission.CONVENTIONAL_METHOD;
+        } else if (grievanceEO.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW) && grievanceEO.getIsSelfMotivatedGrievance() != null && grievanceEO.getIsSelfMotivatedGrievance()) {
+            medium = MediumOfSubmission.SELF_MOTIVATED_ACCEPTANCE;
+        }
+
+        historyEO.setMediumOfSubmission(medium.name());
+        historyEO.setGrievanceType(grievanceEO.getGrievanceType().name());
+        historyEO.setSelfMotivated(grievanceEO.getIsSelfMotivatedGrievance() != null && grievanceEO.getIsSelfMotivatedGrievance() ? 1L : 0L);
+        historyEO.setCreatedAt(new Date());
+        if (currentStatus.contains("CLOSED")) {
+            historyEO.setClosedAt(new Date());
+        }
+        return historyEO;
     }
 
     public ComplainHistory getHistory(Grievance grievanceEO, String currentStatus, Long officeId) {
