@@ -72,8 +72,8 @@
                                 <select id="pagination" style="float: right">
                                     <option value="10">১০</option>
                                     <option value="20">২০</option>
-                                    <option value="30">৩০</option>
-                                    <option value="50" selected>৫০</option>
+                                    <option value="30" selected>৩০</option>
+                                    <option value="50">৫০</option>
                                     <option value="100">১০০</option>
                                 </select>
                                 <span id="view-per-page" style="color: #16376f"></span>
@@ -927,7 +927,7 @@
         alertTitle = "",
         alertBody = "";
 
-    var searchSize = 50;
+    var searchSize = 30;
     var searchPageNo = 0;
 
     var currentView = "inbox";
@@ -1483,7 +1483,7 @@
     function loadComplaintsList(page) {
         var sessionString = sessionStorage.getItem("currentPageNoSession");
         if (sessionString === null) {
-            sessionStorage.setItem("currentPageNoSession", 1 + ";" + 50);
+            sessionStorage.setItem("currentPageNoSession", 1 + ";" + 30);
             sessionString = sessionStorage.getItem("currentPageNoSession");
         }
         // console.log(`SessionString: ${sessionString}`);
