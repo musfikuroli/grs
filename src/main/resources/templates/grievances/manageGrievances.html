@@ -1,60 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <div th:fragment="manageGrievancesIncludeStyle" th:remove="tag">
     <link href="assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet"
+          type="text/css" />
+    <link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet"
+          type="text/css" />
 </div>
 
 <div th:class="${!isMobileLogin ? 'page-content' : ''}" th:fragment="manageGrievances">
     <div class="portlet light portlet-fit full-height-content full-height-content-scrollable bordered">
-        <input type="hidden" name="isMobileLogin" th:value="${isMobileLogin}">
+        <input type="hidden" name="isMobileLogin" th:value="${isMobileLogin}" />
         <div th:if="${!isMobileLogin}" class="portlet-title">
             <div class="caption">
-                <i class="icon-bubbles "></i>
+                <i class="icon-bubbles"></i>
                 <span class="modulename caption-subject bold uppercase" th:text="#{manage.x(#{grievance})}"></span>
                 <span class="caption-helper">&nbsp;</span>
             </div>
             <div class="topnav">
                 <button type="submit" style="
-                    float: right;
-                    padding: 6px;
-                    margin-top: 8px;
-                    width: 2%;
-                    font-size: 16px;
-                " id="searchButton"><i class="fa fa-search"></i></button>
+              float: right;
+              padding: 6px;
+              margin-top: 8px;
+              width: 2%;
+              font-size: 16px;
+            " id="searchButton"><i class="fa fa-search"></i>
+                </button>
                 <input type="text" placeholder="খুঁজুন.." style="
-                    float: right;
-                    padding: 6px;
-                    margin-top: 8px;
-                    font-size: 17px;
-                    width: 30%;
-                    border: 1px solid #ccc;
-                " id="listSearch">
+              float: right;
+              padding: 6px;
+              margin-top: 8px;
+              font-size: 17px;
+              width: 30%;
+              border: 1px solid #ccc;
+            " id="listSearch" />
             </div>
         </div>
         <div th:class="${!isMobileLogin ? 'portlet-body' : ''}">
             <div class="tabbable-line">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs" style="display: flex">
                     <li th:if="${isMobileLogin}"><a href="javascript:;"></a></li>
                     <li class="active">
-                        <a href="#inbox" id="navInbox" data-toggle="tab"><i class="icon-arrow-down"></i><span class="tabname tabname-hide-on-mobile"> আগত <span id="inbox_unseen_count" style="color: #6f042c;">(0)</span></span></a>
+                        <a href="#inbox" id="navInbox" data-toggle="tab"><i class="icon-arrow-down"></i>
+                            <span class="tabname tabname-hide-on-mobile">আগত<span id="inbox_unseen_count" style="color: #6f042c">(0)</span></span></a>
                     </li>
                     <li>
-                        <a href="#sent" id="navSent" data-toggle="tab"><i class="icon-arrow-right"></i><span class="tabname tabname-hide-on-mobile"> প্রেরিত </span></a>
+                        <a href="#sent" id="navSent" data-toggle="tab"><i class="icon-arrow-right" style="margin-right: 3px"></i><span
+                                class="tabname tabname-hide-on-mobile">প্রেরিত</span></a>
                     </li>
                     <li>
-                        <a href="#closed" id="navClosed" data-toggle="tab"><i class="icon-check"></i><span class="tabname tabname-hide-on-mobile"> নিষ্পত্তিকৃত</span></a>
+                        <a href="#closed" id="navClosed" data-toggle="tab"><i class="icon-check" style="margin-right: 3px"></i><span
+                                class="tabname tabname-hide-on-mobile">নিষ্পত্তিকৃত</span></a>
                     </li>
                     <li>
-                        <a href="#forwarded" id="navforwarded" data-toggle="tab"><i class="icon-trash"></i><span class="tabname tabname-hide-on-mobile"> অন্য দপ্তরে প্রেরিত </span></a>
+                        <a href="#forwarded" id="navforwarded" data-toggle="tab"><i class="icon-trash" style="margin-right: 3px"></i><span
+                                class="tabname tabname-hide-on-mobile">অন্য দপ্তরে প্রেরিত</span></a>
                     </li>
                     <li th:if="${isGro || isHoo}">
-                        <a href="#expired" id="navExpired" data-toggle="tab"><i class="icon-speedometer"></i><span class="tabname tabname-hide-on-mobile"> সময় অতিক্রান্ত <span id="time_expired_count" style="color: #6f042c;">(0)</span></span></a>
+                        <a href="#expired" id="navExpired" data-toggle="tab"><i class="icon-speedometer" style="margin-right: 3px"></i><span
+                                class="tabname tabname-hide-on-mobile">সময় অতিক্রান্ত<span id="time_expired_count" style="color: #6f042c">(0)</span></span></a>
                     </li>
                     <li>
-                        <a href="#cc" id="navCC" data-toggle="tab"><i class="icon-docs"></i><span class="tabname tabname-hide-on-mobile"> অনুলিপি <span id="cc_unseen_count" style="color: #6f042c;">(0)</span></span></a>
+                        <a href="#cc" id="navCC" data-toggle="tab"><i class="icon-docs" style="margin-right: 3px"></i><span
+                                class="tabname tabname-hide-on-mobile">অনুলিপি<span id="cc_unseen_count" style="color: #6f042c">(0)</span></span></a>
+                    </li>
+
+                    <li style="margin-left: auto;">
+                        <a style="display: flex; align-items: center;">
+                            <i class="icon-docs" style="margin-right: 3px"></i>
+                            <span class="tabname tabname-hide-on-mobile" style="display: flex; align-items: center; margin-right: 5px">প্রতি পৃষ্ঠায় দেখুন </span>
+                                <select id="pagination" style="float: right">
+                                    <option value="10">১০</option>
+                                    <option value="20">২০</option>
+                                    <option value="30" selected>৩০</option>
+                                    <option value="50">৫০</option>
+                                    <option value="100">১০০</option>
+                                </select>
+                                <span id="view-per-page" style="color: #16376f"></span>
+                        </a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -63,21 +86,27 @@
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped table-bordered" id="tblListViewInbox">
                                     <thead>
-                                        <tr role="row" class="filter hide">
+                                    <tr role="row" class="filter hide">
                                         <td>
-                                            <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                            <input type="text" class="form-control form-filter input-sm"
+                                                   name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" />
                                         </td>
                                         <td>
-                                            <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                                <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                            <div class="input-group date date-picker margin-bottom-5"
+                                                 data-date-format="dd/mm/yyyy">
+                                                <input type="text" class="form-control form-filter input-sm"
+                                                       readonly name="submission_date_from"
+                                                       placeholder="শুরুর দিন প্রদান করুন " />
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-sm default" type="button">
-                                                        <i class="fa fa-calendar"></i>
-                                                    </button>
-                                                </span>
+                                                        <button class="btn btn-sm default" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
                                             </div>
                                             <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                                <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                                <input type="text" class="form-control form-filter input-sm"
+                                                       readonly name="submission_date_to "
+                                                       placeholder="শেষের দিন প্রদান করুন" />
                                                 <span class="input-group-btn">
                                                         <button class="btn btn-sm default" type="button">
                                                             <i class="fa fa-calendar"></i>
@@ -94,90 +123,116 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                            <input type="text" class="form-control form-filter input-sm"
+                                                   name="service_name" placeholder="সেবার নাম লিখুন " />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                            <input type="text" class="form-control form-filter input-sm"
+                                                   name="office_unit_organogram_id" placeholder="পদবি লিখুন " />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                            <input type="text" class="form-control form-filter input-sm"
+                                                   name="subject" placeholder="বিষয় লিখুন " />
                                         </td>
                                         <td>
                                             <select name="current_status" class="form-control form-filter input-sm">
                                                 <option value="">নির্বাচন করুন</option>
                                                 <option value="NEW">নতুন</option>
-                                                <option value="FORWARDED_OUT">অন্য দপ্তর থেকে আগত</option>
-                                                <option value="FORWARDED_IN">আওতাধীন দপ্তর থেকে আগত</option>
+                                                <option value="FORWARDED_OUT">
+                                                    অন্য দপ্তর থেকে আগত
+                                                </option>
+                                                <option value="FORWARDED_IN">
+                                                    আওতাধীন দপ্তর থেকে আগত
+                                                </option>
                                                 <option value="ACCEPTED">গৃহীত</option>
                                                 <option value="INVESTIGATION">তদন্ত চলমান</option>
-                                                <option value="INV_NOTICE_FILE">প্রমান এর জন্য নোটিশ</option>
+                                                <option value="INV_NOTICE_FILE">
+                                                    প্রমান এর জন্য নোটিশ
+                                                </option>
                                                 <option value="INV_HEARING">শুনানি</option>
-                                                <option value="INV_REPORT">তদন্ত প্রতিবেদন প্রেরিত</option>
-                                                <option value="APPEAL_STATEMENT_ASKED">আপিলকৃত</option>
+                                                <option value="INV_REPORT">
+                                                    তদন্ত প্রতিবেদন প্রেরিত
+                                                </option>
+                                                <option value="APPEAL_STATEMENT_ASKED">
+                                                    আপিলকৃত
+                                                </option>
                                             </select>
                                         </td>
                                         <td>
                                             <div class="margin-bottom-5">
-                                                <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                                <button class="btn btn-sm btn-success filter-submit margin-bottom"
+                                                        onClick="javascript:searchComplaintsList()">
                                                     <i class="fa fa-search"></i> খুঁজুন
                                                 </button>
                                             </div>
-                                            <button class="btn btn-sm btn-default filter-cancel" onClick="javascript:searchComplaintsList()">
+                                            <button class="btn btn-sm btn-default filter-cancel"
+                                                    onClick="javascript:searchComplaintsList()">
                                                 <i class="fa fa-times"></i> বাতিল
                                             </button>
                                         </td>
-
                                     </tr>
-                                        <tr role="row" class="heading">
-                                        <th> ট্র্যাকিং নম্বর</th>
-                                        <th> অভিযোগের বিষয়</th>
-                                        <th> অভিযোগের তারিখ</th>
-                                        <th> অভিযোগের ধরন</th>
-                                        <th> সংশ্লিষ্ট সেবা</th>
-                                        <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
-                                        <th> অভিযোগের অবস্থা</th>
-                                        <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
-                                            <th>অভিযোগের প্রকার</th>
-                                            <th>অভিযোগের ভূ-অবস্থান</th>
+                                    <tr role="row" class="heading">
+                                        <th>ট্র্যাকিং নম্বর</th>
+                                        <th>অভিযোগের বিষয়</th>
+                                        <th>অভিযোগের তারিখ</th>
+                                        <th>অভিযোগের ধরন</th>
+                                        <th>সংশ্লিষ্ট সেবা</th>
+                                        <th>দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                        <th>অভিযোগের অবস্থা</th>
+                                        <th>নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                        <th>অভিযোগের প্রকার</th>
+                                        <th>অভিযোগের ভূ-অবস্থান</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                                 <div class="row">
-                                <div class="col-sm-5 col-md-5">
-                                    <div class="dataTables_info" id="tblListViewInbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    <div class="col-sm-5 col-md-5">
+                                        <div class="dataTables_info" id="tblListViewInbox_info" role="status"
+                                             aria-live="polite">
+                                            ০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-7 col-sm-7">
-                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewInbox_paginate">
-                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="inbox">
-                                                <i class="fa fa-angle-left"></i>
-                                            </a>
-                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageInbox" value="০" type="text">
-                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="inbox">
-                                                <i class="fa fa-angle-right"></i>
-                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                    <div class="col-md-7 col-sm-7">
+                                        <div class="dataTables_paginate paging_bootstrap_extended"
+                                             id="tblListViewInbox_paginate">
+                                            <div class="pagination-panel pull-right">
+                                                পৃষ্ঠা
+                                                <span class="pagination-panel-total">০</span> এর
+                                                <a href="javascript:;" class="btn btn-sm default prev disabled"
+                                                   data-prev-for="inbox">
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <input
+                                                        class="pagination-panel-input form-control input-sm input-inline input-mini"
+                                                        maxlength="5" style="text-align: center; margin: 0 5px"
+                                                        id="currentPageInbox" value="০" type="text" />
+                                                <a href="javascript:;" class="btn btn-sm default next disabled"
+                                                   data-next-for="inbox">
+                                                    <i class="fa fa-angle-right"></i>
+                                                </a>
+                                                পৃষ্ঠা দেখানো হচ্ছে
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane" id="sent">
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-bordered " id="tblListViewOutbox">
+                            <table class="table table-hover table-striped table-bordered" id="tblListViewOutbox">
                                 <thead>
                                 <tr role="row" class="filter hide">
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" />
                                     </td>
                                     <td>
-                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                        <div class="input-group date date-picker margin-bottom-5"
+                                             data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন " />
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -185,12 +240,13 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_to " placeholder="শেষের দিন প্রদান করুন" />
                                             <span class="input-group-btn">
-                                                        <button class="btn btn-sm default" type="button">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </button>
-                                                    </span>
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
                                         </div>
                                     </td>
                                     <td>
@@ -202,23 +258,34 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="service_name" placeholder="সেবার নাম লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="office_unit_organogram_id" placeholder="পদবি লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm" name="subject"
+                                               placeholder="বিষয় লিখুন " />
                                     </td>
                                     <td>
                                         <select name="current_status" class="form-control form-filter input-sm">
                                             <option value="">নির্বাচন করুন</option>
                                             <option value="new">নতুন</option>
-                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="sent_for_opinion">
+                                                মতামতের জন্য প্রেরিত
+                                            </option>
                                             <option value="opinion_received">মতামতপ্রাপ্ত</option>
-                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
-                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
-                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="investigation_started">
+                                                তদন্ত কার্যক্রম গৃহীত
+                                            </option>
+                                            <option value="investigation_ongoing">
+                                                তদন্ত কার্যক্রম চলমান
+                                            </option>
+                                            <option value="investigation_report_sent">
+                                                তদন্ত প্রতিবেদন প্রেরিত
+                                            </option>
                                             <option value="appealed">আপিলকৃত</option>
                                             <option value="closed">নিষ্পত্তিকৃত</option>
                                             <option value="forwarded">অন্য দপ্তরে প্রেরিত</option>
@@ -226,65 +293,77 @@
                                     </td>
                                     <td>
                                         <div class="margin-bottom-5">
-                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom"
+                                                    onClick="javascript:searchComplaintsList()">
                                                 <i class="fa fa-search"></i> খুঁজুন
                                             </button>
                                         </div>
-                                        <button class="btn btn-sm btn-default filter-cancel" onClick="javascript:searchComplaintsList()">
+                                        <button class="btn btn-sm btn-default filter-cancel"
+                                                onClick="javascript:searchComplaintsList()">
                                             <i class="fa fa-times"></i> বাতিল
                                         </button>
                                     </td>
-
                                 </tr>
                                 <tr role="row" class="heading">
-                                    <th> ট্র্যাকিং নম্বর</th>
-                                    <th> অভিযোগের বিষয়</th>
-                                    <th> অভিযোগের তারিখ</th>
-                                    <th> অভিযোগের ধরন</th>
-                                    <th> সংশ্লিষ্ট সেবা</th>
-                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
-                                    <th> অভিযোগের অবস্থা</th>
-                                    <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                    <th>ট্র্যাকিং নম্বর</th>
+                                    <th>অভিযোগের বিষয়</th>
+                                    <th>অভিযোগের তারিখ</th>
+                                    <th>অভিযোগের ধরন</th>
+                                    <th>সংশ্লিষ্ট সেবা</th>
+                                    <th>দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th>অভিযোগের অবস্থা</th>
+                                    <th>নিষ্পত্তির সম্ভাব্য তারিখ</th>
                                     <th>অভিযোগের প্রকার</th>
                                     <th>অভিযোগের ভূ-অবস্থান</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewOutbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewOutbox_info" role="status"
+                                         aria-live="polite">
+                                        ০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewOutbox_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="outbox">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageOutbox" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="outbox">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended"
+                                         id="tblListViewOutbox_paginate">
+                                        <div class="pagination-panel pull-right">
+                                            পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled"
+                                               data-prev-for="outbox">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input
+                                                    class="pagination-panel-input form-control input-sm input-inline input-mini"
+                                                    maxlength="5" style="text-align: center; margin: 0 5px"
+                                                    id="currentPageOutbox" value="০" type="text" />
+                                            <a href="javascript:;" class="btn btn-sm default next disabled"
+                                               data-next-for="outbox">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                            পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     <div class="tab-pane" id="cc">
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-bordered " id="tblListViewCC">
+                            <table class="table table-hover table-striped table-bordered" id="tblListViewCC">
                                 <thead>
                                 <tr role="row" class="filter hide">
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" />
                                     </td>
                                     <td>
-                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                        <div class="input-group date date-picker margin-bottom-5"
+                                             data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন " />
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -292,12 +371,13 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_to " placeholder="শেষের দিন প্রদান করুন" />
                                             <span class="input-group-btn">
-                                                        <button class="btn btn-sm default" type="button">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </button>
-                                                    </span>
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
                                         </div>
                                     </td>
                                     <td>
@@ -309,23 +389,34 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="service_name" placeholder="সেবার নাম লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="office_unit_organogram_id" placeholder="পদবি লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm" name="subject"
+                                               placeholder="বিষয় লিখুন " />
                                     </td>
                                     <td>
                                         <select name="current_status" class="form-control form-filter input-sm">
                                             <option value="">নির্বাচন করুন</option>
                                             <option value="new">নতুন</option>
-                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="sent_for_opinion">
+                                                মতামতের জন্য প্রেরিত
+                                            </option>
                                             <option value="opinion_received">মতামতপ্রাপ্ত</option>
-                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
-                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
-                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="investigation_started">
+                                                তদন্ত কার্যক্রম গৃহীত
+                                            </option>
+                                            <option value="investigation_ongoing">
+                                                তদন্ত কার্যক্রম চলমান
+                                            </option>
+                                            <option value="investigation_report_sent">
+                                                তদন্ত প্রতিবেদন প্রেরিত
+                                            </option>
                                             <option value="appealed">আপিলকৃত</option>
                                             <option value="closed">নিষ্পত্তিকৃত</option>
                                             <option value="forwarded">অন্য দপ্তরে প্রেরিত</option>
@@ -333,48 +424,57 @@
                                     </td>
                                     <td>
                                         <div class="margin-bottom-5">
-                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom"
+                                                    onClick="javascript:searchComplaintsList()">
                                                 <i class="fa fa-search"></i> খুঁজুন
                                             </button>
                                         </div>
-                                        <button class="btn btn-sm btn-default filter-cancel" onClick="javascript:searchComplaintsList()">
+                                        <button class="btn btn-sm btn-default filter-cancel"
+                                                onClick="javascript:searchComplaintsList()">
                                             <i class="fa fa-times"></i> বাতিল
                                         </button>
                                     </td>
-
                                 </tr>
                                 <tr role="row" class="heading">
-                                    <th> ট্র্যাকিং নম্বর</th>
-                                    <th> অভিযোগের বিষয়</th>
-                                    <th> অভিযোগের তারিখ</th>
-                                    <th> অভিযোগের ধরন</th>
-                                    <th> সংশ্লিষ্ট সেবা</th>
-                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
-                                    <th> অভিযোগের অবস্থা</th>
-                                    <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                    <th>ট্র্যাকিং নম্বর</th>
+                                    <th>অভিযোগের বিষয়</th>
+                                    <th>অভিযোগের তারিখ</th>
+                                    <th>অভিযোগের ধরন</th>
+                                    <th>সংশ্লিষ্ট সেবা</th>
+                                    <th>দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th>অভিযোগের অবস্থা</th>
+                                    <th>নিষ্পত্তির সম্ভাব্য তারিখ</th>
                                     <th>অভিযোগের প্রকার</th>
                                     <th>অভিযোগের ভূ-অবস্থান</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                             <div class="row">
                                 <div class="col-sm-5 col-md-5">
-                                    <div class="dataTables_info" id="tblListViewCC_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    <div class="dataTables_info" id="tblListViewCC_info" role="status"
+                                         aria-live="polite">
+                                        ০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
                                     </div>
                                 </div>
                                 <div class="col-md-7 col-sm-7">
-                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewCC_paginate">
-                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="cc">
+                                    <div class="dataTables_paginate paging_bootstrap_extended"
+                                         id="tblListViewCC_paginate">
+                                        <div class="pagination-panel pull-right">
+                                            পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled"
+                                               data-prev-for="cc">
                                                 <i class="fa fa-angle-left"></i>
                                             </a>
-                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageCC" value="০" type="text">
-                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="cc">
+                                            <input
+                                                    class="pagination-panel-input form-control input-sm input-inline input-mini"
+                                                    maxlength="5" style="text-align: center; margin: 0 5px"
+                                                    id="currentPageCC" value="০" type="text" />
+                                            <a href="javascript:;" class="btn btn-sm default next disabled"
+                                               data-next-for="cc">
                                                 <i class="fa fa-angle-right"></i>
-                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                            </a>
+                                            পৃষ্ঠা দেখানো হচ্ছে
                                         </div>
                                     </div>
                                 </div>
@@ -383,15 +483,18 @@
                     </div>
                     <div class="tab-pane" id="closed">
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-bordered " id="tblListViewClosed">
+                            <table class="table table-hover table-striped table-bordered" id="tblListViewClosed">
                                 <thead>
                                 <tr role="row" class="filter hide">
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" />
                                     </td>
                                     <td>
-                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                        <div class="input-group date date-picker margin-bottom-5"
+                                             data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন " />
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -399,12 +502,13 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_to " placeholder="শেষের দিন প্রদান করুন" />
                                             <span class="input-group-btn">
-                                                        <button class="btn btn-sm default" type="button">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </button>
-                                                    </span>
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
                                         </div>
                                     </td>
                                     <td>
@@ -416,23 +520,34 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="service_name" placeholder="সেবার নাম লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="office_unit_organogram_id" placeholder="পদবি লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm" name="subject"
+                                               placeholder="বিষয় লিখুন " />
                                     </td>
                                     <td>
                                         <select name="current_status" class="form-control form-filter input-sm">
                                             <option value="">নির্বাচন করুন</option>
                                             <option value="new">নতুন</option>
-                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="sent_for_opinion">
+                                                মতামতের জন্য প্রেরিত
+                                            </option>
                                             <option value="opinion_received">মতামতপ্রাপ্ত</option>
-                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
-                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
-                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="investigation_started">
+                                                তদন্ত কার্যক্রম গৃহীত
+                                            </option>
+                                            <option value="investigation_ongoing">
+                                                তদন্ত কার্যক্রম চলমান
+                                            </option>
+                                            <option value="investigation_report_sent">
+                                                তদন্ত প্রতিবেদন প্রেরিত
+                                            </option>
                                             <option value="appealed">আপিলকৃত</option>
                                             <option value="closed">নিষ্পত্তিকৃত</option>
                                             <option value="forwarded">অন্য দপ্তরে প্রেরিত</option>
@@ -440,65 +555,77 @@
                                     </td>
                                     <td>
                                         <div class="margin-bottom-5">
-                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom"
+                                                    onClick="javascript:searchComplaintsList()">
                                                 <i class="fa fa-search"></i> খুঁজুন
                                             </button>
                                         </div>
-                                        <button class="btn btn-sm btn-default filter-cancel" onClick="javascript:searchComplaintsList()">
+                                        <button class="btn btn-sm btn-default filter-cancel"
+                                                onClick="javascript:searchComplaintsList()">
                                             <i class="fa fa-times"></i> বাতিল
                                         </button>
                                     </td>
-
                                 </tr>
                                 <tr role="row" class="heading">
-                                    <th> ট্র্যাকিং নম্বর</th>
-                                    <th> অভিযোগের বিষয়</th>
-                                    <th> অভিযোগের তারিখ</th>
-                                    <th> অভিযোগের ধরন</th>
-                                    <th> সংশ্লিষ্ট সেবা</th>
-                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
-                                    <th> অভিযোগের অবস্থা</th>
-                                    <th> নিষ্পত্তির তারিখ</th>
+                                    <th>ট্র্যাকিং নম্বর</th>
+                                    <th>অভিযোগের বিষয়</th>
+                                    <th>অভিযোগের তারিখ</th>
+                                    <th>অভিযোগের ধরন</th>
+                                    <th>সংশ্লিষ্ট সেবা</th>
+                                    <th>দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th>অভিযোগের অবস্থা</th>
+                                    <th>নিষ্পত্তির তারিখ</th>
                                     <th>অভিযোগের প্রকার</th>
                                     <th>অভিযোগের ভূ-অবস্থান</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewClosed_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewClosed_info" role="status"
+                                         aria-live="polite">
+                                        ০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewClosed_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="closed">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageClosed" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="closed">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended"
+                                         id="tblListViewClosed_paginate">
+                                        <div class="pagination-panel pull-right">
+                                            পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled"
+                                               data-prev-for="closed">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input
+                                                    class="pagination-panel-input form-control input-sm input-inline input-mini"
+                                                    maxlength="5" style="text-align: center; margin: 0 5px"
+                                                    id="currentPageClosed" value="০" type="text" />
+                                            <a href="javascript:;" class="btn btn-sm default next disabled"
+                                               data-next-for="closed">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                            পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     <div class="tab-pane" id="forwarded">
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-bordered " id="tblListViewforwarded">
+                            <table class="table table-hover table-striped table-bordered" id="tblListViewforwarded">
                                 <thead>
                                 <tr role="row" class="filter hide">
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" />
                                     </td>
                                     <td>
-                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                        <div class="input-group date date-picker margin-bottom-5"
+                                             data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন " />
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -506,12 +633,13 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_to " placeholder="শেষের দিন প্রদান করুন" />
                                             <span class="input-group-btn">
-                                                        <button class="btn btn-sm default" type="button">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </button>
-                                                    </span>
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
                                         </div>
                                     </td>
                                     <td>
@@ -523,23 +651,34 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="service_name" placeholder="সেবার নাম লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="office_unit_organogram_id" placeholder="পদবি লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm" name="subject"
+                                               placeholder="বিষয় লিখুন " />
                                     </td>
                                     <td>
                                         <select name="current_status" class="form-control form-filter input-sm">
                                             <option value="">নির্বাচন করুন</option>
                                             <option value="new">নতুন</option>
-                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="sent_for_opinion">
+                                                মতামতের জন্য প্রেরিত
+                                            </option>
                                             <option value="opinion_received">মতামতপ্রাপ্ত</option>
-                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
-                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
-                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="investigation_started">
+                                                তদন্ত কার্যক্রম গৃহীত
+                                            </option>
+                                            <option value="investigation_ongoing">
+                                                তদন্ত কার্যক্রম চলমান
+                                            </option>
+                                            <option value="investigation_report_sent">
+                                                তদন্ত প্রতিবেদন প্রেরিত
+                                            </option>
                                             <option value="appealed">আপিলকৃত</option>
                                             <option value="closed">নিষ্পত্তিকৃত</option>
                                             <option value="forwarded">অন্য দপ্তরে প্রেরিত</option>
@@ -547,65 +686,77 @@
                                     </td>
                                     <td>
                                         <div class="margin-bottom-5">
-                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom"
+                                                    onClick="javascript:searchComplaintsList()">
                                                 <i class="fa fa-search"></i> খুঁজুন
                                             </button>
                                         </div>
-                                        <button class="btn btn-sm btn-default filter-cancel" onClick="javascript:searchComplaintsList()">
+                                        <button class="btn btn-sm btn-default filter-cancel"
+                                                onClick="javascript:searchComplaintsList()">
                                             <i class="fa fa-times"></i> বাতিল
                                         </button>
                                     </td>
-
                                 </tr>
                                 <tr role="row" class="heading">
-                                    <th> ট্র্যাকিং নম্বর</th>
-                                    <th> অভিযোগের বিষয়</th>
-                                    <th> অভিযোগের তারিখ</th>
-                                    <th> অভিযোগের ধরন</th>
-                                    <th> সংশ্লিষ্ট সেবা</th>
-                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
-                                    <th> অভিযোগের অবস্থা</th>
-                                    <th> অন্য দপ্তরে প্রেরণের তারিখ</th>
+                                    <th>ট্র্যাকিং নম্বর</th>
+                                    <th>অভিযোগের বিষয়</th>
+                                    <th>অভিযোগের তারিখ</th>
+                                    <th>অভিযোগের ধরন</th>
+                                    <th>সংশ্লিষ্ট সেবা</th>
+                                    <th>দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th>অভিযোগের অবস্থা</th>
+                                    <th>অন্য দপ্তরে প্রেরণের তারিখ</th>
                                     <th>অভিযোগের প্রকার</th>
                                     <th>অভিযোগের ভূ-অবস্থান</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewforwarded_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewforwarded_info" role="status"
+                                         aria-live="polite">
+                                        ০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewforwarded_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="forwarded">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageforwarded" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="forwarded">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended"
+                                         id="tblListViewforwarded_paginate">
+                                        <div class="pagination-panel pull-right">
+                                            পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled"
+                                               data-prev-for="forwarded">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input
+                                                    class="pagination-panel-input form-control input-sm input-inline input-mini"
+                                                    maxlength="5" style="text-align: center; margin: 0 5px"
+                                                    id="currentPageforwarded" value="০" type="text" />
+                                            <a href="javascript:;" class="btn btn-sm default next disabled"
+                                               data-next-for="forwarded">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                            পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     <div class="tab-pane" th:if="${isGro || isHoo}" id="expired">
                         <div class="table-responsive">
-                            <table class="table table-hover table-striped table-bordered " id="tblListViewExpired">
+                            <table class="table table-hover table-striped table-bordered" id="tblListViewExpired">
                                 <thead>
                                 <tr role="row" class="filter hide">
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="tracking_number" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" />
                                     </td>
                                     <td>
-                                        <div class="input-group date date-picker margin-bottom-5" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন ">
+                                        <div class="input-group date date-picker margin-bottom-5"
+                                             data-date-format="dd/mm/yyyy">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_from" placeholder="শুরুর দিন প্রদান করুন " />
                                             <span class="input-group-btn">
                                                     <button class="btn btn-sm default" type="button">
                                                         <i class="fa fa-calendar"></i>
@@ -613,12 +764,13 @@
                                                 </span>
                                         </div>
                                         <div class="input-group date date-picker" data-date-format="dd/mm/yyyy">
-                                            <input type="text" class="form-control form-filter input-sm" readonly name="submission_date_to " placeholder="শেষের দিন প্রদান করুন">
+                                            <input type="text" class="form-control form-filter input-sm" readonly
+                                                   name="submission_date_to " placeholder="শেষের দিন প্রদান করুন" />
                                             <span class="input-group-btn">
-                                                        <button class="btn btn-sm default" type="button">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </button>
-                                                    </span>
+                                                    <button class="btn btn-sm default" type="button">
+                                                        <i class="fa fa-calendar"></i>
+                                                    </button>
+                                                </span>
                                         </div>
                                     </td>
                                     <td>
@@ -630,23 +782,34 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="service_name" placeholder="সেবার নাম লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="service_name" placeholder="সেবার নাম লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="office_unit_organogram_id" placeholder="পদবি লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm"
+                                               name="office_unit_organogram_id" placeholder="পদবি লিখুন " />
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control form-filter input-sm" name="subject" placeholder="বিষয় লিখুন ">
+                                        <input type="text" class="form-control form-filter input-sm" name="subject"
+                                               placeholder="বিষয় লিখুন " />
                                     </td>
                                     <td>
                                         <select name="current_status" class="form-control form-filter input-sm">
                                             <option value="">নির্বাচন করুন</option>
                                             <option value="new">নতুন</option>
-                                            <option value="sent_for_opinion">মতামতের জন্য প্রেরিত</option>
+                                            <option value="sent_for_opinion">
+                                                মতামতের জন্য প্রেরিত
+                                            </option>
                                             <option value="opinion_received">মতামতপ্রাপ্ত</option>
-                                            <option value="investigation_started">তদন্ত কার্যক্রম গৃহীত</option>
-                                            <option value="investigation_ongoing">তদন্ত কার্যক্রম চলমান</option>
-                                            <option value="investigation_report_sent">তদন্ত প্রতিবেদন প্রেরিত</option>
+                                            <option value="investigation_started">
+                                                তদন্ত কার্যক্রম গৃহীত
+                                            </option>
+                                            <option value="investigation_ongoing">
+                                                তদন্ত কার্যক্রম চলমান
+                                            </option>
+                                            <option value="investigation_report_sent">
+                                                তদন্ত প্রতিবেদন প্রেরিত
+                                            </option>
                                             <option value="appealed">আপিলকৃত</option>
                                             <option value="closed">নিষ্পত্তিকৃত</option>
                                             <option value="forwarded">অন্য দপ্তরে প্রেরিত</option>
@@ -654,51 +817,61 @@
                                     </td>
                                     <td>
                                         <div class="margin-bottom-5">
-                                            <button class="btn btn-sm btn-success filter-submit margin-bottom" onClick="javascript:searchComplaintsList()">
+                                            <button class="btn btn-sm btn-success filter-submit margin-bottom"
+                                                    onClick="javascript:searchComplaintsList()">
                                                 <i class="fa fa-search"></i> খুঁজুন
                                             </button>
                                         </div>
-                                        <button class="btn btn-sm btn-default filter-cancel" onClick="javascript:searchComplaintsList()">
+                                        <button class="btn btn-sm btn-default filter-cancel"
+                                                onClick="javascript:searchComplaintsList()">
                                             <i class="fa fa-times"></i> বাতিল
                                         </button>
                                     </td>
                                 </tr>
                                 <tr role="row" class="heading">
-                                    <th> ট্র্যাকিং নম্বর</th>
-                                    <th> অভিযোগের বিষয়</th>
-                                    <th> অভিযোগের তারিখ</th>
-                                    <th> অভিযোগের ধরন</th>
-                                    <th> সংশ্লিষ্ট সেবা</th>
-                                    <th> দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
-                                    <th> অভিযোগের অবস্থা</th>
-                                    <th> নিষ্পত্তির সম্ভাব্য তারিখ</th>
+                                    <th>ট্র্যাকিং নম্বর</th>
+                                    <th>অভিযোগের বিষয়</th>
+                                    <th>অভিযোগের তারিখ</th>
+                                    <th>অভিযোগের ধরন</th>
+                                    <th>সংশ্লিষ্ট সেবা</th>
+                                    <th>দায়িত্বপ্রাপ্ত কর্মকর্তা (পদবি)</th>
+                                    <th>অভিযোগের অবস্থা</th>
+                                    <th>নিষ্পত্তির সম্ভাব্য তারিখ</th>
                                     <th>অভিযোগের প্রকার</th>
                                     <th>অভিযোগের ভূ-অবস্থান</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewExpired_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewExpired_info" role="status"
+                                         aria-live="polite">
+                                        ০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewExpired_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="forwarded">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageExpired" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="forwarded">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended"
+                                         id="tblListViewExpired_paginate">
+                                        <div class="pagination-panel pull-right">
+                                            পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled"
+                                               data-prev-for="forwarded">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input
+                                                    class="pagination-panel-input form-control input-sm input-inline input-mini"
+                                                    maxlength="5" style="text-align: center; margin: 0 5px"
+                                                    id="currentPageExpired" value="০" type="text" />
+                                            <a href="javascript:;" class="btn btn-sm default next disabled"
+                                               data-next-for="forwarded">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a>
+                                            পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -709,8 +882,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading">
-                    <span> &nbsp;&nbsp;লোড হচ্ছে... দয়া করে অপেক্ষা করুন  </span>
+                    <img src="assets/global/img/loading-spinner-grey.gif" alt="" class="loading" />
+                    <span> &nbsp;&nbsp;লোড হচ্ছে... দয়া করে অপেক্ষা করুন </span>
                 </div>
             </div>
         </div>
@@ -720,13 +893,21 @@
 <div th:fragment="manageGrievancesIncludeScript" th:remove="tag">
     <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
     <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
-    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
-    <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js"
+            type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"
+            type="text/javascript"></script>
     <script src="assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js" type="text/javascript"></script>
 </div>
 
+
+
 <script th:fragment="manageGrievancesScript">
     $("#header_notification_bar a").addClass("active");
+
+    // var currentPageInbox =
+    //     parseInt(sessionStorage.getItem("currentPageNoSession")?.split(";")[0]) ||
+    //     1;
 
     var currentPageInbox = 1;
     var currentPageOutbox = 1;
@@ -742,25 +923,118 @@
     var maxPageExpired = 1;
     var mobileLogin = false;
 
-    var hasAlert = false, alertTitle = "", alertBody = "";
+    var hasAlert = false,
+        alertTitle = "",
+        alertBody = "";
 
-    var searchSize = 10;
+    var searchSize = 30;
+    var searchPageNo = 0;
+
     var currentView = "inbox";
 
-    $(document).ready(function() {
-        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+    // Event Listener for pagination change
+    document.getElementById("pagination").addEventListener("change", function () {
+        var selectedValue = this.value;
+        searchSize = selectedValue;
+        sessionStorage.setItem("currentPageNoSession", 1 + ";" + searchSize);
+        loadComplaintsList(currentView); // Update to pass currentView
+    });
 
+    $(document).ready(function () {
+
+        // console.log("Ready Function Called...................")
+
+        // Check if there's a saved tab in sessionStorage
+        var activeTab = sessionStorage.getItem('activeTab');
+        if (activeTab) {
+            // Activate the saved tab
+            $('.nav-tabs a[href="' + activeTab + '"]').tab('show');
+            currentView = getCurrentViewFromTab(activeTab);  // Set currentView based on saved tab
+        } else {
+            // If no tab is saved, default to the first tab
+            $('.nav-tabs a:first').tab('show');
+            currentView = "inbox";  // Default to inbox view
+        }
+
+        // Call loadComplaintsList once during the initial load
+        loadComplaintsList(getCurrentPageForTab(activeTab || '#inbox'));
+
+        // Save the active tab on click
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            var currentTab = $(e.target).attr('href');
+            sessionStorage.setItem('activeTab', currentTab);
+            currentView = getCurrentViewFromTab(currentTab); // Update currentView on tab switch
+
+            // Reset the current page to 1 when switching tabs
+            resetCurrentPageForTab(currentTab);
+
+            loadComplaintsList(getCurrentPageForTab(currentTab)); // Load data for the active tab
+        });
+
+        // Function to reset the current page to 1 for the given tab
+        function resetCurrentPageForTab(tab) {
+            switch (tab) {
+                case '#inbox': currentPageInbox = 1; break;
+                case '#sent': currentPageOutbox = 1; break;
+                case '#cc': currentPageCC = 1; break;
+                case '#closed': currentPageClosed = 1; break;
+                case '#forwarded': currentPageforwarded = 1; break;
+                case '#expired': currentPageExpired = 1; break;
+            }
+            let currentSearchSize = sessionStorage.getItem("currentPageNoSession")?.split(";")[1] || searchSize;
+            sessionStorage.setItem("currentPageNoSession", 1 + ";" + currentSearchSize);
+        }
+
+        // Determine which view to set for the current tab
+        function getCurrentViewFromTab(tab) {
+            switch (tab) {
+                case '#inbox': return "inbox";
+                case '#sent': return "outbox";
+                case '#cc': return "cc";
+                case '#closed': return "closed";
+                case '#forwarded': return "forwarded";
+                case '#expired': return "expired";
+                default: return "inbox";
+            }
+        }
+
+        // Determine which page number to load for the current tab
+        function getCurrentPageForTab(tab) {
+            switch (tab) {
+                case '#inbox': return currentPageInbox;
+                case '#sent': return currentPageOutbox;
+                case '#cc': return currentPageCC;
+                case '#closed': return currentPageClosed;
+                case '#forwarded': return currentPageforwarded;
+                case '#expired': return currentPageExpired;
+                default: return 1;
+            }
+        }
+
+        var rowTitle =
+            languageCode == "en"
+                ? "Click to view details"
+                : "বিস্তারিত দেখতে ক্লিক করুন";
         loadUnceenCount();
+        updatePaginationButtons();
 
-        if($("[name='isMobileLogin']").val() === "false"){
-            $("#listSearch").keypress(function(e) {
-                if(e.which == 13 && ($("#listSearch").val().trim().length > 0 || $("#listSearch").val().trim().length == $("#listSearch").val().length)) {
+        if ($("[name='isMobileLogin']").val() === "false") {
+            $("#listSearch").keypress(function (e) {
+                if (
+                    e.which == 13 &&
+                    ($("#listSearch").val().trim().length > 0 ||
+                        $("#listSearch").val().trim().length ==
+                        $("#listSearch").val().length)
+                ) {
                     loadComplaintsList(currentPageInbox);
                 }
             });
-            $("#searchButton").click(function(e) {
-
-                if($("#listSearch").val().trim().length > 0 || $("#listSearch").val().trim().length == $("#listSearch").val().length){
+            $("#searchButton").click(function (e) {
+                if (
+                    $("#listSearch").val().trim().length > 0 ||
+                    $("#listSearch").val().trim().length ==
+                    $("#listSearch").val().length
+                ) {
                     loadComplaintsList(currentPageInbox);
                 }
             });
@@ -768,11 +1042,9 @@
             loadComplaintsList(currentPageInbox);
         }
 
-
-
-        $('.date-picker').datepicker({
+        $(".date-picker").datepicker({
             rtl: App.isRTL(),
-            autoclose: true
+            autoclose: true,
         });
 
         var alertInfo = JSON.parse(sessionStorage.getItem("alertInfo"));
@@ -786,279 +1058,225 @@
 
         showNotification();
 
-        $("thead td").click(function() {
+        $("thead td").click(function () { });
 
-        });
+        var listViewArray = [
+            "Inbox",
+            "Outbox",
+            "CC",
+            "Closed",
+            "forwarded",
+            "Expired",
+        ];
 
-        loadComplaintsList(currentPageInbox);
-        var listViewArray = ['Inbox', 'Outbox', 'CC', 'Closed', 'forwarded', 'Expired'];
-
-        $.each(listViewArray, function(index, value){
-            $('#tblListView' + value).dataTable({
-                "language": {
-                    "aria": {
-                        "sortAscending": ": activate to sort column ascending",
-                        "sortDescending": ": activate to sort column descending"
+        $.each(listViewArray, function (index, value) {
+            $("#tblListView" + value).dataTable({
+                language: {
+                    aria: {
+                        sortAscending: ": activate to sort column ascending",
+                        sortDescending: ": activate to sort column descending",
                     },
-                    "emptyTable": "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ",
-                    "info": "Showing _START_ to _END_ of _TOTAL_ records",
-                    "infoEmpty": "No records found",
-                    "infoFiltered": "(filtered1 from _MAX_ total records)",
-                    "lengthMenu": "Show _MENU_",
-                    "search": "ফিল্টার:",
-                    "zeroRecords": "No matching records found",
-                    "paginate": {
-                        "previous": "Prev",
-                        "next": "Next",
-                        "last": "Last",
-                        "first": "First"
-                    }
+                    emptyTable: "দুঃখিত, কোনো তথ্য পাওয়া যায়নি ",
+                    info: "Showing _START_ to _END_ of _TOTAL_ records",
+                    infoEmpty: "No records found",
+                    infoFiltered: "(filtered1 from _MAX_ total records)",
+                    lengthMenu: "Show _MENU_",
+                    search: "ফিল্টার:",
+                    zeroRecords: "No matching records found",
+                    paginate: {
+                        previous: "Prev",
+                        next: "Next",
+                        last: "Last",
+                        first: "First",
+                    },
                 },
-                "bPaginate": false,
-                "bFilter": false,
-                "bInfo": false,
-                "bAutoWidth": true,
-                "columnDefs": [{
-                        'orderable': false,
-                        'targets': [1,3,4,5,6]
+                bPaginate: false,
+                bFilter: false,
+                bInfo: false,
+                bAutoWidth: true,
+                columnDefs: [
+                    {
+                        orderable: false,
+                        targets: [1, 3, 4, 5, 6],
                     },
                     {
-                        "searchable": false,
-                        "targets": [0, 1]
-                    }
-                    // {
-                    //     targets: [0],
-                    //     orderData: [0]
-                    // }
+                        searchable: false,
+                        targets: [0, 1],
+                    },
                 ],
-                "createdRow": function( row, data, dataIndex ) {
+                createdRow: function (row, data, dataIndex) {
                     var currentRow = $(row);
                     currentRow.attr("data-toggle", "tooltip");
                     currentRow.attr("title", rowTitle);
                 },
                 columns: [
                     {
-                        data: "trackingNumberBangla"
+                        data: "trackingNumberBangla",
                     },
                     {
-                        data: "subject"
+                        data: "subject",
                     },
                     {
                         data: "dateBangla",
                         render: function (data, type, row, meta) {
                             var splittedParts = data.split(" ");
-                            return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
-                        }
+                            return languageCode == "en"
+                                ? splittedParts[0].toEnglishNumber()
+                                : splittedParts[0];
+                        },
                     },
                     {
-                        data: "typeBangla"
+                        data: "typeBangla",
                     },
                     {
-                        data: "serviceNameBangla"
+                        data: "serviceNameBangla",
                     },
                     {
-                        data: "serviceOfficerPostBangla"
+                        data: "serviceOfficerPostBangla",
                     },
                     {
-                        data: "statusBangla"
+                        data: "statusBangla",
                     },
                     {
                         data: "expectedDateOfClosingBangla",
                         render: function (data, type, row, meta) {
                             var splittedParts = data.split(" ");
-                            return  (languageCode == 'en' ? splittedParts[0].toEnglishNumber() : splittedParts[0] )
-                        }
+                            return languageCode == "en"
+                                ? splittedParts[0].toEnglishNumber()
+                                : splittedParts[0];
+                        },
                     },
                     {
-                        data: "complaintCategoryDetails"
+                        data: "complaintCategoryDetails",
                     },
                     {
-                        data: "complaintGeoLocation"
-                    }
+                        data: "complaintGeoLocation",
+                    },
                 ],
-                "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                fnRowCallback: function (
+                    nRow,
+                    aData,
+                    iDisplayIndex,
+                    iDisplayIndexFull
+                ) {
                     var bgColorStyle = "bg-white";
                     if (aData.isExpired) {
-                        $(nRow).addClass(bgColorStyle + ' font text-danger ');
+                        $(nRow).addClass(bgColorStyle + " font text-danger ");
                     } else if (aData.isSeen == false) {
-                        $(nRow).addClass(bgColorStyle + ' font-lg bold');
+                        $(nRow).addClass(bgColorStyle + " font-lg bold");
                     } else {
-                        $(nRow).addClass(bgColorStyle + ' greyishFont ');
+                        $(nRow).addClass(bgColorStyle + " greyishFont ");
                     }
                 },
-                "order": []
+                order: [],
             });
-            $('#tblListView' + value + ' tbody').on('click', 'tr', function () {
-                var table = $('#tblListView' + value).DataTable();
+            $("#tblListView" + value + " tbody").on("click", "tr", function () {
+                var table = $("#tblListView" + value).DataTable();
                 var data = table.row(this).data();
                 if (data != undefined) {
-                    if ( $(this).hasClass('active') ) {
-                        $(this).removeClass('active');
-                    }
-                    else {
-                        table.$('tr.selected').removeClass('active');
-                        $(this).addClass('active');
+                    if ($(this).hasClass("active")) {
+                        $(this).removeClass("active");
+                    } else {
+                        table.$("tr.selected").removeClass("active");
+                        $(this).addClass("active");
                     }
 
-                    var msg = languageCode == 'en' ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
+                    var msg =
+                        languageCode == "en" ? "Just a moment" : "দয়া করে অপেক্ষা করুন";
                     $.blockUI({
-                        message: '<h1>  ' + msg + '</h1>'
+                        message: "<h1>  " + msg + "</h1>",
                     });
-                    window.setTimeout(function() {
+                    window.setTimeout(function () {
+                        // console.log("===invoking viewGrievance.do");
+
                         window.location.href = "/viewGrievances.do?id=" + data.id;
-                    }, 500);
+                    }, 800);
                 }
             });
         });
 
-        $(".next").click(function(e) {
-            var currentPageForNext;
-            var searchCriteriaNo;
-            if (currentView == "inbox") {
-                currentPageInbox = currentPageInbox + 1;
-                if (currentPageInbox == maxPageInbox) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageInbox > maxPageInbox) {
-                    currentPageInbox = maxPageInbox;
-                }
-                searchCriteriaNo = 0;
-                currentPageForNext = currentPageInbox;
-            } else if (currentView == "cc") {
-                currentPageCC = currentPageCC + 1;
-                if (currentPageCC == maxPageCC) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageCC > maxPageCC) {
-                    currentPageCC = maxPageCC;
-                }
-                searchCriteriaNo = 1;
-                currentPageForNext = currentPageCC;
-            } else if (currentView == "outbox") {
-                currentPageOutbox = currentPageOutbox + 1;
-                if (currentPageOutbox == maxPageOutbox) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageOutbox > maxPageOutbox) {
-                    currentPageOutbox = maxPageOutbox;
-                }
-                searchCriteriaNo = 1;
-                currentPageForNext = currentPageOutbox;
-            } else if (currentView == "closed") {
-                currentPageClosed = currentPageClosed + 1;
-                if (currentPageClosed == maxPageClosed) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageClosed > maxPageClosed) {
-                    currentPageClosed = maxPageClosed;
-                }
-                searchCriteriaNo = 2;
-                currentPageForNext = currentPageClosed;
-            } else if (currentView == "forwarded") {
-                currentPageforwarded = currentPageforwarded + 1;
-                if (currentPageforwarded == maxPageforwarded) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageforwarded > maxPageforwarded) {
-                    currentPageforwarded = maxPageforwarded;
-                }
-                searchCriteriaNo = 3;
-                currentPageForNext = currentPageforwarded;
-            } else if (currentView == "expired") {
-                currentPageExpired = currentPageExpired + 1;
-                if (currentPageExpired == maxPageExpired) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageExpired > maxPageExpired) {
-                    currentPageExpired = maxPageExpired;
-                }
-                searchCriteriaNo = 4;
-                currentPageForNext = currentPageExpired;
-            }
-            var searchUrlString = getSearchURL();
-            if (searchUrlString.localeCompare("types&values") != 0) {
-                searchComplaintsList(currentPageForNext);
-            } else {
-                loadComplaintsList(currentPageForNext);
-            }
-            $(this).parent().find(".prev").removeClass("disabled");
+        // Bind events using event delegation
+        $(document).on("click", ".next", function (e) {
+            handlePagination("next");
         });
 
-        $(".prev").click(function(e) {
-            var currentPageForPrev;
-            var searchFieldNo;
-            if (currentView == "inbox") {
-                currentPageInbox = currentPageInbox - 1;
-
-                if (currentPageInbox == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageInbox < 1) {
-                    currentPageInbox = 1;
-                }
-                currentPageForPrev = currentPageInbox;
-                searchFieldNo = 0;
-            } else if (currentView == "cc") {
-                currentPageCC = currentPageCC - 1;
-                if (currentPageCC == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageCC < 1) {
-                    currentPageCC = 1;
-                }
-                currentPageForPrev = currentPageCC;
-                searchFieldNo = 1;
-            } else if (currentView == "outbox") {
-                currentPageOutbox = currentPageOutbox - 1;
-                if (currentPageOutbox == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageOutbox < 1) {
-                    currentPageOutbox = 1;
-                }
-                currentPageForPrev = currentPageOutbox;
-                searchFieldNo = 1;
-            } else if (currentView == "closed") {
-                currentPageClosed = currentPageClosed - 1;
-                if (currentPageClosed == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageClosed < 1) {
-                    currentPageClosed = 1;
-                }
-                currentPageForPrev = currentPageClosed;
-                searchFieldNo = 2;
-            } else if (currentView == "forwarded") {
-                currentPageforwarded = currentPageforwarded - 1;
-                if (currentPageforwarded == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageforwarded < 1) {
-                    currentPageforwarded = 1;
-                }
-                currentPageForPrev = currentPageforwarded;
-                searchFieldNo = 3;
-            } else if (currentView == "expired") {
-                currentPageExpired = currentPageExpired - 1;
-                if (currentPageExpired == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageExpired < 1) {
-                    currentPageExpired = 1;
-                }
-                currentPageForPrev = currentPageExpired;
-                searchFieldNo = 4;
-            }
-            var searchUrlString = getSearchURL();
-            if (searchUrlString.localeCompare("types&values") != 0) {
-                searchComplaintsList(currentPageForPrev);
-            } else {
-                loadComplaintsList(currentPageForPrev);
-            }
-            $(this).parent().find(".next").removeClass("disabled");
+        $(document).on("click", ".prev", function (e) {
+            handlePagination("prev");
         });
 
-        $("#currentPageInbox").blur(function(e) {
+        // Function to handle both next and previous pagination
+        function handlePagination(direction) {
+            // Retrieve the current page and search size from session storage
+            let currentPage = parseInt(
+                sessionStorage.getItem("currentPageNoSession").split(";")[0]
+            );
+            let searchSize = parseInt(
+                sessionStorage.getItem("currentPageNoSession").split(";")[1]
+            );
+            let maxPage = getMaxPageForCurrentView(); // Function to get max page based on current view
+
+            // Update currentPage based on direction
+            currentPage = direction === "next" ? currentPage + 1 : currentPage - 1;
+
+            // Ensure currentPage stays within the boundaries
+            if (currentPage > maxPage) currentPage = maxPage;
+            if (currentPage < 1) currentPage = 1;
+
+            // Update session storage with the new current page and also the specific variable for the tab
+            sessionStorage.setItem("currentPageNoSession", currentPage + ";" + searchSize);
+
+            // Update the specific variable based on the current view
+            switch (currentView) {
+                case "inbox":
+                    currentPageInbox = currentPage;
+                    break;
+                case "outbox":
+                    currentPageOutbox = currentPage;
+                    break;
+                case "cc":
+                    currentPageCC = currentPage;
+                    break;
+                case "closed":
+                    currentPageClosed = currentPage;
+                    break;
+                case "forwarded":
+                    currentPageforwarded = currentPage;
+                    break;
+                case "expired":
+                    currentPageExpired = currentPage;
+                    break;
+            }
+
+            // Load or update the list view with the new page
+            loadComplaintsList(currentPage);
+
+            // Update button states
+            $(".prev").toggleClass("disabled", currentPage === 1);
+            $(".next").toggleClass("disabled", currentPage === maxPage);
+        }
+
+        // Function to determine the maximum page number based on the current view
+        function getMaxPageForCurrentView() {
+            // Assuming global variables that hold max pages for each view
+            switch (currentView) {
+                case "inbox":
+                    return maxPageInbox;
+                case "cc":
+                    return maxPageCC;
+                case "outbox":
+                    return maxPageOutbox;
+                case "closed":
+                    return maxPageClosed;
+                case "forwarded":
+                    return maxPageforwarded;
+                case "expired":
+                    return maxPageExpired;
+                default:
+                    return 1; // Default to 1 if no view matches
+            }
+        }
+
+        $("#currentPageInbox").blur(function (e) {
             e.preventDefault();
             var curValue = ("" + $("#currentPageInbox").val()).toEnglishNumber();
             if ($.isNumeric(curValue)) {
@@ -1077,7 +1295,9 @@
                     loadComplaintsList(currentPageInbox);
                 } else {
                     toastr.error("Sorry, page range out of bound");
-                    $("#currentPageInbox").val(("" + currentPageInbox).toBanglaNumber());
+                    $("#currentPageInbox").val(
+                        ("" + currentPageInbox).toBanglaNumber()
+                    );
                 }
             } else {
                 toastr.error("Sorry, invalid page number");
@@ -1085,7 +1305,7 @@
             }
         });
 
-        $("#currentPageCC").blur(function(e) {
+        $("#currentPageCC").blur(function (e) {
             e.preventDefault();
             var curValue = ("" + $("#currentPageCC").val()).toEnglishNumber();
             if ($.isNumeric(curValue)) {
@@ -1112,7 +1332,7 @@
             }
         });
 
-        $("#currentPageOutbox").blur(function(e) {
+        $("#currentPageOutbox").blur(function (e) {
             e.preventDefault();
             var curValue = ("" + $("#currentPageOutbox").val()).toEnglishNumber();
             if ($.isNumeric(curValue)) {
@@ -1131,15 +1351,19 @@
                     loadComplaintsList(currentPageOutbox);
                 } else {
                     toastr.error("Sorry, page range out of bound");
-                    $("#currentPageOutbox").val(("" + currentPageOutbox).toBanglaNumber());
+                    $("#currentPageOutbox").val(
+                        ("" + currentPageOutbox).toBanglaNumber()
+                    );
                 }
             } else {
                 toastr.error("Sorry, invalid page number");
-                $("#currentPageOutbox").val(("" + currentPageOutbox).toBanglaNumber());
+                $("#currentPageOutbox").val(
+                    ("" + currentPageOutbox).toBanglaNumber()
+                );
             }
         });
 
-        $("#currentPageClosed").blur(function(e) {
+        $("#currentPageClosed").blur(function (e) {
             e.preventDefault();
             var curValue = ("" + $("#currentPageClosed").val()).toEnglishNumber();
             if ($.isNumeric(curValue)) {
@@ -1158,17 +1382,23 @@
                     loadComplaintsList(currentPageClosed);
                 } else {
                     toastr.error("Sorry, page range out of bound");
-                    $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
+                    $("#currentPageClosed").val(
+                        ("" + currentPageClosed).toBanglaNumber()
+                    );
                 }
             } else {
                 toastr.error("Sorry, invalid page number");
-                $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
+                $("#currentPageClosed").val(
+                    ("" + currentPageClosed).toBanglaNumber()
+                );
             }
         });
 
-        $("#currentPageforwarded").blur(function(e) {
+        $("#currentPageforwarded").blur(function (e) {
             e.preventDefault();
-            var curValue = ("" + $("#currentPageforwarded").val()).toEnglishNumber();
+            var curValue = (
+                "" + $("#currentPageforwarded").val()
+            ).toEnglishNumber();
             if ($.isNumeric(curValue)) {
                 if (curValue > 0 && curValue <= maxPageforwarded) {
                     currentPageforwarded = curValue;
@@ -1185,65 +1415,54 @@
                     loadComplaintsList(currentPageforwarded);
                 } else {
                     toastr.error("Sorry, page range out of bound");
-                    $("#currentPageforwarded").val(("" + currentPageforwarded).toBanglaNumber());
+                    $("#currentPageforwarded").val(
+                        ("" + currentPageforwarded).toBanglaNumber()
+                    );
                 }
             } else {
                 toastr.error("Sorry, invalid page number");
-                $("#currentPageforwarded").val(("" + currentPageforwarded).toBanglaNumber());
+                $("#currentPageforwarded").val(
+                    ("" + currentPageforwarded).toBanglaNumber()
+                );
             }
         });
-
-        $("#navInbox").click(function(e) {
-            currentView = "inbox";
-            loadComplaintsList(currentPageInbox);
-        });
-
-        $("#navCC").click(function(e) {
-            currentView = "cc";
-            loadComplaintsList(currentPageCC);
-        });
-
-        $("#navSent").click(function(e) {
-            currentView = "outbox";
-            loadComplaintsList(currentPageOutbox);
-        });
-
-        $("#navClosed").click(function(e) {
-            currentView = "closed";
-            loadComplaintsList(currentPageClosed);
-        });
-
-        $("#navforwarded").click(function(e) {
-            currentView = "forwarded";
-            loadComplaintsList(currentPageforwarded);
-        });
-        $("#navExpired").click(function(e) {
-            currentView = "expired";
-            loadComplaintsList(currentPageforwarded);
-        });
-
     });
 
-    function loadUnceenCount() {
+    function updatePaginationButtons() {
+        let currentPage =
+            parseInt(
+                sessionStorage.getItem("currentPageNoSession")?.split(";")[0]
+            ) || 1;
+        let maxPage = parseInt(sessionStorage.getItem("maxPageSession")) || 1;
+        $(".prev").toggleClass("disabled", currentPage <= 1);
+        $(".next").toggleClass("disabled", currentPage >= maxPage);
+    }
 
+    function loadUnceenCount() {
         $.ajax({
             url: "/api/total/count/inbox",
             type: "get",
             data: "application/json",
             dataType: "json",
             success: function (response) {
-                $("#inbox_unseen_count").html("(" + (response.inboxCount + "").toBanglaNumber() + ")");
-                $("#cc_unseen_count").html("(" + (response.ccCount + "").toBanglaNumber() + ")");
-                $("#time_expired_count").html("(" + (response.expiredCount + "").toBanglaNumber() + ")");
-            }
+                $("#inbox_unseen_count").html(
+                    "(" + (response.inboxCount + "").toBanglaNumber() + ")"
+                );
+                $("#cc_unseen_count").html(
+                    "(" + (response.ccCount + "").toBanglaNumber() + ")"
+                );
+                $("#time_expired_count").html(
+                    "(" + (response.expiredCount + "").toBanglaNumber() + ")"
+                );
+            },
         });
     }
 
     String.prototype.toBanglaNumber = function () {
         var engNum = this;
-        var bngNum = '';
-        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-        engNum.split('').forEach(function (digit) {
+        var bngNum = "";
+        var bngDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+        engNum.split("").forEach(function (digit) {
             var index = parseInt(digit);
             bngNum += isNaN(index) ? digit : bngDigits[index];
         });
@@ -1252,9 +1471,9 @@
 
     String.prototype.toEnglishNumber = function () {
         var bngNum = this;
-        var engNum = '';
-        var bngDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-        bngNum.split('').forEach(function (digit) {
+        var engNum = "";
+        var bngDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+        bngNum.split("").forEach(function (digit) {
             var index = bngDigits.indexOf(digit);
             engNum += index >= 0 ? index : digit;
         });
@@ -1262,96 +1481,191 @@
     };
 
     function loadComplaintsList(page) {
-        var searchSizeLocal = $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
+        var sessionString = sessionStorage.getItem("currentPageNoSession");
+        if (sessionString === null) {
+            sessionStorage.setItem("currentPageNoSession", 1 + ";" + 30);
+            sessionString = sessionStorage.getItem("currentPageNoSession");
+        }
+        // console.log(`SessionString: ${sessionString}`);
+        // console.log(`currentPageInbox: ${currentPageInbox}`);
+        // console.log(`page:searchSize ${page}:${searchSize}`);
+
+        var parts = sessionString.split(";");
+        var x = parseInt(parts[0]);
+        var y = parseInt(parts[1]);
+
+        // Update the specific page number for the current view
+        switch (currentView) {
+            case "inbox":
+                currentPageInbox = x;
+                break;
+            case "outbox":
+                currentPageOutbox = x;
+                break;
+            case "cc":
+                currentPageCC = x;
+                break;
+            case "closed":
+                currentPageClosed = x;
+                break;
+            case "forwarded":
+                currentPageforwarded = x;
+                break;
+            case "expired":
+                currentPageExpired = x;
+                break;
+        }
+
+        document.getElementById("pagination").value = String(y);
+
+        // console.log("x: " + x + ", y: " + y);
+        // console.log(`loading all the complaints : right now`);
+
+        var searchSizeLocal =
+            $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
         $("#ajaxProcessingModal").modal("show");
         var pageNo = 0;
 
         if (currentView == "inbox") {
-            $("#currentPageInbox").val(("" + (currentPageInbox)).toBanglaNumber());
+            $("#currentPageInbox").val(("" + currentPageInbox).toBanglaNumber());
             pageNo = currentPageInbox;
         } else if (currentView == "cc") {
-            $("#currentPageCC").val(("" + (currentPageCC)).toBanglaNumber());
+            $("#currentPageCC").val(("" + currentPageCC).toBanglaNumber());
             pageNo = currentPageCC;
         } else if (currentView == "outbox") {
-            $("#currentPageOutbox").val(("" + (currentPageOutbox)).toBanglaNumber());
+            $("#currentPageOutbox").val(("" + currentPageOutbox).toBanglaNumber());
             pageNo = currentPageOutbox;
         } else if (currentView == "closed") {
-            $("#currentPageClosed").val(("" + (currentPageClosed)).toBanglaNumber());
+            $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
             pageNo = currentPageClosed;
         } else if (currentView == "forwarded") {
-            $("#currentPageforwarded").val(("" + (currentPageforwarded)).toBanglaNumber());
+            $("#currentPageforwarded").val(
+                ("" + currentPageforwarded).toBanglaNumber()
+            );
             pageNo = currentPageforwarded;
         } else if (currentView == "expired") {
-            $("#currentPageExpired").val(("" + (currentPageExpired)).toBanglaNumber());
+            $("#currentPageExpired").val(
+                ("" + currentPageExpired).toBanglaNumber()
+            );
             pageNo = currentPageExpired;
         }
 
-        var searchItem = $("[name='isMobileLogin']").val() == "true" ? "" : $("#listSearch").val()
+        var searchItem = $("[name='isMobileLogin']").val() == "true" ? "" : $("#listSearch").val();
 
         $.ajax({
             url: "/api/grievance/" + currentView + "/search?value=" + searchItem,
             type: "get",
             data: {
-                "page": (pageNo - 1),
-                "size": searchSizeLocal
+                page: x - 1,
+                size: y,
             },
             dataType: "json",
-            success: function(response) {
+
+            success: function (response) {
                 if (response == 0 || response == "" || response.content.length == 0) {
-
                     if (currentView == "inbox") {
-                        $("#tblListViewInbox tbody tr").css("cursor","default");
-                        $("#tblListViewInbox_paginate .pagination-panel-total").html("0".toBanglaNumber());
-                        $("#tblListViewInbox_paginate .pagination-panel-input").val("0".toBanglaNumber());
-                        $("#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next").addClass("disabled");
-                        $("#tblListViewInbox_paginate").find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewInbox tbody tr").css("cursor", "default");
+                        $("#tblListViewInbox_paginate .pagination-panel-total").html(
+                            "0".toBanglaNumber()
+                        );
+                        $("#tblListViewInbox_paginate .pagination-panel-input").val(
+                            "0".toBanglaNumber()
+                        );
+                        $(
+                            "#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next"
+                        ).addClass("disabled");
+                        $("#tblListViewInbox_paginate")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
 
-                        $('#tblListViewInbox').dataTable().fnClearTable();
-                        $('#tblListViewInbox').find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewInbox").dataTable().fnClearTable();
+                        $("#tblListViewInbox").find("[data-toggle='tooltip']").tooltip();
                     } else if (currentView == "cc") {
-                        $("#tblListViewCC tbody tr").css("cursor","default");
-                        $("#tblListViewCC_paginate .pagination-panel-total").html("0".toBanglaNumber());
-                        $("#tblListViewCC_paginate .pagination-panel-input").val("0".toBanglaNumber());
-                        $("#tblListViewCC_paginate .prev, #tblListViewCC_paginate .next").addClass("disabled");
-                        $("#tblListViewCC_paginate").find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewCC tbody tr").css("cursor", "default");
+                        $("#tblListViewCC_paginate .pagination-panel-total").html(
+                            "0".toBanglaNumber()
+                        );
+                        $("#tblListViewCC_paginate .pagination-panel-input").val(
+                            "0".toBanglaNumber()
+                        );
+                        $(
+                            "#tblListViewCC_paginate .prev, #tblListViewCC_paginate .next"
+                        ).addClass("disabled");
+                        $("#tblListViewCC_paginate")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
 
-                        $('#tblListViewCC').dataTable().fnClearTable();
-                        $('#tblListViewCC').find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewCC").dataTable().fnClearTable();
+                        $("#tblListViewCC").find("[data-toggle='tooltip']").tooltip();
                     } else if (currentView == "outbox") {
-                        $("#tblListViewOutbox tbody tr").css("cursor","default");
-                        $("#tblListViewOutbox_paginate .pagination-panel-total").html("0".toBanglaNumber());
-                        $("#tblListViewOutbox_paginate .pagination-panel-input").val("0".toBanglaNumber());
-                        $("#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next").addClass("disabled");
-                        $("#tblListViewOutbox_paginate").find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewOutbox tbody tr").css("cursor", "default");
+                        $("#tblListViewOutbox_paginate .pagination-panel-total").html(
+                            "0".toBanglaNumber()
+                        );
+                        $("#tblListViewOutbox_paginate .pagination-panel-input").val(
+                            "0".toBanglaNumber()
+                        );
+                        $(
+                            "#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next"
+                        ).addClass("disabled");
+                        $("#tblListViewOutbox_paginate")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
 
-                        $('#tblListViewOutbox').dataTable().fnClearTable();
-                        $('#tblListViewOutbox').find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewOutbox").dataTable().fnClearTable();
+                        $("#tblListViewOutbox").find("[data-toggle='tooltip']").tooltip();
                     } else if (currentView == "closed") {
-                        $("#tblListViewClosed tbody tr").css("cursor","default");
-                        $("#tblListViewClosed_paginate .pagination-panel-total").html("0".toBanglaNumber());
-                        $("#tblListViewClosed_paginate .pagination-panel-input").val("0".toBanglaNumber());
-                        $("#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next").addClass("disabled");
-                        $("#tblListViewClosed_paginate").find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewClosed tbody tr").css("cursor", "default");
+                        $("#tblListViewClosed_paginate .pagination-panel-total").html(
+                            "0".toBanglaNumber()
+                        );
+                        $("#tblListViewClosed_paginate .pagination-panel-input").val(
+                            "0".toBanglaNumber()
+                        );
+                        $(
+                            "#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next"
+                        ).addClass("disabled");
+                        $("#tblListViewClosed_paginate")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
 
-                        $('#tblListViewClosed').dataTable().fnClearTable();
-                        $('#tblListViewClosed').find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewClosed").dataTable().fnClearTable();
+                        $("#tblListViewClosed").find("[data-toggle='tooltip']").tooltip();
                     } else if (currentView == "forwarded") {
-                        $("#tblListViewforwarded tbody tr").css("cursor","default");
-                        $("#tblListViewforwarded_paginate .pagination-panel-total").html("0".toBanglaNumber());
-                        $("#tblListViewforwarded_paginate .pagination-panel-input").val("0".toBanglaNumber());
-                        $("#tblListViewforwarded_paginate .prev, #tblListViewforwarded_paginate .next").addClass("disabled");
+                        $("#tblListViewforwarded tbody tr").css("cursor", "default");
+                        $("#tblListViewforwarded_paginate .pagination-panel-total").html(
+                            "0".toBanglaNumber()
+                        );
+                        $("#tblListViewforwarded_paginate .pagination-panel-input").val(
+                            "0".toBanglaNumber()
+                        );
+                        $(
+                            "#tblListViewforwarded_paginate .prev, #tblListViewforwarded_paginate .next"
+                        ).addClass("disabled");
 
-                        $('#tblListViewforwarded').dataTable().fnClearTable();
-                        $('#tblListViewforwarded').find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewforwarded").dataTable().fnClearTable();
+                        $("#tblListViewforwarded")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
                     } else if (currentView == "expired") {
-                        $("#tblListViewExpired tbody tr").css("cursor","default");
-                        $("#tblListViewExpired_paginate .pagination-panel-total").html("0".toBanglaNumber());
-                        $("#tblListViewExpired_paginate .pagination-panel-input").val("0".toBanglaNumber());
-                        $("#tblListViewExpired_paginate .prev, #tblListViewforwarded_paginate .next").addClass("disabled");
-                        $("#tblListViewExpired_paginate").find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewExpired tbody tr").css("cursor", "default");
+                        $("#tblListViewExpired_paginate .pagination-panel-total").html(
+                            "0".toBanglaNumber()
+                        );
+                        $("#tblListViewExpired_paginate .pagination-panel-input").val(
+                            "0".toBanglaNumber()
+                        );
+                        $(
+                            "#tblListViewExpired_paginate .prev, #tblListViewforwarded_paginate .next"
+                        ).addClass("disabled");
+                        $("#tblListViewExpired_paginate")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
 
-                        $('#tblListViewExpired').dataTable().fnClearTable();
-                        $('#tblListViewExpired').find("[data-toggle='tooltip']").tooltip();
+                        $("#tblListViewExpired").dataTable().fnClearTable();
+                        $("#tblListViewExpired")
+                            .find("[data-toggle='tooltip']")
+                            .tooltip();
                     }
                     $("#ajaxProcessingModal").modal("hide");
                 } else {
@@ -1364,138 +1678,266 @@
                     var isFirst = response.isFirst;
                     var isLast = response.isLast;
 
-                    if (currentView == "inbox") {
-                        $("#tblListViewInbox_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
-                        maxPageInbox = totalPages;
-                        if (maxPageInbox == 1) {
-                            $("#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next").addClass("disabled");
-                        }
-                        if (currentPageInbox == 1) {
-                            $("#tblListViewInbox_paginate .prev").addClass("disabled");
-                        }
-                        if (maxPageInbox > 1 && maxPageInbox != currentPageInbox) {
-                            $("#tblListViewInbox_paginate .next").removeClass("disabled");
-                        }
+                    // Update the maximum page number for the current view
+                    switch (currentView) {
+                        case "inbox":
+                            $("#tblListViewInbox_paginate .pagination-panel-total").html(
+                                ("" + totalPages).toBanglaNumber()
+                            );
+                            maxPageInbox = totalPages;
+                            if (maxPageInbox == 1) {
+                                $(
+                                    "#tblListViewInbox_paginate .prev, #tblListViewInbox_paginate .next"
+                                ).addClass("disabled");
+                            }
+                            if (currentPageInbox == 1) {
+                                $("#tblListViewInbox_paginate .prev").addClass("disabled");
+                            }
+                            if (maxPageInbox > 1 && maxPageInbox != currentPageInbox) {
+                                $("#tblListViewInbox_paginate .next").removeClass("disabled");
+                            }
 
-                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
-                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
-                        $("#tblListViewInbox_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+                            var listViewInfoBng =
+                                ("" + totalElements).toBanglaNumber() +
+                                " টি অভিযোগ এর মধ্যে " +
+                                ("" + (number * dataSize + 1)).toBanglaNumber() +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)).toBanglaNumber() +
+                                " এর  তথ্য দেখানো হচ্ছে";
+                            var listViewInfoEng =
+                                "" +
+                                totalElements +
+                                " Items total and  " +
+                                ("" + (number * dataSize + 1)) +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)) +
+                                " is shown";
+                            $("#tblListViewInbox_info").html(
+                                languageCode == "en" ? listViewInfoEng : listViewInfoBng
+                            );
 
-                        $('#tblListViewInbox').dataTable().fnClearTable();
-                        $('#tblListViewInbox').dataTable().fnAddData(response.content);
-                        $('#tblListViewInbox').find("[data-toggle='tooltip']").tooltip();
-                    } else if (currentView == "cc") {
-                        $("#tblListViewCC_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
-                        maxPageCC = totalPages;
-                        if (maxPageCC == 1) {
-                            $("#tblListViewCC_paginate .prev, #tblListViewCC_paginate .next").addClass("disabled");
-                        }
-                        if (currentPageCC == 1) {
-                            $("#tblListViewCC_paginate .prev").addClass("disabled");
-                        }
-                        if (maxPageCC > 1 && maxPageCC != currentPageCC) {
-                            $("#tblListViewCC_paginate .next").removeClass("disabled");
-                        }
-                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
-                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
-                        $("#tblListViewCC_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+                            $("#tblListViewInbox").dataTable().fnClearTable();
+                            $("#tblListViewInbox").dataTable().fnAddData(response.content);
+                            $("#tblListViewInbox").find("[data-toggle='tooltip']").tooltip();
+                            break;
+                        case "cc":
+                            $("#tblListViewCC_paginate .pagination-panel-total").html(
+                                ("" + totalPages).toBanglaNumber()
+                            );
+                            maxPageCC = totalPages;
+                            if (maxPageCC == 1) {
+                                $(
+                                    "#tblListViewCC_paginate .prev, #tblListViewCC_paginate .next"
+                                ).addClass("disabled");
+                            }
+                            if (currentPageCC == 1) {
+                                $("#tblListViewCC_paginate .prev").addClass("disabled");
+                            }
+                            if (maxPageCC > 1 && maxPageCC != currentPageCC) {
+                                $("#tblListViewCC_paginate .next").removeClass("disabled");
+                            }
+                            var listViewInfoBng =
+                                ("" + totalElements).toBanglaNumber() +
+                                " টি অভিযোগ এর মধ্যে " +
+                                ("" + (number * dataSize + 1)).toBanglaNumber() +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)).toBanglaNumber() +
+                                " এর  তথ্য দেখানো হচ্ছে";
+                            var listViewInfoEng =
+                                "" +
+                                totalElements +
+                                " Items total and  " +
+                                ("" + (number * dataSize + 1)) +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)) +
+                                " is shown";
+                            $("#tblListViewCC_info").html(
+                                languageCode == "en" ? listViewInfoEng : listViewInfoBng
+                            );
 
-                        $('#tblListViewCC').dataTable().fnClearTable();
-                        $('#tblListViewCC').dataTable().fnAddData(response.content);
-                        $('#tblListViewCC').find("[data-toggle='tooltip']").tooltip();
+                            $("#tblListViewCC").dataTable().fnClearTable();
+                            $("#tblListViewCC").dataTable().fnAddData(response.content);
+                            $("#tblListViewCC").find("[data-toggle='tooltip']").tooltip();
+                            break;
+                        case "outbox":
+                            $("#tblListViewOutbox_paginate .pagination-panel-total").html(
+                                ("" + totalPages).toBanglaNumber()
+                            );
+                            maxPageOutbox = totalPages;
+                            if (maxPageOutbox == 1) {
+                                $(
+                                    "#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next"
+                                ).addClass("disabled");
+                            }
+                            if (currentPageOutbox == 1) {
+                                $("#tblListViewOutbox_paginate .prev").addClass("disabled");
+                            }
+                            if (maxPageOutbox > 1 && maxPageOutbox != currentPageOutbox) {
+                                $("#tblListViewOutbox_paginate .next").removeClass("disabled");
+                            }
+                            var listViewInfoBng =
+                                ("" + totalElements).toBanglaNumber() +
+                                " টি অভিযোগ এর মধ্যে " +
+                                ("" + (number * dataSize + 1)).toBanglaNumber() +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)).toBanglaNumber() +
+                                " এর  তথ্য দেখানো হচ্ছে";
+                            var listViewInfoEng =
+                                "" +
+                                totalElements +
+                                " Items total and  " +
+                                ("" + (number * dataSize + 1)) +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)) +
+                                " is shown";
+                            $("#tblListViewOutbox_info").html(
+                                languageCode == "en" ? listViewInfoEng : listViewInfoBng
+                            );
 
-                    } else if (currentView == "outbox") {
-                        $("#tblListViewOutbox_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
-                        maxPageOutbox = totalPages;
-                        if (maxPageOutbox == 1) {
-                            $("#tblListViewOutbox_paginate .prev, #tblListViewOutbox_paginate .next").addClass("disabled");
-                        }
-                        if (currentPageOutbox == 1) {
-                            $("#tblListViewOutbox_paginate .prev").addClass("disabled");
-                        }
-                        if (maxPageOutbox > 1 && maxPageOutbox != currentPageOutbox) {
-                            $("#tblListViewOutbox_paginate .next").removeClass("disabled");
-                        }
-                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
-                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
-                        $("#tblListViewOutbox_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+                            $("#tblListViewOutbox").dataTable().fnClearTable();
+                            $("#tblListViewOutbox").dataTable().fnAddData(response.content);
+                            $("#tblListViewOutbox").find("[data-toggle='tooltip']").tooltip();
+                            break;
+                        case "closed":
+                            $("#tblListViewClosed_paginate .pagination-panel-total").html(
+                                ("" + totalPages).toBanglaNumber()
+                            );
+                            maxPageClosed = totalPages;
+                            if (maxPageClosed == 1) {
+                                $(
+                                    "#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next"
+                                ).addClass("disabled");
+                            }
+                            if (currentPageClosed == 1) {
+                                $("#tblListViewClosed_paginate .prev").addClass("disabled");
+                            }
+                            if (maxPageClosed > 1 && maxPageClosed != currentPageClosed) {
+                                $("#tblListViewClosed_paginate .next").removeClass("disabled");
+                            }
 
-                        $('#tblListViewOutbox').dataTable().fnClearTable();
-                        $('#tblListViewOutbox').dataTable().fnAddData(response.content);
-                        $('#tblListViewOutbox').find("[data-toggle='tooltip']").tooltip();
+                            var listViewInfoBng =
+                                ("" + totalElements).toBanglaNumber() +
+                                " টি অভিযোগ এর মধ্যে " +
+                                ("" + (number * dataSize + 1)).toBanglaNumber() +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)).toBanglaNumber() +
+                                " এর  তথ্য দেখানো হচ্ছে";
+                            var listViewInfoEng =
+                                "" +
+                                totalElements +
+                                " Items total and  " +
+                                ("" + (number * dataSize + 1)) +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)) +
+                                " is shown";
+                            $("#tblListViewClosed_info").html(
+                                languageCode == "en" ? listViewInfoEng : listViewInfoBng
+                            );
 
-                    } else if (currentView == "closed") {
-                        $("#tblListViewClosed_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
-                        maxPageClosed = totalPages;
-                        if (maxPageClosed == 1) {
-                            $("#tblListViewClosed_paginate .prev, #tblListViewClosed_paginate .next").addClass("disabled");
-                        }
-                        if (currentPageClosed == 1) {
-                            $("#tblListViewClosed_paginate .prev").addClass("disabled");
-                        }
-                        if (maxPageClosed > 1 && maxPageClosed != currentPageClosed) {
-                            $("#tblListViewClosed_paginate .next").removeClass("disabled");
-                        }
+                            $("#tblListViewClosed").dataTable().fnClearTable();
+                            $("#tblListViewClosed").dataTable().fnAddData(response.content);
+                            $("#tblListViewClosed").find("[data-toggle='tooltip']").tooltip();
+                            break;
+                        case "forwarded":
+                            $("#tblListViewforwarded_paginate .pagination-panel-total").html(
+                                ("" + totalPages).toBanglaNumber()
+                            );
+                            maxPageforwarded = totalPages;
+                            if (maxPageforwarded == 1) {
+                                $(
+                                    "#tblListViewforwarded_paginate .prev, #tblListViewforwarded_paginate .next"
+                                ).addClass("disabled");
+                            }
+                            if (currentPageforwarded == 1) {
+                                $("#tblListViewforwarded_paginate .prev").addClass("disabled");
+                            }
+                            if (
+                                maxPageforwarded > 1 &&
+                                maxPageforwarded != currentPageforwarded
+                            ) {
+                                $("#tblListViewforwarded_paginate .next").removeClass(
+                                    "disabled"
+                                );
+                            }
 
-                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
-                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
-                        $("#tblListViewClosed_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+                            var listViewInfoBng =
+                                ("" + totalElements).toBanglaNumber() +
+                                " টি অভিযোগ এর মধ্যে " +
+                                ("" + (number * dataSize + 1)).toBanglaNumber() +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)).toBanglaNumber() +
+                                " এর  তথ্য দেখানো হচ্ছে";
+                            var listViewInfoEng =
+                                "" +
+                                totalElements +
+                                " Items total and  " +
+                                ("" + (number * dataSize + 1)) +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)) +
+                                " is shown";
+                            $("#tblListViewforwarded_info").html(
+                                languageCode == "en" ? listViewInfoEng : listViewInfoBng
+                            );
 
-                        $('#tblListViewClosed').dataTable().fnClearTable();
-                        $('#tblListViewClosed').dataTable().fnAddData(response.content);
-                        $('#tblListViewClosed').find("[data-toggle='tooltip']").tooltip();
+                            $("#tblListViewforwarded").dataTable().fnClearTable();
+                            $("#tblListViewforwarded")
+                                .dataTable()
+                                .fnAddData(response.content);
+                            $("#tblListViewforwarded")
+                                .find("[data-toggle='tooltip']")
+                                .tooltip();
+                            break;
+                        case "expired":
+                            $("#tblListViewExpired_paginate .pagination-panel-total").html(
+                                ("" + totalPages).toBanglaNumber()
+                            );
+                            maxPageExpired = totalPages;
+                            if (maxPageExpired == 1) {
+                                $(
+                                    "#tblListViewExpired_paginate .prev, #tblListViewExpired_paginate .next"
+                                ).addClass("disabled");
+                            }
+                            if (currentPageExpired == 1) {
+                                $("#tblListViewExpired_paginate .prev").addClass("disabled");
+                            }
+                            if (maxPageExpired > 1 && maxPageExpired != currentPageExpired) {
+                                $("#tblListViewExpired_paginate .next").removeClass("disabled");
+                            }
+                            var listViewInfoBng =
+                                ("" + totalElements).toBanglaNumber() +
+                                " টি অভিযোগ এর মধ্যে " +
+                                ("" + (number * dataSize + 1)).toBanglaNumber() +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)).toBanglaNumber() +
+                                " এর  তথ্য দেখানো হচ্ছে";
+                            var listViewInfoEng =
+                                "" +
+                                totalElements +
+                                " Items total and  " +
+                                ("" + (number * dataSize + 1)) +
+                                "-" +
+                                ("" + (number * dataSize + numberOfElements)) +
+                                " is shown";
+                            $("#tblListViewExpired_info").html(
+                                languageCode == "en" ? listViewInfoEng : listViewInfoBng
+                            );
 
-                    } else if (currentView == "forwarded") {
-                        $("#tblListViewforwarded_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
-                        maxPageforwarded = totalPages;
-                        if (maxPageforwarded == 1) {
-                            $("#tblListViewforwarded_paginate .prev, #tblListViewforwarded_paginate .next").addClass("disabled");
-                        }
-                        if (currentPageforwarded == 1) {
-                            $("#tblListViewforwarded_paginate .prev").addClass("disabled");
-                        }
-                        if (maxPageforwarded > 1 && maxPageforwarded != currentPageforwarded) {
-                            $("#tblListViewforwarded_paginate .next").removeClass("disabled");
-                        }
-
-                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
-                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
-                        $("#tblListViewforwarded_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
-
-                        $('#tblListViewforwarded').dataTable().fnClearTable();
-                        $('#tblListViewforwarded').dataTable().fnAddData(response.content);
-                        $('#tblListViewforwarded').find("[data-toggle='tooltip']").tooltip();
-
-                    } else if (currentView == "expired") {
-                        $("#tblListViewExpired_paginate .pagination-panel-total").html(("" + (totalPages)).toBanglaNumber());
-                        maxPageExpired = totalPages;
-                        if (maxPageExpired == 1) {
-                            $("#tblListViewExpired_paginate .prev, #tblListViewExpired_paginate .next").addClass("disabled");
-                        }
-                        if (currentPageExpired == 1) {
-                            $("#tblListViewExpired_paginate .prev").addClass("disabled");
-                        }
-                        if (maxPageExpired > 1 && maxPageExpired != currentPageExpired) {
-                            $("#tblListViewExpired_paginate .next").removeClass("disabled");
-                        }
-                        var listViewInfoBng = ("" + totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + (number * dataSize + 1)).toBanglaNumber() + "-" + ("" + (number * dataSize + numberOfElements)).toBanglaNumber() + " এর  তথ্য দেখানো হচ্ছে";
-                        var listViewInfoEng = ("" + totalElements) + " Items total and  " + ("" + (number * dataSize + 1)) + "-" + ("" + (number * dataSize + numberOfElements)) + " is shown";
-                        $("#tblListViewExpired_info").html( languageCode == "en" ? listViewInfoEng : listViewInfoBng);
-
-                        $('#tblListViewExpired').dataTable().fnClearTable();
-                        $('#tblListViewExpired').dataTable().fnAddData(response.content);
-                        $('#tblListViewExpired').find("[data-toggle='tooltip']").tooltip();
-
+                            $("#tblListViewExpired").dataTable().fnClearTable();
+                            $("#tblListViewExpired").dataTable().fnAddData(response.content);
+                            $("#tblListViewExpired")
+                                .find("[data-toggle='tooltip']")
+                                .tooltip();
+                            break;
                     }
                     $("#ajaxProcessingModal").modal("hide");
                 }
-            }
+            },
         });
     }
 
     function searchComplaintsList() {
-
-        var searchSizeLocal = $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
+        var searchSizeLocal =
+            $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
         $("#ajaxProcessingModal").modal("show");
         var pageNo = 0;
         var SearchFieldNo;
@@ -1507,7 +1949,7 @@
             $("#currentPageCC").val(("" + currentPageCC).toBanglaNumber());
             pageNo = currentPageCC;
             SearchFieldNo = 1;
-        }  else if (currentView == "outbox") {
+        } else if (currentView == "outbox") {
             $("#currentPageOutbox").val(("" + currentPageOutbox).toBanglaNumber());
             pageNo = currentPageOutbox;
             SearchFieldNo = 1;
@@ -1516,18 +1958,34 @@
             pageNo = currentPageClosed;
             SearchFieldNo = 2;
         } else if (currentView == "forwarded") {
-            $("#currentPageforwarded").val(("" + currentPageforwarded).toBanglaNumber());
+            $("#currentPageforwarded").val(
+                ("" + currentPageforwarded).toBanglaNumber()
+            );
             pageNo = currentPageforwarded;
             SearchFieldNo = 3;
         } else if (currentView == "expired") {
-            $("#currentPageExpired").val(("" + currentPageExpired).toBanglaNumber());
+            $("#currentPageExpired").val(
+                ("" + currentPageExpired).toBanglaNumber()
+            );
             pageNo = currentPageExpired;
             SearchFieldNo = 4;
         }
     }
 
     function getSearchURL() {
-        var array = ["caseNumber", "trackingNumber", "createdAtStart", "createdAtEnd", "serviceName", "designationName", "subject", "closeDateStart", "closeDateEnd", "serviceType", "status"];
+        var array = [
+            "caseNumber",
+            "trackingNumber",
+            "createdAtStart",
+            "createdAtEnd",
+            "serviceName",
+            "designationName",
+            "subject",
+            "closeDateStart",
+            "closeDateEnd",
+            "serviceType",
+            "status",
+        ];
         var types = "types=";
         var values = "values=";
         var count = 0;
@@ -1543,22 +2001,26 @@
         } else if (currentView == "expired") {
             SearchFieldNo = 4;
         }
-        $($("tr.filter")[SearchFieldNo]).find("input").each(function(index) {
-            var value = $(this).val();
-            if (value != "") {
-                types = types + array[index] + ',';
-                values = values + value + ',';
-            }
-            count += 1;
-        })
-        $($("tr.filter")[0]).find("select").each(function(index) {
-            var value = $(this).val();
-            if (value != "") {
-                types = types + array[count] + ',';
-                values = values + encodeURIComponent(value) + ',';
-            }
-            count += 1;
-        })
+        $($("tr.filter")[SearchFieldNo])
+            .find("input")
+            .each(function (index) {
+                var value = $(this).val();
+                if (value != "") {
+                    types = types + array[index] + ",";
+                    values = values + value + ",";
+                }
+                count += 1;
+            });
+        $($("tr.filter")[0])
+            .find("select")
+            .each(function (index) {
+                var value = $(this).val();
+                if (value != "") {
+                    types = types + array[count] + ",";
+                    values = values + encodeURIComponent(value) + ",";
+                }
+                count += 1;
+            });
         types = types.substring(0, types.length - 1);
         values = values.substring(0, values.length - 1);
         var str = types + "&" + values;
@@ -1567,7 +2029,17 @@
 
     function showNotification() {
         if (hasAlert) {
-            $(".tab-content").prepend('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button><strong>' + alertTitle + '</strong> ' + alertBody + '</div>');
+            $(".tab-content").prepend(
+                '<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button><strong>' +
+                alertTitle +
+                "</strong> " +
+                alertBody +
+                "</div>"
+            );
         }
     }
 </script>
+
+
+
+</html>

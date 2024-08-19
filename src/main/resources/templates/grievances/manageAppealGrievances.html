@@ -36,19 +36,34 @@
         </div>
         <div th:class="${!isMobileLogin ? 'portlet-body' : ''}">
             <div class="tabbable-line">
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs" style="display: flex">
                     <li th:if="${isMobileLogin}"><a href="javascript:;"></a></li>
                     <li class="active">
                         <a href="#inbox" id="navInbox" data-toggle="tab"><i class="icon-arrow-down"></i><span class="tabname tabname-hide-on-mobile"> আগত <span id="inbox_unseen_count" style="color: #6f042c;">(0)</span></span></a>
                     </li>
                     <li>
-                        <a href="#sent" id="navSent" data-toggle="tab"><i class="icon-arrow-right"></i><span class="tabname tabname-hide-on-mobile"> প্রেরিত </span></a>
+                        <a href="#outbox" id="navSent" data-toggle="tab"><i class="icon-arrow-right"></i><span class="tabname tabname-hide-on-mobile"> প্রেরিত </span></a>
                     </li>
                     <li>
                         <a href="#closed" id="navClosed" data-toggle="tab"><i class="icon-check"></i><span class="tabname tabname-hide-on-mobile"> নিষ্পত্তিকৃত</span></a>
                     </li>
                     <li th:if="${isGro}">
                         <a href="#expired" id="navExpired" data-toggle="tab"><i class="icon-speedometer"></i><span class="tabname tabname-hide-on-mobile"> সময় অতিক্রান্ত</span></a>
+                    </li>
+
+                    <li style="margin-left: auto;">
+                        <a style="display: flex; align-items: center;">
+                            <i class="icon-docs" style="margin-right: 3px"></i>
+                            <span class="tabname tabname-hide-on-mobile" style="display: flex; align-items: center; margin-right: 5px">প্রতি পৃষ্ঠায় দেখুন </span>
+                            <select id="pagination" style="float: right">
+                                <option value="10">১০</option>
+                                <option value="20">২০</option>
+                                <option value="30" selected>৩০</option>
+                                <option value="50">৫০</option>
+                                <option value="100">১০০</option>
+                            </select>
+                            <span id="view-per-page" style="color: #16376f"></span>
+                        </a>
                     </li>
                 </ul>
                 <div class="tab-content">
@@ -57,7 +72,7 @@
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped table-bordered" id="tblListViewInbox">
                                     <thead>
-                                        <tr role="row" class="filter hide">
+                                    <tr role="row" class="filter hide">
                                         <td>
                                             <input type="text" class="form-control form-filter input-sm" name="case_number" placeholder="কেস নম্বর প্রদান করুন">
                                         </td>
@@ -125,7 +140,7 @@
                                         </td>
 
                                     </tr>
-                                        <tr role="row" class="heading">
+                                    <tr role="row" class="heading">
                                         <th> কেস নম্বর</th>
                                         <th> ট্র্যাকিং নম্বর</th>
                                         <th> অভিযোগের বিষয়</th>
@@ -142,28 +157,28 @@
                                     </tbody>
                                 </table>
                                 <div class="row">
-                                <div class="col-sm-5 col-md-5">
-                                    <div class="dataTables_info" id="tblListViewInbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    <div class="col-sm-5 col-md-5">
+                                        <div class="dataTables_info" id="tblListViewInbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-7 col-sm-7">
-                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewInbox_paginate">
-                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="inbox">
-                                                <i class="fa fa-angle-left"></i>
-                                            </a>
-                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageInbox" value="০" type="text">
-                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="inbox">
-                                                <i class="fa fa-angle-right"></i>
-                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                    <div class="col-md-7 col-sm-7">
+                                        <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewInbox_paginate">
+                                            <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                                <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="inbox">
+                                                    <i class="fa fa-angle-left"></i>
+                                                </a>
+                                                <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageInbox" value="০" type="text">
+                                                <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="inbox">
+                                                    <i class="fa fa-angle-right"></i>
+                                                </a> পৃষ্ঠা দেখানো হচ্ছে
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            </div>
                         </div>
                     </div>
-                    <div class="tab-pane" id="sent">
+                    <div class="tab-pane" id="outbox">
                         <div class="table-responsive">
                             <table class="table table-hover table-striped table-bordered " id="tblListViewOutbox">
                                 <thead>
@@ -251,24 +266,24 @@
                                 </tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewOutbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewOutbox_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewOutbox_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="outbox">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageOutbox" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="outbox">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewOutbox_paginate">
+                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="outbox">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageOutbox" value="০" type="text">
+                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="outbox">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     <div class="tab-pane" id="closed">
@@ -359,24 +374,24 @@
                                 </tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewClosed_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewClosed_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewClosed_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="closed">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageClosed" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="closed">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewClosed_paginate">
+                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="closed">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageClosed" value="০" type="text">
+                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="closed">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     <div class="tab-pane" th:if="${isGro}" id="expired">
@@ -466,24 +481,24 @@
                                 </tbody>
                             </table>
                             <div class="row">
-                            <div class="col-sm-5 col-md-5">
-                                <div class="dataTables_info" id="tblListViewExpired_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                <div class="col-sm-5 col-md-5">
+                                    <div class="dataTables_info" id="tblListViewExpired_info" role="status" aria-live="polite">০ এর মধ্যে ০ তথ্য দেখানো হচ্ছে
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7 col-sm-7">
-                                <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewExpired_paginate">
-                                    <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
-                                        <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="expired">
-                                            <i class="fa fa-angle-left"></i>
-                                        </a>
-                                        <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageExpired" value="০" type="text">
-                                        <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="expired">
-                                            <i class="fa fa-angle-right"></i>
-                                        </a> পৃষ্ঠা দেখানো হচ্ছে
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="dataTables_paginate paging_bootstrap_extended" id="tblListViewExpired_paginate">
+                                        <div class="pagination-panel pull-right"> পৃষ্ঠা <span class="pagination-panel-total">০</span> এর
+                                            <a href="javascript:;" class="btn btn-sm default prev disabled" data-prev-for="expired">
+                                                <i class="fa fa-angle-left"></i>
+                                            </a>
+                                            <input class="pagination-panel-input form-control input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" id="currentPageExpired" value="০" type="text">
+                                            <a href="javascript:;" class="btn btn-sm default next disabled" data-next-for="expired">
+                                                <i class="fa fa-angle-right"></i>
+                                            </a> পৃষ্ঠা দেখানো হচ্ছে
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -510,6 +525,8 @@
     <script src="assets/global/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js" type="text/javascript"></script>
 </div>
 
+
+
 <script th:fragment="manageAppealGrievancesScript">
     $("#header_inbox_bar a").addClass("active");
     var currentPageInbox = 1;
@@ -523,12 +540,85 @@
 
     var hasAlert = false, alertTitle = "", alertBody = "";
 
-    var searchSize = 10;
+    var searchSize = 30;
     var currentView = "inbox";
 
+
+    // Event Listener for pagination change
+    document.getElementById("pagination").addEventListener("change", function () {
+        var selectedValue = this.value;
+        searchSize = selectedValue;
+        sessionStorage.setItem("appealCurrentPageNoSession", 1 + ";" + searchSize);
+        loadComplaintsList(currentView); // Update to pass currentView
+    });
+
     $(document).ready(function() {
-        var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
+        var activeTab = sessionStorage.getItem('appealActiveTab');
+        if (activeTab) {
+            // Activate the saved tab
+            $('.nav-tabs a[href="' + activeTab + '"]').tab('show');
+            currentView = getCurrentViewFromTab(activeTab);  // Set currentView based on saved tab
+        } else {
+            // If no tab is saved, default to the first tab
+            $('.nav-tabs a:first').tab('show');
+            currentView = "inbox";  // Default to inbox view
+        }
+
+        // Call loadComplaintsList once during the initial load
+        loadComplaintsList(getCurrentPageForTab(activeTab || '#inbox'));
+
+        // Save the active tab on click
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            var currentTab = $(e.target).attr('href');
+            sessionStorage.setItem('appealActiveTab', currentTab);
+            currentView = getCurrentViewFromTab(currentTab); // Update currentView on tab switch
+
+            // Reset the current page to 1 when switching tabs
+            resetCurrentPageForTab(currentTab);
+
+            loadComplaintsList(getCurrentPageForTab(currentTab)); // Load data for the active tab
+        });
+
+        // Function to reset the current page to 1 for the given tab
+        function resetCurrentPageForTab(tab) {
+            switch (tab) {
+                case '#inbox': currentPageInbox = 1; break;
+                case '#outbox': currentPageOutbox = 1; break;
+                case '#closed': currentPageClosed = 1; break;
+                case '#expired': currentPageExpired = 1; break;
+            }
+            let currentSearchSize = sessionStorage.getItem("appealCurrentPageNoSession")?.split(";")[1] || searchSize;
+            sessionStorage.setItem("appealCurrentPageNoSession", 1 + ";" + currentSearchSize);
+        }
+
+        // Determine which view to set for the current tab
+        function getCurrentViewFromTab(tab) {
+            switch (tab) {
+                case '#inbox': return "inbox";
+                case '#outbox': return "outbox";
+                case '#closed': return "closed";
+                case '#expired': return "expired";
+                default: return "inbox";
+            }
+        }
+
+        // Determine which page number to load for the current tab
+        function getCurrentPageForTab(tab) {
+            switch (tab) {
+                case '#inbox': return currentPageInbox;
+                case '#outbox': return currentPageOutbox;
+                case '#closed': return currentPageClosed;
+                case '#expired': return currentPageExpired;
+                default: return 1;
+            }
+        }
+
+        var rowTitle =
+            (languageCode == "en")
+                ? "Click to view details"
+                : "বিস্তারিত দেখতে ক্লিক করুন";
         loadUnceenCount();
+        updatePaginationButtons();
 
         if($("[name='isMobileLogin']").val() === "false"){
             $("#listSearch").keypress(function(e) {
@@ -561,7 +651,7 @@
 
         showNotification();
 
-        loadComplaintsList(currentPageInbox);
+        // loadComplaintsList(currentPageInbox);
 
         var listViewArray = ['Inbox', 'Outbox', 'Closed', 'Expired'];
         $.each(listViewArray, function(index, value){
@@ -590,9 +680,9 @@
                 "bInfo": false,
                 "bAutoWidth": true,
                 "columnDefs": [{
-                        'orderable': false,
-                        'targets': [2,3,5,6,7,8]
-                    },
+                    'orderable': false,
+                    'targets': [2,3,5,6,7,8]
+                },
                     {
                         "searchable": false,
                         "targets": [0, 1]
@@ -674,92 +764,76 @@
             });
         });
 
-        $(".next").click(function(e) {
-            var currentPageForNext;
-            var searchCriteriaNo;
-            if (currentView == "inbox") {
-                currentPageInbox = currentPageInbox + 1;
-                if (currentPageInbox == maxPageInbox) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageInbox > maxPageInbox) {
-                    currentPageInbox = maxPageInbox;
-                }
-                searchCriteriaNo = 0;
-                currentPageForNext = currentPageInbox;
-            } else if (currentView == "outbox") {
-                currentPageOutbox = currentPageOutbox + 1;
-                if (currentPageOutbox == maxPageOutbox) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageOutbox > maxPageOutbox) {
-                    currentPageOutbox = maxPageOutbox;
-                }
-                searchCriteriaNo = 1;
-                currentPageForNext = currentPageOutbox;
-            } else if (currentView == "closed") {
-                currentPageClosed = currentPageClosed + 1;
-                if (currentPageClosed == maxPageClosed) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageClosed > maxPageClosed) {
-                    currentPageClosed = maxPageClosed;
-                }
-                searchCriteriaNo = 2;
-                currentPageForNext = currentPageClosed;
-            }
-            var searchUrlString = getSearchURL();
-            if (searchUrlString.localeCompare("types&values") != 0) {
-                searchComplaintsList(currentPageForNext);
-            } else {
-                loadComplaintsList(currentPageForNext);
-            }
-            $(this).parent().find(".prev").removeClass("disabled");
+        // Bind events using event delegation
+        $(document).on("click", ".next", function (e) {
+            handlePagination("next");
         });
 
-        $(".prev").click(function(e) {
-            var currentPageForPrev;
-            var searchFieldNo;
-            if (currentView == "inbox") {
-                currentPageInbox = currentPageInbox - 1;
-
-                if (currentPageInbox == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageInbox < 1) {
-                    currentPageInbox = 1;
-                }
-                currentPageForPrev = currentPageInbox;
-                searchFieldNo = 0;
-            } else if (currentView == "outbox") {
-                currentPageOutbox = currentPageOutbox - 1;
-                if (currentPageOutbox == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageOutbox < 1) {
-                    currentPageOutbox = 1;
-                }
-                currentPageForPrev = currentPageOutbox;
-                searchFieldNo = 1;
-            } else if (currentView == "closed") {
-                currentPageClosed = currentPageClosed - 1;
-                if (currentPageClosed == 1) {
-                    $(this).addClass("disabled");
-                }
-                if (currentPageClosed < 1) {
-                    currentPageClosed = 1;
-                }
-                currentPageForPrev = currentPageClosed;
-                searchFieldNo = 2;
-            }
-            var searchUrlString = getSearchURL();
-            if (searchUrlString.localeCompare("types&values") != 0) {
-                searchComplaintsList(currentPageForPrev);
-            } else {
-                loadComplaintsList(currentPageForPrev);
-            }
-            $(this).parent().find(".next").removeClass("disabled");
+        $(document).on("click", ".prev", function (e) {
+            handlePagination("prev");
         });
+
+        // Function to handle both next and previous pagination
+        function handlePagination(direction) {
+            // Retrieve the current page and search size from session storage
+            let currentPage = parseInt(
+                sessionStorage.getItem("appealCurrentPageNoSession").split(";")[0]
+            );
+            let searchSize = parseInt(
+                sessionStorage.getItem("appealCurrentPageNoSession").split(";")[1]
+            );
+            let maxPage = getMaxPageForCurrentView(); // Function to get max page based on current view
+
+            // Update currentPage based on direction
+            currentPage = direction === "next" ? currentPage + 1 : currentPage - 1;
+
+            // Ensure currentPage stays within the boundaries
+            if (currentPage > maxPage) currentPage = maxPage;
+            if (currentPage < 1) currentPage = 1;
+
+            // Update session storage with the new current page and also the specific variable for the tab
+            sessionStorage.setItem("appealCurrentPageNoSession", currentPage + ";" + searchSize);
+
+            // Update the specific variable based on the current view
+            switch (currentView) {
+                case "inbox":
+                    currentPageInbox = currentPage;
+                    break;
+                case "outbox":
+                    currentPageOutbox = currentPage;
+                    break;
+                case "closed":
+                    currentPageClosed = currentPage;
+                    break;
+                case "expired":
+                    currentPageExpired = currentPage;
+                    break;
+            }
+
+            // Load or update the list view with the new page
+            loadComplaintsList(currentPage);
+
+            // Update button states
+            $(".prev").toggleClass("disabled", currentPage === 1);
+            $(".next").toggleClass("disabled", currentPage === maxPage);
+        }
+
+        // Function to determine the maximum page number based on the current view
+        function getMaxPageForCurrentView() {
+            // Assuming global variables that hold max pages for each view
+            switch (currentView) {
+                case "inbox":
+                    return maxPageInbox;
+                case "outbox":
+                    return maxPageOutbox;
+                case "closed":
+                    return maxPageClosed;
+                case "expired":
+                    return maxPageExpired;
+                default:
+                    return 1; // Default to 1 if no view matches
+            }
+        }
 
         $("#currentPageInbox").blur(function(e) {
             e.preventDefault();
@@ -841,29 +915,17 @@
                 $("#currentPageClosed").val(("" + currentPageClosed).toBanglaNumber());
             }
         });
-
-        $("#navInbox").click(function(e) {
-            currentView = "inbox";
-            loadComplaintsList(currentPageInbox);
-        });
-
-        $("#navSent").click(function(e) {
-            currentView = "outbox";
-            loadComplaintsList(currentPageOutbox);
-        });
-
-        $("#navClosed").click(function(e) {
-            currentView = "closed";
-            loadComplaintsList(currentPageClosed);
-        });
-
-
-        $("#navExpired").click(function(e) {
-            currentView = "expired";
-            loadComplaintsList(currentPageExpired);
-        });
-
     });
+
+    function updatePaginationButtons() {
+        let currentPage =
+            parseInt(
+                sessionStorage.getItem("appealCurrentPageNoSession")?.split(";")[0]
+            ) || 1;
+        let maxPage = parseInt(sessionStorage.getItem("appealMaxPageSession")) || 1;
+        $(".prev").toggleClass("disabled", currentPage <= 1);
+        $(".next").toggleClass("disabled", currentPage >= maxPage);
+    }
 
     function loadUnceenCount() {
 
@@ -901,6 +963,36 @@
     };
 
     function loadComplaintsList(page) {
+        var sessionString = sessionStorage.getItem("appealCurrentPageNoSession");
+        if (sessionString === null) {
+            sessionStorage.setItem("appealCurrentPageNoSession", 1 + ";" + 30);
+            sessionString = sessionStorage.getItem("appealCurrentPageNoSession");
+        }
+        // console.log(`SessionString: ${sessionString}`);
+        // console.log(`currentPageInbox: ${currentPageInbox}`);
+        // console.log(`page:searchSize ${page}:${searchSize}`);
+
+        var parts = sessionString.split(";");
+        var x = parseInt(parts[0]);
+        var y = parseInt(parts[1]);
+
+        // Update the specific page number for the current view
+        switch (currentView) {
+            case "inbox":
+                currentPageInbox = x;
+                break;
+            case "outbox":
+                currentPageOutbox = x;
+                break;
+            case "closed":
+                currentPageClosed = x;
+                break;
+            case "expired":
+                currentPageExpired = x;
+                break;
+        }
+
+        document.getElementById("pagination").value = String(y);
 
         var searchSizeLocal = $("[name='isMobileLogin']").val() == "true" ? 5 : searchSize;
         $("#ajaxProcessingModal").modal("show");
@@ -921,18 +1013,21 @@
         }
 
         var searchItem = $("[name='isMobileLogin']").val() == "true" ? "" : $("#listSearch").val()
-        var url = "/api/grievance/appeal/" + currentView;
-        if (searchItem !== "" && searchItem != null) {
-            url = "/api/grievance/appeal/" + currentView+"/search?value="+searchItem;
-        }
+
+        // var url = "/api/grievance/appeal/" + currentView;
+        // if (searchItem !== "" && searchItem != null) {
+        //     url = "/api/grievance/appeal/" + currentView+"/search?value="+searchItem;
+        // }
         $.ajax({
-            url: url,
+            // url: url,
+            url: "/api/grievance/appeal/" + currentView + "/search?value=" + searchItem,
             type: "get",
             data: {
-                "page": (pageNo - 1),
-                "size": searchSizeLocal
+                page: x - 1,
+                size: y,
             },
             dataType: "json",
+
             success: function(response) {
                 if (response == 0 || response == "" || response.content.length == 0) {
                     if (currentView == "inbox") {
