@@ -1014,12 +1014,13 @@
 
         var searchItem = $("[name='isMobileLogin']").val() == "true" ? "" : $("#listSearch").val()
 
-        var url = "/api/grievance/appeal/" + currentView;
-        if (searchItem !== "" && searchItem != null) {
-            url = "/api/grievance/appeal/" + currentView+"/search?value="+searchItem;
-        }
+        // var url = "/api/grievance/appeal/" + currentView;
+        // if (searchItem !== "" && searchItem != null) {
+        //     url = "/api/grievance/appeal/" + currentView+"/search?value="+searchItem;
+        // }
         $.ajax({
-            url: url,
+            // url: url,
+            url: "/api/grievance/appeal/" + currentView + "/search?value=" + searchItem,
             type: "get",
             data: {
                 page: x - 1,

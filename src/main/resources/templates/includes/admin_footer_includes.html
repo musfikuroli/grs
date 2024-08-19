@@ -220,9 +220,21 @@
                 data: JSON.stringify(singleRole),
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
+                    clearGrievanceAndAppealPaginationSession();
                     window.location.replace("/login");
                 }
             });
+        }
+
+        function clearGrievanceAndAppealPaginationSession(){
+            sessionStorage.removeItem("activeTab");
+            sessionStorage.removeItem("currentPageNoSession");
+            sessionStorage.removeItem("maxPageSession");
+
+            sessionStorage.removeItem("appealActiveTab");
+            sessionStorage.removeItem("appealCurrentPageNoSession");
+            sessionStorage.removeItem("appealMaxPageSession");
+            // sessionStorage.clear();
         }
 
         var languageCode = $.cookie("lang");
