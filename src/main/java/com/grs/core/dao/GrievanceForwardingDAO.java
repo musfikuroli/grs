@@ -391,7 +391,7 @@ public class GrievanceForwardingDAO {
 
         Specification<GrievanceForwarding> specification = new Specification<GrievanceForwarding>() {
             public Predicate toPredicate(Root<GrievanceForwarding> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> predicates = new ArrayList<Predicate>();
+                List<Predicate> predicates = new ArrayList<>();
                 predicates.add(builder.notEqual(root.get("grievance").get("complainantId"), userId));
                 if (listType.toString().contains("APPEAL")) {
                     predicates.add(builder.equal(root.get("grievance").<Long>get("currentAppealOfficeId"), officeId));
