@@ -15,10 +15,10 @@ import java.util.List;
 @Repository
 public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
-    @Query(value = "select coalesce(sum(cnt),0) from (select count(distinct id) cnt, current_status from complain_history where current_status in ('NEW', 'RETAKE') " +
+    @Query(value = "select coalesce(sum(cnt),0) from (select count(distinct complain_id) AS cnt from complain_history where current_status in ('NEW', 'RETAKE') " +
             "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH), '%Y-%m-01 00:00:00') " +
             "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH)), '%Y-%m-%d 23:59:59')  " +
-            "and medium_of_submission=?2 and office_id=?1 group by current_status) cxt", nativeQuery = true)
+            "and medium_of_submission=?2 and office_id=?1) cxt", nativeQuery = true)
 
 
     Long countComplaintsByOfficeAndMediumOfSubmission(Long officeId, String mediumOfSubmission, Long monthDiff);
@@ -1343,9 +1343,9 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
                     "\tDATE_FORMAT(DATE_ADD(?3, INTERVAL 1 MONTH), '%Y-%m-%d 00:00:00')) AND dd.office_id=?1 AND dd.medium_of_submission=?2")
     Long getMonthlyAppealCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth(Long officeId, String mediumOfSubmission, String date);
 
-    @Query(value = "select coalesce(sum(cnt),0) from (select count(distinct complain_id) as cnt,current_status  from complain_history where current_status in ('NEW','RETAKE')" +
+    @Query(value = "select coalesce(sum(cnt),0) from (select count(distinct complain_id) as cnt from complain_history where current_status in ('NEW','RETAKE')" +
             "and created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
-            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id=?1 group by current_status ) cxt", nativeQuery = true)
+            "and DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') and office_id=?1) cxt", nativeQuery = true)
 
 
     Long countTotalComplaintsByOfficeIdV2(Long officeId, Long monthDiff);
@@ -1471,16 +1471,16 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
             "  AND d.office_id = ?1 and com.office_id= ?1", nativeQuery = true)
         */
 
-    @Query(value = "select coalesce(sum(cnt), 0) from (select count(distinct complain_id) as cnt,current_status  from complain_history where current_status in ('NEW','RETAKE') " +
+    @Query(value = "select coalesce(sum(cnt), 0) from (select count(distinct complain_id) as cnt from complain_history where current_status in ('NEW','RETAKE') " +
             "and created_at < DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') " +
             "and closed_at is null and DATEDIFF(DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00'), created_at) > ?3 " +
-            "and office_id =?1 group by current_status) cxt", nativeQuery = true)
+            "and office_id =?1) cxt", nativeQuery = true)
 
     Long countTimeExpiredGrievancesByOfficeIdV2(Long officeId, Long monthDiff, Long numberOfDays);
 
-    @Query(value = "select coalesce(sum(cnt), 0) from (select count(distinct complain_id) as cnt,current_status  from complain_history where current_status in ('NEW', 'RETAKE') " +
+    @Query(value = "select coalesce(sum(cnt), 0) from (select count(distinct complain_id) as cnt from complain_history where current_status in ('NEW', 'RETAKE') " +
             "and (closed_at is null or closed_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')) " +
-            "and office_id = ?1 and created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') group by current_status) cxt", nativeQuery = true)
+            "and office_id = ?1 and created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59')) cxt", nativeQuery = true)
 
     Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff);
 
