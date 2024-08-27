@@ -469,6 +469,19 @@ public class DashboardDataDAO {
         return dashboardDataRepo.findByOfficeIdAndComplaintStatusInOrderByCreatedAtDesc(officeId, nonAppealStatusList, pageable);
     }
 
+    public Page<DashboardData> getPageableDashboardDataForGrievanceRegisterByTrackingNumber(Long officeId, String trackingNumber, Pageable pageable) {
+        // Filter out statuses containing "APPEAL"
+        List<GrievanceCurrentStatus> nonAppealStatusList = new ArrayList<>();
+        for (GrievanceCurrentStatus status : GrievanceCurrentStatus.values()) {
+            if (!status.name().contains("APPEAL")) {
+                nonAppealStatusList.add(status);
+            }
+        }
+
+        // Call the repository method to find data by officeId, trackingNumber, and non-appeal statuses
+        return dashboardDataRepo.findByOfficeIdAndTrackingNumberAndComplaintStatusInOrderByCreatedAtDesc(officeId, trackingNumber, nonAppealStatusList, pageable);
+    }
+
     public Page<DashboardData> getPageableDashboardDataAppealRegister(Long officeId, Pageable pageable) {
         List<GrievanceCurrentStatus> nonAppealStatusList = new ArrayList();
         for (GrievanceCurrentStatus status : GrievanceCurrentStatus.values()) {

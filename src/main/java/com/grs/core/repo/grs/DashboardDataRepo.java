@@ -1125,6 +1125,9 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
 
     Page<DashboardData> findByOfficeIdAndComplaintStatusInOrderByCreatedAtDesc(Long officeId, List<GrievanceCurrentStatus> grievanceCurrentStatusList, Pageable pageable);
 
+    // New method for filtering by officeId, tracking number, and non-appeal statuses
+    Page<DashboardData> findByOfficeIdAndTrackingNumberAndComplaintStatusInOrderByCreatedAtDesc(Long officeId, String trackingNumber, List<GrievanceCurrentStatus> statusList, Pageable pageable);
+
     Page<DashboardData> findByOfficeIdAndGrievanceIdInAndAppealFromOfficeIdIsNullOrderByCreatedAtDesc(Long officeId, List<Long> grievanceIdList, Pageable pageable);
 
     List<DashboardData> findByAppealFromOfficeId(Long officeId);
