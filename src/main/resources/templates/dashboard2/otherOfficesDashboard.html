@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="otherOfficesDashboard" th:remove="tag">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body" id="otherOfficesDashboard" style="margin-left: 50px; margin-right: 50px">
+            <div class="font-lg bold text-center margin-20" style="margin-bottom: 20px">অন্যান্য দপ্তরের ড্যাশবোর্ডের চিত্র</div>
+            <div class="font-lg text-center margin-20" style="margin-bottom: 20px">দপ্তর নির্বাচন করুন</div>
+
+            <!-- Office Selection Section -->
+            <div class="row margin-bottom-20 office-selection" style="margin-bottom: 30px;">
+                <th:block th:replace="officeSelection :: officeSelection(selectionType='OtherOfficesDashboard')"></th:block>
+            </div>
+
+            <!-- Button to Navigate to Dashboard -->
+            <div class="text-center margin-top-20">
+                <button id="viewDashboardButton" class="btn btn-primary"  style="cursor: pointer; height: 35px; width: 140px; font-size: 16px;" onclick="navigateToDashboard()">ড্যাশবোর্ড দেখুন</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="otherOfficesDashboardScript">
+    function initOtherOfficesDashboardTabContents(){
+        // bindOfficeLayersChangeActionsForReport("otherOfficesDashboard", "appendAllIfExist");
+    }
+
+    function encodeOfficeIdOnDrillDown(param) {
+        var encodedPrefix = btoa("" + (Math.pow(10, 10) * Math.random())).substr(0, 20).split("").reverse().join("");
+        var encodedParams = btoa("" + param);
+        return encodedPrefix + encodedParams;
+    }
+
+    function navigateToDashboard() {
+        // Retrieve the selected office ID
+        var selectedOfficeId = parseInt($('#secondSelectionOtherOfficesDashboard').val()); // Ensure this ID is correct as per your dynamic setup
+
+        console.log("Selected Office ID  ==== " + selectedOfficeId)
+
+        if (selectedOfficeId) {
+            var encodedParams = encodeOfficeIdOnDrillDown(selectedOfficeId);
+            var url = 'dashboard.do?params=' + encodedParams;
+            window.location.href = url; // Navigate to the constructed URL
+        } else {
+            alert('Please select an office first.');
+        }
+    }
+</script>

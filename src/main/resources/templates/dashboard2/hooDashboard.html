@@ -125,6 +125,10 @@
         <div th:replace="dashboard2/dcOfficeWiseReport :: dcOfficeWiseReport"></div>
     </div>
 
+    <div class="tab-container" id="tabOtherOfficesDashboard_body">
+        <div th:replace="dashboard2/otherOfficesDashboard :: otherOfficesDashboard"></div>
+    </div>
+
 <!--    <div class="tab-container" id="tabSafetyNetDashboard_body">-->
 <!--        <div th:replace="dashboard2/safetyNetDashboard :: safetyNetDashboard"></div>-->
 <!--    </div>-->
@@ -152,6 +156,7 @@
     <th:block th:replace="dashboard2/safetyNetDashboard :: safetyNetDashboardScript"></th:block>
     <th:block th:replace="dashboard2/upazilaWiseSafetynetGrievanceReport :: upazilaWiseSafetynetGrievanceReportScript"></th:block>
     <th:block th:replace="dashboard2/dcOfficeWiseReport :: dcOfficeWiseReportScript"></th:block>
+    <th:block th:replace="dashboard2/otherOfficesDashboard :: otherOfficesDashboardScript"></th:block>
 
 </div>
 
@@ -1566,6 +1571,7 @@
         });
 
         $("body").on("tabCustomReport-opened", function () {
+            bindOfficeLayersChangeActionsForReport("", "appendAllIfExist");
             loadAppealedComplaints(1);
         });
 
@@ -1575,6 +1581,10 @@
 
         $("body").on("tabDCOfficeWiseReport-opened", function () {
             loadAppealedComplaints(1);
+        });
+
+        $("body").on("tabOtherOfficesDashboard-opened", function () {
+            bindOfficeLayersChangeActionsForReport("OtherOfficesDashboard", "appendAllIfExist");
         });
     }
 
@@ -1722,6 +1732,7 @@
         initMonthlyReportTabContents();
         initCustomReportTabContents();
         initDCOfficeReportTabContents();
+        initOtherOfficesDashboardTabContents();
         initSafetyNetDashboard();
         initGrievanceRegisterTable();
         initAppealRegisterTable();
