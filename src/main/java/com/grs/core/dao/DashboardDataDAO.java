@@ -151,7 +151,6 @@ public class DashboardDataDAO {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, monthDiff.intValue());
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        //Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
         return dashboardDataRepo.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
     }
 
@@ -292,7 +291,12 @@ public class DashboardDataDAO {
     }
 
     public Long countTimeExpiredAppealsByOfficeIdV2(Long officeId, Long monthDiff) {
-        return dashboardDataRepo.countTimeExpiredAppealsByOfficeIdV2(officeId, monthDiff);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, monthDiff.intValue());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
+
+        return dashboardDataRepo.countTimeExpiredAppealsByOfficeIdV2(officeId, monthDiff, days);
     }
 
     public Long countRunningAppealsByOfficeId(Long officeId, Long monthDiff) {

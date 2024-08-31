@@ -71,25 +71,18 @@ public class GRSStatisticDTO {
             }
 
             this.resolveRate = rate.floatValue();
-
-            this.appealTotal = monthlyReport.getAppealTotalCount();
             this.appealCurrentMonthAcceptance =  monthlyReport.getAppealOnlineSubmissionCount();
             this.appealAscertain = monthlyReport.getAppealInheritedFromLastMonthCount();
+            this.appealTotal = this.appealCurrentMonthAcceptance + this.appealAscertain;
             this.appealRunning = monthlyReport.getAppealRunningCount();
             this.appealTimeExpired = monthlyReport.getAppealTimeExpiredCount();
             this.appealResolved = monthlyReport.getAppealResolvedCount();
 
             Double appealRate = 0d;
-            if (monthlyReport.getAppealTotalCount() > 0) {
-                if (monthlyReport.getAppealResolvedCount() > monthlyReport.getAppealTotalCount()) {
-                    this.appealTotal +=1;
-                    this.appealRunning +=1;
-                    monthlyReport.setAppealTotalCount(monthlyReport.getAppealTotalCount()+1);
-                }
-                appealRate = ((double) monthlyReport.getAppealResolvedCount() / ((double) monthlyReport.getAppealTotalCount())) * 100;
+            if (this.appealTotal > 0) {
+                appealRate = ((double) monthlyReport.getAppealResolvedCount() / ((double) this.appealTotal)) * 100;
                 appealRate = (double) Math.round(appealRate * 100) / 100;
             }
-            //this.runningGrievances = this.currentMonthAcceptance + this.ascertainOfLastMonth - this.resolvedGrievances - this.forwardedGrievances;
             this.appealResolveRate = appealRate.floatValue();
         }
     }
