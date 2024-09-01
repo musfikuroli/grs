@@ -6,10 +6,21 @@
         <div class="font-lg font-purple text-center" th:text="#{register.view.title}"></div>
 
         <div id="registerTable">
-            <a class="btn btn-outline btn-success col-md-1 print-report pull-right remove-on-print" style="cursor: pointer; color: #ffffff;">
-                <i class="fa fa-print"></i>&nbsp;
-                <span th:text="#{print}"></span>
-            </a>
+            <div class="row remove-on-print" style="margin-bottom: 15px;">
+                <div class="col-md-2" style="width: 250px; height: 34px; padding-right: 5px">
+                    <input type="text" id="trackingNumberSearch" class="form-control" placeholder="ট্র্যাকিং নম্বর" style="font-size: 16px;"/>
+                </div>
+                <div class="col-md-2" style="height: 34px; padding-left: 0">
+                    <button class="btn btn-primary" id="searchByTrackingNumber" style="cursor: pointer; font-size: 16px" onclick="searchByTrackingNumber()">সার্চ</button>
+                </div>
+                <div class="col-md-2 pull-right">
+                    <a class="btn btn-outline btn-success print-report pull-right" style="cursor: pointer; color: #ffffff; height: 34px">
+                        <i class="fa fa-print"></i>&nbsp;
+                        <span th:text="#{print}"></span>
+                    </a>
+                </div>
+            </div>
+
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                 <tr role="row" class="heading">
@@ -60,6 +71,28 @@
 <script type="text/javascript" th:fragment="grievanceRegisterScript">
 
     var grievanceCurrentPage = 1, grievanceMaxPage = 1;
+    var currentTrackingNumber = "";  // New variable to store current tracking number
+
+    function searchByTrackingNumber() {
+        let trackingNumberInput = $('#trackingNumberSearch').val();
+        currentTrackingNumber = convertBanglaToEnglishNumber(trackingNumberInput);
+
+        grievanceCurrentPage = 1; // Reset to the first page for a new search
+        loadGrievanceRegister(grievanceCurrentPage);
+    }
+
+    // Function to convert Bangla numerals to English
+    function convertBanglaToEnglishNumber(banglaNumber) {
+        const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        let englishNumber = banglaNumber.split('').map(char => {
+            const index = banglaDigits.indexOf(char);
+            return index > -1 ? englishDigits[index] : char;
+        }).join('');
+
+        return englishNumber;
+    }
 
     function getResolveTypeText(status) {
         var text = "-";
@@ -105,16 +138,29 @@
     function loadGrievanceRegister(page) {
         blockUI();
         $("#registerTable [name='grievanceCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+        var requestData = {
+            "page": (page - 1),
+            "size": itemPerPage
+        };
+
+        // Include tracking number in the request if provided
+        if (currentTrackingNumber.trim() !== "") {
+            requestData.trackingNumber = currentTrackingNumber;
+        }
+
         $.ajax({
             url: "/api/dashboard/offices/" + $("[name='officeId']").val() + "/register",
             type: "get",
-            data: {
-                "page": (page - 1),
-                "size": itemPerPage
-            },
+            data: requestData,
             dataType: "json",
             success: function(response) {
                 if (response == 0 || response == "" || response.content.length == 0) {
+                    // Clear the existing table data
+                    $("#registerTable tbody").empty();
+                    // Display the "কোন অভিযোগ পাওয়া যায়নি" message
+                    var noDataMessage = "<tr><td colspan='10' class='text-center bold'>কোন অভিযোগ পাওয়া যায়নি</td></tr>";
+                    $("#registerTable tbody").append(noDataMessage);
+
                     $("#registerTable tbody tr").css("cursor","default");
                     $("#registerTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
                     $("#registerTable [name='grievanceCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
@@ -366,6 +412,14 @@
             } else {
                 toastr.error("Sorry, invalid page number");
                 paginationFieldDom.val(languageCode == 'en' ? ("" + grievanceCurrentPage) : ("" + grievanceCurrentPage).toBanglaNumber());
+            }
+        });
+
+        // Add event listener for Enter key on the search input field
+        $('#trackingNumberSearch').keypress(function(event) {
+            if (event.which === 13) { // Enter key code
+                event.preventDefault(); // Prevent form submission if inside a form
+                searchByTrackingNumber(); // Call the search function
             }
         });
     }

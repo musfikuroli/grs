@@ -204,10 +204,6 @@ public class ReportsService {
         Long runningGrievanceCount = dashboardService.countRunningAppealsByOfficeIdV2(officeId, monthDiff);
 
         Long onlineSubmitted = dashboardService.getMonthlyAppealsCountByOfficeIdAndMediumOfSubmissionV2(officeId, MediumOfSubmission.ONLINE, monthDiff);
-        while (resolvedCount > totalSubmitted) {
-            totalSubmitted +=1;
-            onlineSubmitted +=1;
-        }
         Double rate = 0d;
         if (totalSubmitted > 0) {
             rate = ((double)resolvedCount / (double)totalSubmitted) * 100;
@@ -216,7 +212,7 @@ public class ReportsService {
         return MonthlyReportDTO.builder()
                 .officeId(officeId)
                 .onlineSubmissionCount(onlineSubmitted)
-                .inheritedFromLastMonthCount(dashboardService.getAppealAscertainCountOfPreviousMonthV2(officeId, monthDiff))
+                .inheritedFromLastMonthCount(dashboardService.countRunningAppealsByOfficeIdV2(officeId, monthDiff-1))
                 .totalCount(totalSubmitted)
                 .resolvedCount(resolvedCount)
                 .runningCount(runningGrievanceCount)

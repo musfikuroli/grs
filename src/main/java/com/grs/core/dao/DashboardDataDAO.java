@@ -151,7 +151,6 @@ public class DashboardDataDAO {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, monthDiff.intValue());
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        //Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
         return dashboardDataRepo.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
     }
 
@@ -292,7 +291,12 @@ public class DashboardDataDAO {
     }
 
     public Long countTimeExpiredAppealsByOfficeIdV2(Long officeId, Long monthDiff) {
-        return dashboardDataRepo.countTimeExpiredAppealsByOfficeIdV2(officeId, monthDiff);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, monthDiff.intValue());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        Long days = CalendarUtil.getWorkDaysCountBefore(calendar.getTime(), (int) Constant.GRIEVANCE_EXPIRATION_TIME);
+
+        return dashboardDataRepo.countTimeExpiredAppealsByOfficeIdV2(officeId, monthDiff, days);
     }
 
     public Long countRunningAppealsByOfficeId(Long officeId, Long monthDiff) {
@@ -467,6 +471,19 @@ public class DashboardDataDAO {
             }
         }
         return dashboardDataRepo.findByOfficeIdAndComplaintStatusInOrderByCreatedAtDesc(officeId, nonAppealStatusList, pageable);
+    }
+
+    public Page<DashboardData> getPageableDashboardDataForGrievanceRegisterByTrackingNumber(Long officeId, String trackingNumber, Pageable pageable) {
+        // Filter out statuses containing "APPEAL"
+        List<GrievanceCurrentStatus> nonAppealStatusList = new ArrayList<>();
+        for (GrievanceCurrentStatus status : GrievanceCurrentStatus.values()) {
+            if (!status.name().contains("APPEAL")) {
+                nonAppealStatusList.add(status);
+            }
+        }
+
+        // Call the repository method to find data by officeId, trackingNumber, and non-appeal statuses
+        return dashboardDataRepo.findByOfficeIdAndTrackingNumberAndComplaintStatusInOrderByCreatedAtDesc(officeId, trackingNumber, nonAppealStatusList, pageable);
     }
 
     public Page<DashboardData> getPageableDashboardDataAppealRegister(Long officeId, Pageable pageable) {
