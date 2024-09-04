@@ -230,8 +230,11 @@ public class DashboardController {
     }
 
     @GetMapping("/offices/{office_id}/register")
-    public Page<RegisterDTO> getPaginatedDashboardDataForGrievanceRegister(@PathVariable("office_id") Long officeId, Pageable pageable) {
-        return dashboardService.getPageableDashboardDataForGrievanceRegister(officeId, pageable);
+    public Page<RegisterDTO> getPaginatedDashboardDataForGrievanceRegister(
+            @PathVariable("office_id") Long officeId,
+            @RequestParam(value = "trackingNumber", required = false) String trackingNumber,
+            Pageable pageable) {
+        return dashboardService.getPageableDashboardDataForGrievanceRegister(officeId, trackingNumber, pageable);
     }
 
     @GetMapping("/offices/{office_id}/appeal-register")

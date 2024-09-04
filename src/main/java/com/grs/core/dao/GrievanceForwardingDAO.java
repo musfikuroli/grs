@@ -715,11 +715,12 @@ public class GrievanceForwardingDAO {
         }
 
         if (movement.getAction().equalsIgnoreCase("FORWARD_TO_ANOTHER_OFFICE")) {
-            String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and current_status=:current_status and closed_at is null ";
+            String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and current_status in(:current_status1,:current_status2) and closed_at is null ";
             Map<String, Object> params = new HashMap<>();
             params.put("closedAt", new Date());
             params.put("complain_id", movement.getGrievance().getId());
-            params.put("current_status", "NEW");
+            params.put("current_status1", "NEW");
+            params.put("current_status2", "RETAKE");
 
             baseEntityManager.updateByQuery(sql, params);
 

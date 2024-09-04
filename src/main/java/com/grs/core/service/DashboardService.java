@@ -1444,8 +1444,17 @@ public class DashboardService {
         return registerDTO;
     }
 
-    public Page<RegisterDTO> getPageableDashboardDataForGrievanceRegister(Long officeId, Pageable pageable) {
-        Page<DashboardData> dashboardDataList = dashboardDataDAO.getPageableDashboardDataForGrievanceRegister(officeId, pageable);
+    public Page<RegisterDTO> getPageableDashboardDataForGrievanceRegister(Long officeId, String trackingNumber, Pageable pageable) {
+        Page<DashboardData> dashboardDataList;
+
+        if(trackingNumber != null) {
+            // If tracking number is provided, search by officeId and tracking number
+            dashboardDataList = dashboardDataDAO.getPageableDashboardDataForGrievanceRegisterByTrackingNumber(officeId, trackingNumber, pageable);
+        } else {
+            // If no tracking number is provided, return the default paginated data
+            dashboardDataList = dashboardDataDAO.getPageableDashboardDataForGrievanceRegister(officeId, pageable);
+        }
+
         return dashboardDataList.map(this::convertDashboardDataToRegisterDTO);
     }
 
