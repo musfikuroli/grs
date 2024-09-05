@@ -32,6 +32,8 @@ public class OfficesGroDAO {
     @Autowired
     private OfficesGRORepo officesGRORepo;
 
+    private List<OfficesGRO> officesGROList = new ArrayList<>();
+
     public List<BigInteger> findOfficeIds() {
         return this.officesGRORepo.findOfficeIds();
     }
@@ -100,7 +102,10 @@ public class OfficesGroDAO {
     }
 
     public List<OfficesGRO> findAll() {
-        return this.officesGRORepo.findAll();
+        if(officesGROList == null || officesGROList.size() == 0) {
+            officesGROList.addAll(this.officesGRORepo.findAll());
+        }
+        return officesGROList;
     }
 
     public List<Long> getGRSEnabledOfficeIdFromOfficeIdList(List<Long> officeIdList) {

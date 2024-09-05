@@ -10,7 +10,9 @@ import com.grs.core.repo.projapoti.OfficeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Acer on 8/30/2017.
@@ -23,6 +25,8 @@ public class OfficeDAO {
     private OfficesGRORepo officesGRORepo;
     @Autowired
     private CitizensCharterOriginRepo citizensCharterOriginRepo;
+
+    private Map<Long, List<Office> > mapOfficeByOfficeOrigin = new HashMap<>();
 
     public Integer getChildCountByParentOfficeId( Long parentOfficeId ) {
         return this.officeRepo.countByParentOfficeId(parentOfficeId);
@@ -97,7 +101,13 @@ public class OfficeDAO {
     }
 
     public List<Office> findByOfficeOriginId(Long officeoriginId) {
-        return this.officeRepo.findByOfficeOriginIdAndStatusTrue(officeoriginId);
+
+        mapOfficeByOfficeOrigin.computeIfAbsent(officeoriginId, id->{
+           List<Office> offices = this.officeRepo.findByOfficeOriginIdAndStatusTrue(id);
+            mapOfficeByOfficeOrigin.put(id, offices);
+            return offices;
+        });
+        return mapOfficeByOfficeOrigin.get(officeoriginId);
     }
     public List<Office> findByOfficeOriginIds(List<Long>  officeoriginIds) {
         return this.officeRepo.findByOfficeOriginIdInAndStatusTrue(officeoriginIds);
