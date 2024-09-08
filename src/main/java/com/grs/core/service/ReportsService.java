@@ -169,7 +169,9 @@ public class ReportsService {
         Long sentToOtherOfficeCount = dashboardService.countForwardedGrievancesByOfficeIdV2(officeId, monthDiff);
         Long onlineSubmission = dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(officeId, MediumOfSubmission.ONLINE, monthDiff);
 
-        Long inherited = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff-1);//dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
+//        Long inherited = dashboardService.countRunningGrievancesByOfficeIdV2(officeId, monthDiff-1);//dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId, monthDiff);
+        Long inherited = dashboardService.countInheritedComplaintsByOfficeId(officeId, monthDiff);
+
         if (totalSubmitted == null ) {
             totalSubmitted = 0L;
         }

@@ -1354,6 +1354,26 @@ public interface DashboardDataRepo extends JpaRepository<DashboardData, Long> {
     Long countTotalComplaintsByOfficeIdV2(Long officeId, Long monthDiff);
 
 
+    @Query(value =
+            "SELECT COALESCE(SUM(cnt), 0) " +
+                "FROM ("+
+                "SELECT COUNT(DISTINCT complain_id) AS cnt "+
+                "FROM complain_history "+
+                "WHERE current_status IN ('NEW', 'RETAKE') "+
+                "AND (closed_at IS NULL OR closed_at > DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH)), '%Y-%m-%d 23:59:59')) "+
+                "AND (created_at < DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?3 MONTH)), '%Y-%m-%d 23:59:59')) "+
+                "AND office_id = ?1 "+
+                "AND complain_id NOT IN ( "+
+                "SELECT DISTINCT complain_id "+
+                "FROM complain_history "+
+                "WHERE current_status IN ('NEW','RETAKE') "+
+                "AND created_at BETWEEN DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH), '%Y-%m-01 00:00:00') "+
+                "AND DATE_FORMAT(LAST_DAY(DATE_ADD(CURDATE(), INTERVAL ?2 MONTH)), '%Y-%m-%d 23:59:59') "+
+                "AND office_id = ?1) "+
+            ") cxt ", nativeQuery = true)
+    Long countInheritedComplaintsByOfficeId(Long officeId, Long currMonth, Long prevMonth);
+
+
     @Query(nativeQuery = true,
             value = "SELECT COUNT(DISTINCT d.id) " +
                     "FROM dashboard_data d \n" +

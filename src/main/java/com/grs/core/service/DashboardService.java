@@ -1587,6 +1587,10 @@ public class DashboardService {
     public Long countRunningGrievancesByOfficeIdV2(Long officeId, Long monthDiff) {
         return dashboardDataDAO.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
     }
+    public Long countInheritedComplaintsByOfficeId(Long officeId, Long monthDiff) {
+        return dashboardDataDAO.countInheritedComplaintsByOfficeId(officeId, monthDiff);
+    }
+
 
     public Long countForwardedGrievancesByOfficeIdV2(Long officeId, Long monthDiff) {
         return dashboardDataDAO.countForwardedGrievancesByOfficeIdV2(officeId, monthDiff);
