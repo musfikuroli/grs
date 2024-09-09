@@ -154,6 +154,13 @@ public class DashboardDataDAO {
         return dashboardDataRepo.countRunningGrievancesByOfficeIdV2(officeId, monthDiff);
     }
 
+    public Long countInheritedComplaintsByOfficeId(Long officeId, Long monthDiff) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, monthDiff.intValue());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return dashboardDataRepo.countInheritedComplaintsByOfficeId(officeId, monthDiff, monthDiff-1);
+    }
+
     public Long countDeclinedGrievancesByOfficeId(Long officeId, Long monthDiff) {
         return dashboardDataRepo.countDeclinedGrievancesByOfficeId(officeId, monthDiff);
     }
