@@ -1379,12 +1379,14 @@ public class ViewPageController {
                 }
                 List<OfficeSearchDTO> officeSearchDTOList = officeService.getGrsEnabledOfficeSearchingData();
                 Boolean isMinistryLevelGro = false;
+                Boolean isCabinetDivisionUser = false;
                 if (isMinistryOrDivisionLevelOffice && Utility.isUserAnGROUser(authentication)) {
                     isMinistryLevelGro = true;
                     if(officeId != 28L) {
                         officeSearchDTOList = officeService.getDescendantOfficeSearchingData();
                     } else {
                         officeSearchDTOList = officeService.getTopLayerOffices();
+                        isCabinetDivisionUser = true;
                     }
                     model.addAttribute("showAllOffices", true);
                     model.addAttribute("showChildOfficesOnly", true);
@@ -1407,6 +1409,7 @@ public class ViewPageController {
                 model.addAttribute("divisionId", divisionId);
                 model.addAttribute("districtId", districtId);
                 model.addAttribute("upazilaId", upazilaId);
+                model.addAttribute("isCabinetDivisionUser",isCabinetDivisionUser);
                 return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                         authentication,
                         request,
