@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 @Getter
@@ -61,11 +62,33 @@ public class ComplainHistory implements Serializable {
             if (Utility.valueExists(model, 9)) {
                 this.selfMotivated = Utility.getLongValue(model[9]);
             }
+            // if (Utility.valueExists(model, 10)) {
+            //     this.createdAt = (Date) model[10];
+            // }
+            // if (Utility.valueExists(model, 11)) {
+            //     this.closedAt = (Date) model[11];
+            // }
+            // Handle createdAt field and set time to 00:00:00
             if (Utility.valueExists(model, 10)) {
                 this.createdAt = (Date) model[10];
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(this.createdAt);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                this.createdAt = calendar.getTime();
             }
+            // Handle closedAt field and set time to 00:00:00
             if (Utility.valueExists(model, 11)) {
                 this.closedAt = (Date) model[11];
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(this.closedAt);
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                this.closedAt = calendar.getTime();
             }
         }
     }

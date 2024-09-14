@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,10 +107,22 @@ public class GrievanceMigratorService {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+        // if (newHistory != null && closedHistory != null) {
+        //     newHistory.setClosedAt(closedHistory.getCreatedAt());
+        //     entityManager.merge(newHistory);
+        // }
         if (newHistory != null && closedHistory != null) {
-            newHistory.setClosedAt(closedHistory.getCreatedAt());
+            // Get the createdAt from closedHistory and set time to 00:00:00
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(closedHistory.getCreatedAt());
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            newHistory.setClosedAt(calendar.getTime());
             entityManager.merge(newHistory);
         }
+
         if (closedHistory != null) {
             entityManager.save(closedHistory);
         }
@@ -163,8 +176,19 @@ public class GrievanceMigratorService {
             t.printStackTrace();
         }
 
+        // if (newAppeal != null && appealClosed != null) {
+        //     newAppeal.setClosedAt(appealClosed.getCreatedAt());
+        // }
+
         if (newAppeal != null && appealClosed != null) {
-            newAppeal.setClosedAt(appealClosed.getCreatedAt());
+            // Get the createdAt from appealClosed and set time to 00:00:00
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(appealClosed.getCreatedAt());
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            newAppeal.setClosedAt(calendar.getTime());
         }
 
         sql = "select com.id, com.tracking_number, 'CELL_NEW' as current_status, com.office_id,ol.layer_level,\n" +
