@@ -840,7 +840,7 @@ public class GrievanceForwardingDAO {
         if (currentStatus.contains("CLOSED")) {
             historyEO.setClosedAt(new Date());
         }
-        historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyyMMdd").format(historyEO.getCreatedAt()));
+        historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyy-MM-dd").format(historyEO.getCreatedAt()));
         return historyEO;
     }
 
@@ -903,7 +903,7 @@ public class GrievanceForwardingDAO {
         if (currentStatus.contains("CLOSED")) {
             historyEO.setClosedAt(new Date());
         }
-        historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyyMMdd").format(historyEO.getCreatedAt()));
+        historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyy-MM-dd").format(historyEO.getCreatedAt()));
 
         return historyEO;
     }
