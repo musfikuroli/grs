@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -839,6 +840,7 @@ public class GrievanceForwardingDAO {
         if (currentStatus.contains("CLOSED")) {
             historyEO.setClosedAt(new Date());
         }
+        historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyyMMdd").format(historyEO.getCreatedAt()));
         return historyEO;
     }
 
@@ -901,6 +903,8 @@ public class GrievanceForwardingDAO {
         if (currentStatus.contains("CLOSED")) {
             historyEO.setClosedAt(new Date());
         }
+        historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyyMMdd").format(historyEO.getCreatedAt()));
+
         return historyEO;
     }
 }
