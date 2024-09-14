@@ -68,6 +68,14 @@ public class CalendarUtil {
         return sandwichDates.size();
     }
 
+    public static Date truncateDate(Date fromDate){
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            return sdf.parse(sdf.format(fromDate));
+        }catch (ParseException pe){}
+        return fromDate;
+    }
+
 
     public List<Date> getHolidays() throws ParseException {
         ArrayList<Date> holidays = new ArrayList<>();

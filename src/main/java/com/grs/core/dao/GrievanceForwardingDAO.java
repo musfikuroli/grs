@@ -690,15 +690,8 @@ public class GrievanceForwardingDAO {
 
             String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and closed_at is null ";
             Map<String, Object> params = new HashMap<>();
-
-            // params.put("closedAt", new Date());
             // Set the modified date with time set to 00:00:00
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            params.put("closedAt", calendar.getTime());
+            params.put("closedAt", CalendarUtil.truncateDate(new Date()));
 
             params.put("complain_id", movement.getGrievance().getId());
 
@@ -729,13 +722,7 @@ public class GrievanceForwardingDAO {
             Map<String, Object> params = new HashMap<>();
 
             // Assign the modified date (with time 00:00:00) to closedAt
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            Date closedAt = calendar.getTime();
-            params.put("closedAt", closedAt);
+            params.put("closedAt", CalendarUtil.truncateDate(new Date()));
             params.put("complain_id", movement.getGrievance().getId());
             params.put("current_status1", "NEW");
             params.put("current_status2", "RETAKE");
@@ -743,15 +730,9 @@ public class GrievanceForwardingDAO {
             baseEntityManager.updateByQuery(sql, params);
 
             ComplainHistory historyEO = prepareHistory(movement.getGrievance(), "FORWARDED_OUT", movement.getFromOfficeId());
-            // historyEO.setClosedAt(movement.getUpdatedAt());
 
             // Setting the time part to 00:00:00 for movement.getUpdatedAt() as well
-            calendar.setTime(movement.getUpdatedAt());
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            historyEO.setClosedAt(calendar.getTime());
+            historyEO.setClosedAt(CalendarUtil.truncateDate(movement.getUpdatedAt()));
             this.complainHistoryRepository.save(historyEO);
 
             ComplainHistory historyNew = prepareHistory(movement.getGrievance(), "NEW", movement.getToOfficeId());
@@ -767,7 +748,7 @@ public class GrievanceForwardingDAO {
 
             String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and current_status=:current_status and closed_at is null ";
             Map<String, Object> params = new HashMap<>();
-            params.put("closedAt", new Date());
+            params.put("closedAt", CalendarUtil.truncateDate(new Date()));
             params.put("complain_id", movement.getGrievance().getId());
             params.put("current_status", "NEW");
 
@@ -777,7 +758,7 @@ public class GrievanceForwardingDAO {
         if (movement.getAction().equalsIgnoreCase("APPEAL")) {
             String sql = "update complain_history set closed_at=:closedAt where complain_id=:complain_id and closed_at is null ";
             Map<String, Object> params = new HashMap<>();
-            params.put("closedAt", new Date());
+            params.put("closedAt", CalendarUtil.truncateDate(new Date()));
             params.put("complain_id", movement.getGrievance().getId());
 
             baseEntityManager.updateByQuery(sql, params);
@@ -867,21 +848,11 @@ public class GrievanceForwardingDAO {
         // }
 
         // Set the modified Date (with time set to 00:00:00)
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        historyEO.setCreatedAt(calendar.getTime());
+        historyEO.setCreatedAt(CalendarUtil.truncateDate(new Date()));
 
         // Set the closedAt field with time 00:00:00 if current status contains "CLOSED"
         if (currentStatus.contains("CLOSED")) {
-            calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            historyEO.setClosedAt(calendar.getTime());
+            historyEO.setClosedAt(CalendarUtil.truncateDate(new Date()));
         }
 
         historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyy-MM-dd").format(historyEO.getCreatedAt()));
@@ -944,27 +915,13 @@ public class GrievanceForwardingDAO {
         historyEO.setMediumOfSubmission(medium.name());
         historyEO.setGrievanceType(grievanceEO.getGrievanceType().name());
         historyEO.setSelfMotivated(grievanceEO.getIsSelfMotivatedGrievance() != null && grievanceEO.getIsSelfMotivatedGrievance() ? 1L : 0L);
-        // historyEO.setCreatedAt(new Date());
-        // if (currentStatus.contains("CLOSED")) {
-        //     historyEO.setClosedAt(new Date());
-        // }
 
         // Set the createdAt field with time 00:00:00
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        historyEO.setCreatedAt(calendar.getTime());
+        historyEO.setCreatedAt(CalendarUtil.truncateDate(new Date()));
 
         // Set the closedAt field with time 00:00:00 if current status contains "CLOSED"
         if (currentStatus.contains("CLOSED")) {
-            calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            historyEO.setClosedAt(calendar.getTime());
+            historyEO.setClosedAt(CalendarUtil.truncateDate(new Date()));
         }
 
         historyEO.setCreatedYearMonthDay(new SimpleDateFormat("yyyy-MM-dd").format(historyEO.getCreatedAt()));

@@ -2,6 +2,7 @@ package com.grs.core.service;
 
 import com.grs.api.model.ComplainHistory;
 import com.grs.core.repo.grs.BaseEntityManager;
+import com.grs.utils.CalendarUtil;
 import com.grs.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -9,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,13 +115,7 @@ public class GrievanceMigratorService {
         // }
         if (newHistory != null && closedHistory != null) {
             // Get the createdAt from closedHistory and set time to 00:00:00
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(closedHistory.getCreatedAt());
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            newHistory.setClosedAt(calendar.getTime());
+            newHistory.setClosedAt(CalendarUtil.truncateDate(closedHistory.getCreatedAt()));
             entityManager.merge(newHistory);
         }
 
@@ -182,13 +178,7 @@ public class GrievanceMigratorService {
 
         if (newAppeal != null && appealClosed != null) {
             // Get the createdAt from appealClosed and set time to 00:00:00
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(appealClosed.getCreatedAt());
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            newAppeal.setClosedAt(calendar.getTime());
+            newAppeal.setClosedAt(CalendarUtil.truncateDate(appealClosed.getCreatedAt()));
         }
 
         sql = "select com.id, com.tracking_number, 'CELL_NEW' as current_status, com.office_id,ol.layer_level,\n" +
