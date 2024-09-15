@@ -45,6 +45,7 @@ public class ComplainHistory implements Serializable {
     Date createdAt;
     @Column(name = "closed_at")
     Date closedAt;
-//    @Column(name = "created_year_month_day")
-//    String createdYearMonthDay;
+
+    @Column(name = "created_year_month_day")
+    private String createdYearMonthDay;
 }
