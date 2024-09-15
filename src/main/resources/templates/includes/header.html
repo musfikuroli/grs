@@ -2,18 +2,51 @@
 <div class="page-wrapper-row" th:fragment="header(menu)">
     <div class="page-wrapper-top">
         <div class="page-header">
-            <div class="page-header-strip">
-                <div class="container">
-                    <ul class="header-strip-nav">
-<!--                        <li class="bangla">-->
-<!--                            <i class="icon-call-end"></i>-->
-<!--                            <a href="tel:+88029113781" th:text="#{helpdesk.phone.number}"></a>-->
+<!--            <div class="page-header-strip">-->
+<!--                <div class="container">-->
+<!--                    <ul class="header-strip-nav">-->
+<!--&lt;!&ndash;                        <li class="bangla">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <i class="icon-call-end"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <a href="tel:+88029113781" th:text="#{helpdesk.phone.number}"></a>&ndash;&gt;-->
+<!--&lt;!&ndash;                        </li>&ndash;&gt;-->
+<!--                        <li class="english">-->
+<!--                            <i class="icon-envelope"></i>-->
+<!--                            <a href="mailto:grs@cabinet.gov.bd">grs@cabinet.gov.bd</a>-->
+<!--                            &lt;!&ndash; Marquee scrolling text &ndash;&gt;-->
+<!--                            <marquee style="margin-left: 10px; width: 200px;" scrollamount="5">-->
+<!--                                <span th:text="'Welcome to GRS'">Welcome to GRS</span>-->
+<!--                            </marquee>-->
 <!--                        </li>-->
-                        <li class="english">
+<!--                        <li> Right </li>-->
+<!--                        <li class="label circle border pull-right" th:if="${isMobileLogin}">-->
+<!--                            <a id="selectedLanguageLink" href="javascript:;" data-close-others="true" aria-expanded="true">-->
+<!--                                <span id="selectedLanguageName" class="langname"> বাংলা </span>-->
+<!--                            </a>-->
+<!--                        </li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </div>-->
+            <!-- Updated HTML code with marquee aligned to the right -->
+            <div class="page-header-strip" style="height: 35px; display: flex; align-items: center;">
+                <div class="container">
+                    <ul style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; width: 100%;">
+                        <!-- Email Link -->
+                        <li class="english" style="display: flex; align-items: center;">
                             <i class="icon-envelope"></i>
                             <a href="mailto:grs@cabinet.gov.bd">grs@cabinet.gov.bd</a>
                         </li>
-                        <li class="label circle border pull-right" th:if="${isMobileLogin}">
+
+                        <!-- Spacer to push the marquee to the right -->
+                        <li style="flex-grow: 1;"></li>
+
+                        <!-- Marquee scrolling text aligned to the right -->
+                        <li style="display: flex; align-items: center;">
+                            <marquee style="width: 700px; color: #009444;" scrollamount="8">
+                                <span th:text="'অভিযোগ প্রতিকার ব্যবস্থায় স্বাগতম। অভিযোগ প্রতিকার ব্যবস্থা সফটওয়ারটির অধিকতর মানোন্নয়নের কাজ চলমান রয়েছে।'"></span>
+                            </marquee>
+                        </li>
+                        <!-- Other list items -->
+                        <li class="label circle border" th:if="${isMobileLogin}" style="margin-left: 10px;">
                             <a id="selectedLanguageLink" href="javascript:;" data-close-others="true" aria-expanded="true">
                                 <span id="selectedLanguageName" class="langname"> বাংলা </span>
                             </a>
