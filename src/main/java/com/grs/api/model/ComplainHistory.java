@@ -1,5 +1,6 @@
 package com.grs.api.model;
 
+import com.grs.utils.CalendarUtil;
 import com.grs.utils.Utility;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,9 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 @Getter
@@ -61,11 +65,19 @@ public class ComplainHistory implements Serializable {
             if (Utility.valueExists(model, 9)) {
                 this.selfMotivated = Utility.getLongValue(model[9]);
             }
+            // if (Utility.valueExists(model, 10)) {
+            //     this.createdAt = (Date) model[10];
+            // }
+            // if (Utility.valueExists(model, 11)) {
+            //     this.closedAt = (Date) model[11];
+            // }
+            // Handle createdAt field and set time to 00:00:00
             if (Utility.valueExists(model, 10)) {
-                this.createdAt = (Date) model[10];
+                this.createdAt = CalendarUtil.truncateDate((Date) model[10]);
             }
+            // Handle closedAt field and set time to 00:00:00
             if (Utility.valueExists(model, 11)) {
-                this.closedAt = (Date) model[11];
+                this.closedAt = CalendarUtil.truncateDate((Date) model[11]);
             }
         }
     }
