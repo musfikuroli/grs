@@ -28,3 +28,6 @@ nbbuild/
 nbdist/
 .nb-gradle/
 
+# Log file
+*.log
+
