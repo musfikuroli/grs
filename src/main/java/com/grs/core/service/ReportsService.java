@@ -888,14 +888,16 @@ public class ReportsService {
 
         List<GrievanceAndAppealMonthlyReportDTO> reportDTOS = getMultipleOfficesMergedReport(childOffices, fromYear, fromMonth, toYear, toMonth);
         if (level.equals(1)) {
+            final long[] serial = {1};
             return reportDTOS.stream()
                     .filter(e -> CacheUtil.getOfficeOrder(e.getOfficeId()) != null)
+                    .sorted((a, b) -> Long.compare(CacheUtil.getOfficeOrder(a.getOfficeId()), CacheUtil.getOfficeOrder(b.getOfficeId())))
                     .map(r -> {
-                        r.setSl(CacheUtil.getOfficeOrder(r.getOfficeId()));
-                        r.getMonthlyGrievanceReport().setSl(CacheUtil.getOfficeOrder(r.getOfficeId()));
+                        r.setSl(serial[0]);
+                        r.getMonthlyGrievanceReport().setSl(serial[0]);
+                        serial[0]++;
                         return r;
                     })
-                    .sorted((a, b) -> Long.compare(CacheUtil.getOfficeOrder(a.getOfficeId()), CacheUtil.getOfficeOrder(b.getOfficeId())))
                     .collect(Collectors.toList());
 
 
