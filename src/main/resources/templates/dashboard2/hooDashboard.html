@@ -216,7 +216,8 @@
         "STAFF": "কর্মকর্তা-কর্মচারী"
     };
     const MONTH_NAME_BANGLA = ["জানুয়ারী", "ফেব্রুয়ারী", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
-    const itemPerPage = 10;
+    // const itemPerPage = 10;
+    let itemPerPage = 10;
 
     function tooltipBanglaFormatter(params, ticket, callback) {
         return params.name + " :<br>"
@@ -1492,8 +1493,16 @@
         $("body").on("tabMonthlyReport-opened", function () {
             loadCurrentMonthReportData();
         });
+        // $("body").on("tabGrievanceRegister-opened", function () {
+        //     loadGrievanceRegister(1);
+        // });
         $("body").on("tabGrievanceRegister-opened", function () {
-            loadGrievanceRegister(1);
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') ? parseInt(urlParams.get('page')) : 1; // Default to page 1 if not provided
+            const size = urlParams.get('size') ? parseInt(urlParams.get('size')) : itemPerPage; // Default to the predefined `itemPerPage` size
+
+            grievanceCurrentPage = page; // Set the current page globally
+            loadGrievanceRegister(page, size); // Pass the page and size to load the appropriate data
         });
 
         $("body").on("tabCentral-opened", function () {
@@ -1631,12 +1640,65 @@
         }
     }
 
+    // function showFirstTabContents() {
+    //     var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
+    //     $(".tab-container").hide();
+    //     $("#" + firstTabId + "_body").show();
+    //     $("body").trigger(firstTabId + "-opened");
+    //     showAppropriateOfficeName(firstTabId);
+    // }
+
     function showFirstTabContents() {
-        var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
-        $(".tab-container").hide();
-        $("#" + firstTabId + "_body").show();
-        $("body").trigger(firstTabId + "-opened");
-        showAppropriateOfficeName(firstTabId);
+        // Get the query parameters from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        const page = urlParams.get('page');
+        const size = urlParams.get('size');
+
+        // Set the page size from the query param or default to 10
+        itemPerPage = size ? parseInt(size, 10) : 10;  // Update itemPerPage from the URL or set a default value of 10
+
+        // If a tab is specified in the query parameters, open that tab
+        if (tab) {
+            // Remove the active class from all tabs and hide their content
+            $("#left-menu-tabs li a").removeClass("active");
+            $(".tab-container").hide();
+
+            // Find the tab that matches the query parameter and open it
+            var tabId = "tab" + tab.charAt(0).toUpperCase() + tab.slice(1); // e.g., 'grievanceRegister' becomes 'tabGrievanceRegister'
+
+            $("#" + tabId).addClass("active");
+            $("#" + tabId + "_body").fadeIn("slow");
+            $("body").trigger(tabId + "-opened");
+            showAppropriateOfficeName(tabId);
+
+            // Expand the correct section if the tab is inside a collapsible menu
+            expandMenuForTab(tabId);
+
+            // Optionally, handle page and size if needed (e.g., pagination)
+            if (page) {
+                // Handle pagination logic here if necessary
+                console.log("Page:", page, "Size:", size);
+                // You can pass these values to the appropriate tab's content loader
+            }
+        } else {
+            // If no tab is specified, open the default first tab
+            var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
+            $(".tab-container").hide();
+            $("#" + firstTabId + "_body").show();
+            $("body").trigger(firstTabId + "-opened");
+            showAppropriateOfficeName(firstTabId);
+        }
+    }
+
+    // Function to expand the collapsible menu based on the selected tab
+    function expandMenuForTab(tabId) {
+        // Find the parent collapsible menu (if any) and expand it
+        var menuSection = $("#" + tabId).closest(".collapse");
+
+        if (menuSection.length > 0) {
+            menuSection.addClass("show"); // Bootstrap's class to expand collapsible sections
+        }
     }
 
     function initDashboardMenuCollapseAndHide() {
