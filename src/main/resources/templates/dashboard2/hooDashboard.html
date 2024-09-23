@@ -1496,13 +1496,11 @@
         // $("body").on("tabGrievanceRegister-opened", function () {
         //     loadGrievanceRegister(1);
         // });
+        // Grievance Register Tab opened
         $("body").on("tabGrievanceRegister-opened", function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const page = urlParams.get('page') ? parseInt(urlParams.get('page')) : 1; // Default to page 1 if not provided
-            const size = urlParams.get('size') ? parseInt(urlParams.get('size')) : itemPerPage; // Default to the predefined `itemPerPage` size
-
+            const { page, size } = getPaginationParams(); // Get pagination params
             grievanceCurrentPage = page; // Set the current page globally
-            loadGrievanceRegister(page, size); // Pass the page and size to load the appropriate data
+            loadGrievanceRegister(page, size); // Load data for Grievance Register
         });
 
         $("body").on("tabCentral-opened", function () {
@@ -1548,8 +1546,10 @@
             loadGrievanceChartsAndData();
         });
 
+        // Appeal Register Tab opened
         $("body").on("tabAppealRegister-opened", function () {
-            loadAppealRegister(1);
+            const { page, size } = getPaginationParams(); // Get pagination params
+            loadAppealRegister(page, size); // Load data for Appeal Register
         });
 
         $("body").on("tabAppealExpired-opened", function () {
@@ -1649,14 +1649,14 @@
     // }
 
     function showFirstTabContents() {
-        // Get the query parameters from the URL
+        const { page, size } = getPaginationParams(1, 20); // Default to page 1 and size 20
+
+        // Set the global itemPerPage from the size parameter
+        itemPerPage = size;
+
+        // Get the 'tab' query parameter
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
-        const page = urlParams.get('page');
-        const size = urlParams.get('size');
-
-        // Set the page size from the query param or default to 10
-        itemPerPage = size ? parseInt(size, 10) : 10;  // Update itemPerPage from the URL or set a default value of 10
 
         // If a tab is specified in the query parameters, open that tab
         if (tab) {
@@ -1665,22 +1665,13 @@
             $(".tab-container").hide();
 
             // Find the tab that matches the query parameter and open it
-            var tabId = "tab" + tab.charAt(0).toUpperCase() + tab.slice(1); // e.g., 'grievanceRegister' becomes 'tabGrievanceRegister'
+            var tabId = "tab" + tab.charAt(0).toUpperCase() + tab.slice(1);
 
             $("#" + tabId).addClass("active");
             $("#" + tabId + "_body").fadeIn("slow");
             $("body").trigger(tabId + "-opened");
             showAppropriateOfficeName(tabId);
 
-            // Expand the correct section if the tab is inside a collapsible menu
-            expandMenuForTab(tabId);
-
-            // Optionally, handle page and size if needed (e.g., pagination)
-            if (page) {
-                // Handle pagination logic here if necessary
-                console.log("Page:", page, "Size:", size);
-                // You can pass these values to the appropriate tab's content loader
-            }
         } else {
             // If no tab is specified, open the default first tab
             var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
@@ -1691,14 +1682,12 @@
         }
     }
 
-    // Function to expand the collapsible menu based on the selected tab
-    function expandMenuForTab(tabId) {
-        // Find the parent collapsible menu (if any) and expand it
-        var menuSection = $("#" + tabId).closest(".collapse");
-
-        if (menuSection.length > 0) {
-            menuSection.addClass("show"); // Bootstrap's class to expand collapsible sections
-        }
+    // Function to get URL parameters for pagination
+    function getPaginationParams(defaultPage = 1, defaultSize = itemPerPage) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page') ? parseInt(urlParams.get('page')) : defaultPage;
+        const size = urlParams.get('size') ? parseInt(urlParams.get('size')) : defaultSize;
+        return { page, size };
     }
 
     function initDashboardMenuCollapseAndHide() {

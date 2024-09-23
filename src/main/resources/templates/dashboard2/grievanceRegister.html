@@ -224,6 +224,8 @@
 
         // Default page size if not provided
         var pageSize = size ? size : itemPerPage;
+        itemPerPage = pageSize; // Update the global itemPerPage value
+
         $("#pageSizeSelect").val(pageSize);  // Set the dropdown to the current size
 
         var requestData = {
