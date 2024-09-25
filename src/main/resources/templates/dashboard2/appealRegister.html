@@ -4,6 +4,22 @@
 <div th:fragment="appealRegister" th:remove="tag">
     <div class="panel-body" style="background: white;">
         <div class="font-lg font-purple text-center" th:text="#{register.view.title.appeal}"></div>
+
+        <!-- Right side elements -->
+        <div class="col-md-12 d-flex align-items-center">
+            <div class="d-flex align-items-center ml-auto">
+                <i class="icon-docs" style="margin-right: 5px"></i>
+                <span class="tabname tabname-hide-on-mobile mr-2">প্রতি পৃষ্ঠায় দেখুন</span>
+                <select id="appealRegisterPageSizeSelect" class="form-control" style="font-size: 16px; width: 60px; height: 35px;" onchange="changeAppealRegisterPageSize()">
+                    <option value="10">১০</option>
+                    <option value="20">২০</option>
+                    <option value="30">৩০</option>
+                    <option value="50">৫০</option>
+                    <option value="100">১০০</option>
+                </select>
+            </div>
+        </div>
+
         <div id="appealRegisterTable">
             <table class="table table-striped table-bordered table-hover">
                 <thead>
@@ -137,6 +153,88 @@
         });
     }
 
+    function loadAppealRegister(page, size) {
+        blockUI();
+        appealCurrentPage = page;
+
+        // Set the current page value in the input field
+        $("#appealRegisterTable [name='appealCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+
+        // Default page size if not provided
+        const pageSize = size ? size : itemPerPage; // Use provided size or default to `itemPerPage`
+        itemPerPage = pageSize;  // Update the global itemPerPage value
+
+        // Update the page size dropdown to reflect the current page size
+        $("#appealRegisterPageSizeSelect").val(pageSize);
+
+        $.ajax({
+            url: "/api/dashboard/offices/" + $("[name='officeId']").val() + "/appeal-register",
+            type: "get",
+            data: {
+                "page": (page - 1), // Zero-based index for backend pagination
+                "size": pageSize     // Pass the size to backend
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    // If no data is found
+                    $("#appealRegisterTable tbody tr").css("cursor", "default");
+                    $("#appealRegisterTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#appealRegisterTable [name='appealCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#appealRegisterTable").find(".prev, .next").addClass("disabled");
+                } else {
+                    // Handling response with data
+                    var totalPages = response.totalPages;
+                    appealMaxPage = totalPages;
+
+                    // Update total pages in UI
+                    $("#appealRegisterTable .pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+
+                    // Enable/disable pagination buttons based on page number
+                    if (appealCurrentPage === 1) {
+                        $("#appealRegisterTable .prev").addClass("disabled");
+                    } else {
+                        $("#appealRegisterTable .prev").removeClass("disabled");
+                    }
+
+                    if (appealCurrentPage === appealMaxPage) {
+                        $("#appealRegisterTable .next").addClass("disabled");
+                    } else {
+                        $("#appealRegisterTable .next").removeClass("disabled");
+                    }
+
+                    // Update table data and UI elements
+                    var listViewInfoBng = ("" + response.totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + ((page - 1) * pageSize + 1)).toBanglaNumber() + "-" + ("" + ((page - 1) * pageSize + response.numberOfElements)).toBanglaNumber() + " এর তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + response.totalElements) + " Items total and " + ("" + ((page - 1) * pageSize + 1)) + "-" + ("" + ((page - 1) * pageSize + response.numberOfElements)) + " is shown";
+
+                    $("#appealRegisterTable_info").html(languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    $('#appealRegisterTable table').dataTable().fnClearTable();
+                    $('#appealRegisterTable table').dataTable().fnAddData(response.content);
+                    $('#appealRegisterTable').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+                $("#appealRegisterTable tr").css('cursor', 'pointer');
+
+                // Clear the query parameters in the URL after loading the page
+                var newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+    }
+
+    function changeAppealRegisterPageSize() {
+        // Get the selected page size
+        var appealRegisterSelectedPageSize = $("#appealRegisterPageSizeSelect").val();
+        itemPerPage = parseInt(appealRegisterSelectedPageSize, 10);  // Update the global itemPerPage value
+
+        // Reload the table with the new page size, resetting to page 1
+        appealCurrentPage = 1;
+        loadAppealRegister(appealCurrentPage, itemPerPage);
+    }
+
     function initAppealRegisterTable() {
         var rowTitle = (languageCode == "en") ? "Click to view details" : "বিস্তারিত দেখতে ক্লিক করুন";
         var table1 = $('#appealRegisterTable table');
@@ -163,7 +261,7 @@
             },
             "bSort": false,
             "bPaginate": false,
-            "bFilter": true,
+            "bFilter": false,
             "bInfo": false,
             "bAutoWidth": false,
             columns: [{
@@ -220,7 +318,13 @@
             }, {
                 data: "subject",
                 render: function (data, type, row, meta) {
-                    return "<a href='viewGrievances.do?id=" + row.id + "' class='clickable-link tooltips' data-toggle='tooltip' title='" + "অভিযোগের বিস্তারিত দেখুন" + "'>" +  data + "</a>";
+                    var currentTab = "appealRegister"; // Replace with the actual tab value if needed
+                    var page = appealCurrentPage;      // Current page number
+                    var size = itemPerPage;            // Page size
+
+                    // Add 'data-id' and 'onclick' attributes to the <tr> element
+                    var grievanceDetailsUrl = "viewGrievances.do?id=" + row.id + "&tab=" + currentTab + "&page=" + page + "&size=" + size;
+                    return "<a href='" + grievanceDetailsUrl + "' class='clickable-link tooltips' data-toggle='tooltip' title='অভিযোগের বিস্তারিত দেখুন'>" + data + "</a>";
                 }
             }, {
                 data: "closingOrRejectingDateBng",
@@ -240,16 +344,27 @@
             }]
         });
 
+        $('#appealRegisterTable tbody').on('click', 'tr', function() {
+            blockUI();
+
+            // Get the row data and build the URL
+            var rowData = table1.DataTable().row(this).data();
+            var grievanceDetailsUrl = "viewGrievances.do?id=" + rowData.id + "&tab=appealRegister&page=" + appealCurrentPage + "&size=" + itemPerPage;
+
+            // Simulate loading by adding a delay before navigating to the details page
+            setTimeout(function() {
+                window.location.href = grievanceDetailsUrl;
+            }, 500); // Delay added for smooth loading
+        });
+
+
         $("#appealRegisterTable .next").click(function(e) {
             appealCurrentPage = appealCurrentPage + 1;
             $("#appealRegisterTable .prev").removeClass("disabled");
             if (appealCurrentPage == appealMaxPage) {
                 $("#appealRegisterTable .next").addClass("disabled");
             }
-            if (appealCurrentPage > appealMaxPage) {
-                appealCurrentPage = appealMaxPage;
-            }
-            loadAppealRegister(appealCurrentPage);
+            loadAppealRegister(appealCurrentPage, itemPerPage); // Pass the current page and size
         });
 
         $("#appealRegisterTable .prev").click(function(e) {
@@ -258,19 +373,17 @@
             if (appealCurrentPage == 1) {
                 $("#appealRegisterTable .prev").addClass("disabled");
             }
-            if (appealCurrentPage < 1) {
-                appealCurrentPage = 1;
-            }
-            loadAppealRegister(appealCurrentPage);
+            loadAppealRegister(appealCurrentPage, itemPerPage); // Pass the current page and size
         });
 
         var paginationFieldDom = $("#appealRegisterTable [name='appealCurrentPage']");
-        paginationFieldDom.blur(function(e) {
-            e.preventDefault();
+
+        // Function to handle page change logic
+        function handlePageChange() {
             var curValue = ("" + paginationFieldDom.val()).toEnglishNumber();
             if ($.isNumeric(curValue)) {
                 if (curValue > 0 && curValue <= appealMaxPage) {
-                    appealCurrentPage = curValue;
+                    appealCurrentPage = parseInt(curValue, 10);
                     if (appealCurrentPage == 1) {
                         $("#appealRegisterTable .prev").addClass("disabled");
                     } else {
@@ -281,14 +394,28 @@
                     } else {
                         $("#appealRegisterTable .next").removeClass("disabled");
                     }
-                    loadAppealRegister(appealCurrentPage);
+                    loadAppealRegister(appealCurrentPage, itemPerPage);
                 } else {
-                    toastr.error("Sorry, page range out of bound");
-                    paginationFieldDom.val( languageCode == 'en' ? ("" + appealCurrentPage) : ("" + appealCurrentPage).toBanglaNumber());
+                    toastr.error(languageCode == 'en' ? "Sorry, page range out of bound" : "দুঃখিত, পৃষ্ঠা সীমার বাইরে");
+                    paginationFieldDom.val(languageCode == 'en' ? ("" + appealCurrentPage) : ("" + appealCurrentPage).toBanglaNumber());
                 }
             } else {
-                toastr.error("Sorry, invalid page number");
+                toastr.error(languageCode == 'en' ? "Sorry, invalid page number" : "দুঃখিত, অবৈধ পৃষ্ঠা নম্বর");
                 paginationFieldDom.val(languageCode == 'en' ? ("" + appealCurrentPage) : ("" + appealCurrentPage).toBanglaNumber());
+            }
+        }
+
+        // Blur event handler
+        paginationFieldDom.blur(function(e) {
+            e.preventDefault();
+            handlePageChange();
+        });
+
+        // Event listener for Enter key on the pagination input field
+        $('#appealRegisterTable .pagination-panel-input').keypress(function(e) {
+            if (e.which === 13) { // Enter key code
+                e.preventDefault();
+                handlePageChange();
             }
         });
     }

@@ -21,6 +21,21 @@
                 </div>
             </div>
 
+            <!-- Right side elements -->
+            <div class="col-md-12 d-flex align-items-center">
+                <div class="d-flex align-items-center ml-auto">
+                    <i class="icon-docs" style="margin-right: 5px"></i>
+                    <span class="tabname tabname-hide-on-mobile mr-2">প্রতি পৃষ্ঠায় দেখুন</span>
+                    <select id="pageSizeSelect" class="form-control" style="font-size: 16px; width: 60px; height: 35px;" onchange="changePageSize()">
+                        <option value="10">১০</option>
+                        <option value="20">২০</option>
+                        <option value="30">৩০</option>
+                        <option value="50">৫০</option>
+                        <option value="100">১০০</option>
+                    </select>
+                </div>
+            </div>
+
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                 <tr role="row" class="heading">
@@ -55,7 +70,7 @@
                             <a href="javascript:;" class="btn btn-sm default prev disabled" style="cursor: pointer;">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <input class="pagination-panel-input input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" name="grievanceCurrentPage" value="০" type="text">
+                            <input id="pagenumberinput" class="pagination-panel-input input-sm input-inline input-mini" maxlength="5" style="text-align:center; margin: 0 5px;" name="grievanceCurrentPage" value="০" type="text">
                             <a href="javascript:;" class="btn btn-sm default next disabled" style="cursor: pointer;">
                                 <i class="fa fa-angle-right"></i>
                             </a>
@@ -69,6 +84,7 @@
 </div>
 
 <script type="text/javascript" th:fragment="grievanceRegisterScript">
+    // itemPerPage = 10;  // Default page size
 
     var grievanceCurrentPage = 1, grievanceMaxPage = 1;
     var currentTrackingNumber = "";  // New variable to store current tracking number
@@ -200,6 +216,93 @@
                 $("#registerTable tr").css('cursor', 'pointer');
             }
         });
+    }
+
+    function loadGrievanceRegister(page, size) {
+        blockUI();
+        $("#registerTable [name='grievanceCurrentPage']").val(languageCode == 'en' ? ("" + (page)) : ("" + (page)).toBanglaNumber());
+
+        // Default page size if not provided
+        var pageSize = size ? size : itemPerPage;
+        itemPerPage = pageSize; // Update the global itemPerPage value
+
+        $("#pageSizeSelect").val(pageSize);  // Set the dropdown to the current size
+
+        var requestData = {
+            "page": (page - 1),  // Convert to zero-based index for backend pagination
+            "size": pageSize
+        };
+
+        // Include tracking number in the request if provided
+        if (currentTrackingNumber.trim() !== "") {
+            requestData.trackingNumber = currentTrackingNumber;
+        }
+
+        $.ajax({
+            url: "/api/dashboard/offices/" + $("[name='officeId']").val() + "/register",
+            type: "get",
+            data: requestData,
+            dataType: "json",
+            success: function(response) {
+                if (response == 0 || response == "" || response.content.length == 0) {
+                    // Handle no data found
+                    $("#registerTable tbody").empty();
+                    var noDataMessage = "<tr><td colspan='10' class='text-center bold'>কোন অভিযোগ পাওয়া যায়নি</td></tr>";
+                    $("#registerTable tbody").append(noDataMessage);
+                    $("#registerTable tbody tr").css("cursor","default");
+                    $("#registerTable .pagination-panel-total").html(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#registerTable [name='grievanceCurrentPage']").val(languageCode == "en" ? "0" : "0".toBanglaNumber());
+                    $("#registerTable").find(".prev, .next").addClass("disabled");
+                } else {
+                    // Handle data display and pagination
+                    var totalPages = response.totalPages;
+                    grievanceMaxPage = totalPages;
+
+                    // Update total pages in UI
+                    $("#registerTable .pagination-panel-total").html(languageCode == "en" ? ("" + (totalPages)) : ("" + (totalPages)).toBanglaNumber());
+
+                    // Enable/disable buttons based on the current page
+                    if (grievanceCurrentPage === 1) {
+                        $("#registerTable .prev").addClass("disabled");
+                    } else {
+                        $("#registerTable .prev").removeClass("disabled");
+                    }
+
+                    if (grievanceCurrentPage === grievanceMaxPage) {
+                        $("#registerTable .next").addClass("disabled");
+                    } else {
+                        $("#registerTable .next").removeClass("disabled");
+                    }
+
+                    var listViewInfoBng = ("" + response.totalElements).toBanglaNumber() + " টি অভিযোগ এর মধ্যে " + ("" + ((page - 1) * pageSize + 1)).toBanglaNumber() + "-" + ("" + ((page - 1) * pageSize + response.numberOfElements)).toBanglaNumber() + " এর তথ্য দেখানো হচ্ছে";
+                    var listViewInfoEng = ("" + response.totalElements) + " Items total and " + ("" + ((page - 1) * pageSize + 1)) + "-" + ("" + ((page - 1) * pageSize + response.numberOfElements)) + " is shown";
+                    $("#registerTable_info").html(languageCode == "en" ? listViewInfoEng : listViewInfoBng);
+
+                    // Update table with data
+                    $('#registerTable table').dataTable().fnClearTable();
+                    $('#registerTable table').dataTable().fnAddData(response.content);
+                    $('#registerTable').find("[data-toggle='tooltip']").tooltip();
+                }
+            },
+            complete: function () {
+                unblockUI();
+                $("#registerTable tr").css('cursor', 'pointer');
+
+                // Clear the query parameters in the URL after loading the page
+                var newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+    }
+
+    function changePageSize() {
+        // Get the selected page size
+        var selectedPageSize = $("#pageSizeSelect").val();
+        itemPerPage = parseInt(selectedPageSize, 10);  // Update the global itemPerPage value
+
+        // Reload the table with the new page size, resetting to page 1
+        grievanceCurrentPage = 1;
+        loadGrievanceRegister(grievanceCurrentPage, itemPerPage);
     }
 
     function printRegister() {
@@ -357,8 +460,18 @@
                 $.blockUI({
                     message: '<h1>  ' + msg + '</h1>'
                 });
-                window.setTimeout(function() {
-                    window.location.href = "/viewGrievances.do?id=" + data.id;
+
+                // Retrieve current tab, page, and size values
+                var currentTab = "grievanceRegister";  // Replace this with dynamic value if needed
+                var page = grievanceCurrentPage;
+                var size = itemPerPage;
+
+                window.setTimeout(function () {
+                    // Redirect to the details page with additional query parameters
+                    window.location.href = "/viewGrievances.do?id=" + data.id +
+                        "&tab=" + currentTab +
+                        "&page=" + page +
+                        "&size=" + size
                 }, 500);
             }
         });
@@ -369,10 +482,7 @@
             if (grievanceCurrentPage == grievanceMaxPage) {
                 $("#registerTable .next").addClass("disabled");
             }
-            if (grievanceCurrentPage > grievanceMaxPage) {
-                grievanceCurrentPage = grievanceMaxPage;
-            }
-            loadGrievanceRegister(grievanceCurrentPage);
+            loadGrievanceRegister(grievanceCurrentPage, itemPerPage); // Pass the current page and size
         });
 
         $("#registerTable .prev").click(function(e) {
@@ -381,19 +491,17 @@
             if (grievanceCurrentPage == 1) {
                 $("#registerTable .prev").addClass("disabled");
             }
-            if (grievanceCurrentPage < 1) {
-                grievanceCurrentPage = 1;
-            }
-            loadGrievanceRegister(grievanceCurrentPage);
+            loadGrievanceRegister(grievanceCurrentPage, itemPerPage); // Pass the current page and size
         });
 
         var paginationFieldDom = $("#registerTable [name='grievanceCurrentPage']");
-        paginationFieldDom.blur(function(e) {
-            e.preventDefault();
+
+        // Function to handle page change logic
+        function handlePageChange() {
             var curValue = ("" + paginationFieldDom.val()).toEnglishNumber();
             if ($.isNumeric(curValue)) {
                 if (curValue > 0 && curValue <= grievanceMaxPage) {
-                    grievanceCurrentPage = curValue;
+                    grievanceCurrentPage = parseInt(curValue, 10);
                     if (grievanceCurrentPage == 1) {
                         $("#registerTable .prev").addClass("disabled");
                     } else {
@@ -404,22 +512,36 @@
                     } else {
                         $("#registerTable .next").removeClass("disabled");
                     }
-                    loadGrievanceRegister(grievanceCurrentPage);
+                    loadGrievanceRegister(grievanceCurrentPage, itemPerPage);
                 } else {
-                    toastr.error("Sorry, page range out of bound");
-                    paginationFieldDom.val( languageCode == 'en' ? ("" + grievanceCurrentPage) : ("" + grievanceCurrentPage).toBanglaNumber());
+                    toastr.error(languageCode == 'en' ? "Sorry, page range out of bound" : "দুঃখিত, পৃষ্ঠা সীমার বাইরে");
+                    paginationFieldDom.val(languageCode == 'en' ? ("" + grievanceCurrentPage) : ("" + grievanceCurrentPage).toBanglaNumber());
                 }
             } else {
-                toastr.error("Sorry, invalid page number");
+                toastr.error(languageCode == 'en' ? "Sorry, invalid page number" : "দুঃখিত, অবৈধ পৃষ্ঠা নম্বর");
                 paginationFieldDom.val(languageCode == 'en' ? ("" + grievanceCurrentPage) : ("" + grievanceCurrentPage).toBanglaNumber());
+            }
+        }
+
+        // Blur event handler
+        paginationFieldDom.blur(function(e) {
+            e.preventDefault();
+            handlePageChange();
+        });
+
+        // Event listener for Enter key on the pagination input field
+        $('#pagenumberinput').keypress(function(e) {
+            if (e.which === 13) { // Enter key code
+                e.preventDefault();
+                handlePageChange();
             }
         });
 
-        // Add event listener for Enter key on the search input field
+        // Event listener for Enter key on the search input field
         $('#trackingNumberSearch').keypress(function(event) {
             if (event.which === 13) { // Enter key code
-                event.preventDefault(); // Prevent form submission if inside a form
-                searchByTrackingNumber(); // Call the search function
+                event.preventDefault();
+                searchByTrackingNumber();
             }
         });
     }

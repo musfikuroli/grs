@@ -122,7 +122,15 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET, params = "id")
-    public ModelAndView getViewGrievancesPage(Authentication authentication, Model model, HttpServletRequest request, @RequestParam Long id) {
+    public ModelAndView getViewGrievancesPage(
+            Authentication authentication,
+            Model model,
+            HttpServletRequest request,
+            @RequestParam Long id,
+            @RequestParam(required = false) String tab, // Add tab as an optional parameter
+            @RequestParam(required = false) Integer page, // Add page as an optional parameter
+            @RequestParam(required = false) Integer size // Add size as an optional parameter
+    ) {
         if (authentication != null) {
             if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
                 return new ModelAndView("redirect:/error-page");
@@ -169,6 +177,12 @@ public class GrievanceController {
             model.addAttribute("reviveFlag", reviveFlag);
             this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), id);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
+
+            // Add tab, page, and size parameters to the model so they can be passed back
+            model.addAttribute("currentTab", tab);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("pageSize", size);
+
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
                     request,

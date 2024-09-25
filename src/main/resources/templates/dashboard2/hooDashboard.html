@@ -216,7 +216,8 @@
         "STAFF": "কর্মকর্তা-কর্মচারী"
     };
     const MONTH_NAME_BANGLA = ["জানুয়ারী", "ফেব্রুয়ারী", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
-    const itemPerPage = 10;
+    // const itemPerPage = 10;
+    let itemPerPage = 10;
 
     function tooltipBanglaFormatter(params, ticket, callback) {
         return params.name + " :<br>"
@@ -1492,8 +1493,14 @@
         $("body").on("tabMonthlyReport-opened", function () {
             loadCurrentMonthReportData();
         });
+        // $("body").on("tabGrievanceRegister-opened", function () {
+        //     loadGrievanceRegister(1);
+        // });
+        // Grievance Register Tab opened
         $("body").on("tabGrievanceRegister-opened", function () {
-            loadGrievanceRegister(1);
+            const { page, size } = getPaginationParams(); // Get pagination params
+            grievanceCurrentPage = page; // Set the current page globally
+            loadGrievanceRegister(page, size); // Load data for Grievance Register
         });
 
         $("body").on("tabCentral-opened", function () {
@@ -1539,8 +1546,10 @@
             loadGrievanceChartsAndData();
         });
 
+        // Appeal Register Tab opened
         $("body").on("tabAppealRegister-opened", function () {
-            loadAppealRegister(1);
+            const { page, size } = getPaginationParams(); // Get pagination params
+            loadAppealRegister(page, size); // Load data for Appeal Register
         });
 
         $("body").on("tabAppealExpired-opened", function () {
@@ -1631,12 +1640,54 @@
         }
     }
 
+    // function showFirstTabContents() {
+    //     var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
+    //     $(".tab-container").hide();
+    //     $("#" + firstTabId + "_body").show();
+    //     $("body").trigger(firstTabId + "-opened");
+    //     showAppropriateOfficeName(firstTabId);
+    // }
+
     function showFirstTabContents() {
-        var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
-        $(".tab-container").hide();
-        $("#" + firstTabId + "_body").show();
-        $("body").trigger(firstTabId + "-opened");
-        showAppropriateOfficeName(firstTabId);
+        const { page, size } = getPaginationParams(1, 20); // Default to page 1 and size 20
+
+        // Set the global itemPerPage from the size parameter
+        itemPerPage = size;
+
+        // Get the 'tab' query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+
+        // If a tab is specified in the query parameters, open that tab
+        if (tab) {
+            // Remove the active class from all tabs and hide their content
+            $("#left-menu-tabs li a").removeClass("active");
+            $(".tab-container").hide();
+
+            // Find the tab that matches the query parameter and open it
+            var tabId = "tab" + tab.charAt(0).toUpperCase() + tab.slice(1);
+
+            $("#" + tabId).addClass("active");
+            $("#" + tabId + "_body").fadeIn("slow");
+            $("body").trigger(tabId + "-opened");
+            showAppropriateOfficeName(tabId);
+
+        } else {
+            // If no tab is specified, open the default first tab
+            var firstTabId = $("#left-menu-tabs .app-menu__item").first().attr("id");
+            $(".tab-container").hide();
+            $("#" + firstTabId + "_body").show();
+            $("body").trigger(firstTabId + "-opened");
+            showAppropriateOfficeName(firstTabId);
+        }
+    }
+
+    // Function to get URL parameters for pagination
+    function getPaginationParams(defaultPage = 1, defaultSize = itemPerPage) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page') ? parseInt(urlParams.get('page')) : defaultPage;
+        const size = urlParams.get('size') ? parseInt(urlParams.get('size')) : defaultSize;
+        return { page, size };
     }
 
     function initDashboardMenuCollapseAndHide() {

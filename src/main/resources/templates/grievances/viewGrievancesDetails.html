@@ -2850,13 +2850,28 @@
         });
     }
 
-    function initializePage() {
-        var id = (document.location.href).split("=")[1];
-        var url = '/api/grievance/' + id;
-        blockUI();
-        CallAjax(url, constructDetails);
-    }
+    // function initializePage() {
+    //     var id = (document.location.href).split("=")[1];
+    //     var url = '/api/grievance/' + id;
+    //     blockUI();
+    //     CallAjax(url, constructDetails);
+    // }
 
+    function initializePage() {
+        // Create a URLSearchParams object from the query string
+        var queryParams = new URLSearchParams(window.location.search);
+
+        // Get the 'id' parameter from the query string
+        var id = queryParams.get('id');
+
+        if (id) {
+            var url = '/api/grievance/' + id;
+            blockUI();
+            CallAjax(url, constructDetails);
+        } else {
+            console.error("ID parameter is missing from the URL");
+        }
+    }
 
     function getUrlParameter(sParam) {
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -5136,15 +5151,59 @@
         $('#sentToAppealOfficerNote').summernote('code', note);
     }
 
+    // function goPreviousPage() {
+    //     var previousPage = document.referrer;
+    //     var nextPage = null;
+    //     if (previousPage.includes("viewGrievances.do") || previousPage.includes("viewMyGrievances.do") || previousPage.includes("dashboardMobile.do") || previousPage.includes("dashboard.do")) {
+    //         nextPage = "/" + previousPage.split("/")[3];
+    //     } else {
+    //         nextPage = "/viewGrievances.do";
+    //     }
+    //     window.location.href = nextPage;
+    // }
+
     function goPreviousPage() {
-        var previousPage = document.referrer;
+        var previousPage = document.referrer; // Get the previous page URL
         var nextPage = null;
-        if (previousPage.includes("viewGrievances.do") || previousPage.includes("viewMyGrievances.do") || previousPage.includes("dashboardMobile.do") || previousPage.includes("dashboard.do")) {
-            nextPage = "/" + previousPage.split("/")[3];
-        } else {
-            nextPage = "/viewGrievances.do";
+
+        // Extract the current parameters (tab, page, size) from the current URL
+        var currentParams = new URLSearchParams(window.location.search);
+        var tab = currentParams.get('tab');
+        var page = currentParams.get('page');
+        var size = currentParams.get('size');
+
+        // Construct the query parameters if they exist
+        var queryParams = '';
+        if (tab || page || size) {
+            queryParams = '?';
+            if (tab) queryParams += 'tab=' + encodeURIComponent(tab);
+            if (page) queryParams += (queryParams.length > 1 ? '&' : '') + 'page=' + encodeURIComponent(page);
+            if (size) queryParams += (queryParams.length > 1 ? '&' : '') + 'size=' + encodeURIComponent(size);
         }
-        window.location.href = nextPage;
+
+        // Check if the referrer exists and matches specific patterns
+        if (previousPage && (previousPage.includes("viewGrievances.do") ||
+            previousPage.includes("viewMyGrievances.do") ||
+            previousPage.includes("dashboardMobile.do") ||
+            previousPage.includes("dashboard.do"))) {
+
+            // // Extract the path after the third '/' and navigate
+            // nextPage = previousPage.split("/").slice(3).join("/");
+
+            // Extract the path from referrer
+            var referrerUrl = new URL(previousPage); // Create URL object from referrer
+            nextPage = referrerUrl.pathname; // Get the path of the referrer (e.g., "/dashboard.do")
+
+            // Append the query params only for 'dashboard.do'
+            if (nextPage.includes("dashboard.do")) {
+                window.location.href = referrerUrl.origin + nextPage + queryParams; // Ensure the full URL with hostname
+            } else {
+                window.location.href = referrerUrl.origin + nextPage; // Keep others as they are without appending query params
+            }
+        } else {
+            // Fallback if referrer doesn't match or is undefined
+            window.location.href = "/viewGrievances.do";
+        }
     }
 
 </script>
