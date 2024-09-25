@@ -887,10 +887,31 @@ public class ReportsService {
 
 
         List<GrievanceAndAppealMonthlyReportDTO> reportDTOS = getMultipleOfficesMergedReport(childOffices, fromYear, fromMonth, toYear, toMonth);
+//        if (level.equals(1)) {
+//            final long[] serial = {1};
+//            return reportDTOS.stream()
+//                    .filter(e -> CacheUtil.getOfficeOrder(e.getOfficeId()) != null)
+//                    .sorted((a, b) -> Long.compare(CacheUtil.getOfficeOrder(a.getOfficeId()), CacheUtil.getOfficeOrder(b.getOfficeId())))
+//                    .map(r -> {
+//                        r.setSl(serial[0]);
+//                        r.getMonthlyGrievanceReport().setSl(serial[0]);
+//                        serial[0]++;
+//                        return r;
+//                    })
+//                    .collect(Collectors.toList());
+//
+//
+//        }
         if (level.equals(1)) {
             final long[] serial = {1};
-            return reportDTOS.stream()
+
+            // Define the IDs of the offices you want to move to the end (using HashSet and Arrays.asList)
+            Set<Long> excludedOfficeIds = new HashSet<>(Arrays.asList(2131L, 2175L, 53L));
+
+            // Process the main list without the excluded office IDs
+            List<GrievanceAndAppealMonthlyReportDTO> prioritizedList = reportDTOS.stream()
                     .filter(e -> CacheUtil.getOfficeOrder(e.getOfficeId()) != null)
+                    .filter(e -> !excludedOfficeIds.contains(e.getOfficeId()))  // Exclude the specified offices
                     .sorted((a, b) -> Long.compare(CacheUtil.getOfficeOrder(a.getOfficeId()), CacheUtil.getOfficeOrder(b.getOfficeId())))
                     .map(r -> {
                         r.setSl(serial[0]);
@@ -900,8 +921,23 @@ public class ReportsService {
                     })
                     .collect(Collectors.toList());
 
+            // Now handle the excluded offices and append them to the list
+            List<GrievanceAndAppealMonthlyReportDTO> excludedOffices = reportDTOS.stream()
+                    .filter(e -> excludedOfficeIds.contains(e.getOfficeId()))  // Only include the excluded offices
+                    .map(r -> {
+                        r.setSl(serial[0]);
+                        r.getMonthlyGrievanceReport().setSl(serial[0]);
+                        serial[0]++;
+                        return r;
+                    })
+                    .collect(Collectors.toList());
 
-        } else {
+            // Combine both lists (prioritized + excluded offices at the end)
+            prioritizedList.addAll(excludedOffices);
+
+            return prioritizedList;
+        }
+        else {
             for (int i=0;i<reportDTOS.size();i++) {
                 reportDTOS.get(i).setSl(new Long(i+1));
                 reportDTOS.get(i).getMonthlyGrievanceReport().setSl(new Long(i+1));
