@@ -253,6 +253,12 @@
                     <span class="app-menu__label">পরামর্শের তালিকা</span>
                 </a>
             </li>
+            <li th:if="${isCabinetDivisionUser}">
+                <a href="javascript:;" class="app-menu__item" id="tabFindByTrackingNumber">
+                    <i class="app-menu__icon fa fa-search-plus"></i>
+                    <span class="app-menu__label">ট্র্যাকিং নম্বর দ্বারা অনুসন্ধান</span>
+                </a>
+            </li>
         </th:block>
 
     </ul>

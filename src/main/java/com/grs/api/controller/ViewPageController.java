@@ -124,6 +124,15 @@ public class ViewPageController {
         return modelViewService.returnViewsForNormalPages(authentication, model, request, "index");
     }
 
+//    @RequestMapping(value = "/searchGrievance.do", method = RequestMethod.GET)
+//    public ModelAndView getViewGrievancesPage(Authentication auth, Model model, HttpServletRequest request) {
+//        return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
+//                auth,
+//                request,
+//                "grievances",
+//                "searchGrievance",
+//                "admin");
+//    }
     public void afterLoginDoptorResponse(com.grs.core.domain.doptor.LoginResponse loginResponse, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         User user1 = loginResponse.getUser_info().getUser();

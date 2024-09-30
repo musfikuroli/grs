@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="searchByTrx" th:remove="tag">
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <form id="searchForm" class="text-center p-5 border rounded shadow-lg" style="background-color: #f8f9fa; width: 100%; max-width: 500px;">
+            <div class="form-group">
+                <label for="search_trx" class="form-label h4">Tracking Number</label>
+                <input type="text" id="search_trx" name="search_trx" class="form-control form-control-lg" placeholder="Enter tracking number">
+            </div>
+            <div class="mt-4">
+                <input type="button" value="সার্চ" class="btn btn-primary btn-lg" id="searchButton">
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:fragment="searchByTrxScript">
+    var currentTrackingNumber = "";
+
+    document.getElementById("searchButton").addEventListener("click", function() {
+        currentTrackingNumber = document.getElementById("search_trx").value.trim();
+
+        if (currentTrackingNumber !== "") {
+            searchByTrackingNumber();
+        } else {
+            alert("Please enter a tracking number.");
+        }
+    });
+
+    document.getElementById("search_trx").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("searchButton").click();
+        }
+    });
+
+    function searchByTrackingNumber() {
+
+        $.ajax({
+            url: `/api/search/${currentTrackingNumber}`,
+            type: "GET",
+            success: function(response) {
+                if (response) {
+                    console.log(response)
+                    handleSearchSuccess(response);
+                } else {
+                    alert("No grievances found for the given tracking number.");
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("Error fetching grievance data: " + xhr.responseText);
+            }
+        });
+    }
+
+    function handleSearchSuccess(id) {
+        if (id) {
+            window.location.href = `/searchGrievances.do?id=${id}`;
+        } else {
+            alert("No valid grievance found.");
+        }
+    }
+</script>
+
+</body>
+</html>

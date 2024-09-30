@@ -124,6 +124,9 @@
     <div class="tab-container" id="tabDCOfficeWiseReport_body">
         <div th:replace="dashboard2/dcOfficeWiseReport :: dcOfficeWiseReport"></div>
     </div>
+    <div class="tab-container" id="tabFindByTrackingNumber_body">
+        <div th:replace="dashboard2/searchByTrackingNumber :: searchByTrx"></div>
+    </div>
 
     <div class="tab-container" id="tabOtherOfficesDashboard_body">
         <div th:replace="dashboard2/otherOfficesDashboard :: otherOfficesDashboard"></div>
@@ -145,6 +148,7 @@
     <th:block th:replace="dashboard2/grievanceRegister :: grievanceRegisterScript"></th:block>
     <th:block th:replace="dashboard2/appealRegister :: appealRegisterScript"></th:block>
     <th:block th:replace="dashboard2/suggestions :: suggestionsScript"></th:block>
+    <th:block th:replace="dashboard2/searchByTrackingNumber :: searchByTrxScript"></th:block>
     <th:block th:replace="dashboard2/subOfficesReports :: subOfficesReportsScript"></th:block>
     <th:block th:replace="dashboard2/appealedComplaints :: appealedComplaintsScript"></th:block>
     <th:block th:replace="dashboard2/tagidList :: tagidListScript"></th:block>
@@ -1512,6 +1516,9 @@
 
         $("body").on("tabSuggestions-opened", function () {
             loadSuggestionsList(1);
+        });
+        $("body").on("tabFindByTrackingNumber-opened", function () {
+            // need to implement find the logic to find issues by tracking number
         });
 
         $("body").on("tabAppealedComplaints-opened", function () {

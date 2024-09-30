@@ -33,6 +33,10 @@ public class GrievanceForwardingController {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         return this.grievanceForwardingService.forwardGrievanceToAnotherOffice(forwardToAnotherOfficeDTO, userInformation);
     }
+    @RequestMapping(value = "/api/grievance/forwardall/{grievanceId}", method = RequestMethod.GET)
+    public List<GrievanceForwardingEmployeeRecordsDTO> searchAllComplaintMovements(@PathVariable("grievanceId") Long grievanceId) {
+        return this.grievanceForwardingService.searchAllComplaintMovementHistoryByGrievance(grievanceId);
+    }
 
     @RequestMapping(value = "/api/grievance/forward/{grievanceId}", method = RequestMethod.GET)
     public List<GrievanceForwardingEmployeeRecordsDTO> getAllComplaintMovements(@PathVariable("grievanceId") Long grievanceId, Authentication authentication) {

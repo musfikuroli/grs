@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
     @Query(value="SELECT coalesce(max(CONVERT(tracking_number ,UNSIGNED INTEGER)),0) FROM complaints c where tracking_number not like '01%' and tracking_number not like '1%'",
     nativeQuery = true)
     public long findMaxTrackingNumber();
+
+//    @Query("SELECT g FROM Grievance g WHERE g.trackingNumber = :trx")
+//    List<Grievance> findGrievancesByTrackingNumber(@Param("trx") String trx);
+    @Query("SELECT g FROM Grievance g WHERE g.trackingNumber = :trx OR g.trackingNumber = CONCAT('0', :trx)")
+    List<Grievance> findGrievancesByTrackingNumber(@Param("trx") String trx);
+
 
     public Page<Grievance> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

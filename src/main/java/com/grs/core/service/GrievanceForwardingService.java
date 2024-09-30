@@ -462,6 +462,37 @@ public class GrievanceForwardingService {
         }
         return grievanceForwardings.stream().distinct().collect(Collectors.toList());
     }
+    public List<GrievanceForwardingEmployeeRecordsDTO> searchAllComplaintMovementHistoryByGrievance(Long grievanceId) {
+        Grievance grievance = this.grievanceService.findGrievanceById(grievanceId);
+        List<GrievanceForwarding> grievanceForwardings = grievanceForwardingDAO.getAllComplaintMovement(grievance);
+
+        return grievanceForwardings.stream()
+                .map(grievanceForwarding -> GrievanceForwardingEmployeeRecordsDTO.builder()
+                        .toGroNameBangla(grievanceForwarding.getToEmployeeNameBangla())
+                        .fromGroNameBangla(grievanceForwarding.getFromEmployeeNameBangla())
+                        .toGroNameEnglish(grievanceForwarding.getToEmployeeNameEnglish())
+                        .fromGroNameEnglish(grievanceForwarding.getFromEmployeeNameEnglish())
+                        .comment(grievanceForwarding.getComment())
+                        .action(grievanceForwarding.getAction())
+                        .createdAtEng(DateTimeConverter.convertDateToStringForTimeline(grievanceForwarding.getCreatedAt()))
+                        .createdAtBng(BanglaConverter.getDateBanglaFromEnglish(DateTimeConverter.convertDateToStringForTimeline(grievanceForwarding.getCreatedAt())))
+                        .createdAtFullEng(DateTimeConverter.convertDateToStringForTimelineFull(grievanceForwarding.getCreatedAt()))
+                        .createdAtFullBng(BanglaConverter.getDateBanglaFromEnglishFull(DateTimeConverter.convertDateToStringForTimelineFull(grievanceForwarding.getCreatedAt())))
+                        .files(getFiles(grievanceForwarding))
+                        .toDesignationNameBangla(grievanceForwarding.getToEmployeeDesignationBangla())
+                        .fromDesignationNameBangla(grievanceForwarding.getFromEmployeeDesignationBangla())
+                        .toOfficeNameBangla(grievanceForwarding.getToOfficeNameBangla())
+                        .fromOfficeNameBangla(grievanceForwarding.getFromOfficeNameBangla())
+                        .toOfficeUnitNameBangla(grievanceForwarding.getToEmployeeUnitNameBangla())
+                        .fromOfficeUnitNameBangla(grievanceForwarding.getFromEmployeeUnitNameBangla())
+                        .fromGroUsername(grievanceForwarding.getFromEmployeeUsername())
+                        .isCC(grievanceForwarding.getIsCC())
+                        .isCommitteeHead(grievanceForwarding.getIsCommitteeHead())
+                        .isCommitteeMember(grievanceForwarding.getIsCommitteeMember())
+                        .assignedRole(grievanceForwarding.getAssignedRole())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
     public List<GrievanceForwardingEmployeeRecordsDTO> getAllComplaintMovementHistoryByGrievance(Long grievanceId, Authentication authentication) {
         Grievance grievance = this.grievanceService.findGrievanceById(grievanceId);

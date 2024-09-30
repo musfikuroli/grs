@@ -121,6 +121,78 @@ public class GrievanceController {
         return new ModelAndView("redirect:/error-page");
     }
 
+    @RequestMapping(value = "/searchGrievances.do", method = RequestMethod.GET, params = "id")
+    public ModelAndView searchGrievancesPage(
+            Authentication authentication,
+            Model model,
+            HttpServletRequest request,
+            @RequestParam Long id,
+            @RequestParam(required = false) String tab, // Add tab as an optional parameter
+            @RequestParam(required = false) Integer page, // Add page as an optional parameter
+            @RequestParam(required = false) Integer size // Add size as an optional parameter
+    ) {
+        if (authentication != null) {
+            if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
+                return new ModelAndView("redirect:/error-page");
+            }
+            Boolean isGrsUser = Utility.isUserAnGRSUser(authentication);
+            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
+            Boolean isGROUser = Utility.isUserAnGROUser(authentication);
+            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(id);
+            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(authentication, id);
+            Boolean serviceIsNull = this.grievanceService.serviceIsNull(id);
+            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(id);
+            Boolean isBlacklisted = complainantService.isBlacklistedUser(authentication);
+            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(id);
+            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(id);
+            Boolean soAppealOption = null;
+            Boolean isComplainantBlacklisted = false;
+            Boolean canRetakeComplaint = false;
+            if (Utility.isServiceOfficer(authentication)) {
+                soAppealOption = this.grievanceService.soAppealActivationFlag(id);
+            }
+            if(!isGrsUser) {
+                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(id);
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(id, authentication);
+            }
+            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(id);
+            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model.addAttribute("grsUser", isGrsUser);
+            model.addAttribute("isOthersComplainant", isOthersComplainant);
+            model.addAttribute("isGRO", isGROUser);
+            model.addAttribute("appealButtonFlag", appealButtonFlag);
+            model.addAttribute("isOISFComplainant", isOISFComplainant);
+            model.addAttribute("serviceIsNull", serviceIsNull);
+            model.addAttribute("isNagorik", isNagorik);
+            model.addAttribute("isBlacklisted", isBlacklisted);
+            model.addAttribute("isAnonymousUser", isAnonymousUser);
+            model.addAttribute("isFeedbackEnabled", isFeedbackEnabled);
+            model.addAttribute("feedbacks", feedbacks);
+            model.addAttribute("soAppealOption", soAppealOption);
+            model.addAttribute("isComplainantBlacklisted", isComplainantBlacklisted);
+            model.addAttribute("canRetakeComplaint", canRetakeComplaint);
+            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(id));
+            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(authentication, id));
+            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(id, authentication);
+            model.addAttribute("reviveFlag", reviveFlag);
+            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), id);
+            model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
+
+            // Add tab, page, and size parameters to the model so they can be passed back
+            model.addAttribute("currentTab", tab);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("pageSize", size);
+
+            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
+                    authentication,
+                    request,
+                    "grievances",
+                    "searchGrievance",
+                    "admin");
+        }
+        return new ModelAndView("redirect:/error-page");
+    }
+
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET, params = "id")
     public ModelAndView getViewGrievancesPage(
             Authentication authentication,

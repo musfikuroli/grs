@@ -24,7 +24,7 @@ public class MyGovLoginResponse {
     private WeakHashMap<String, String> mygovToGRSgenderMAp = new WeakHashMap<>();
     private WeakHashMap<String, String> grsToMygovgenderMAp = new WeakHashMap<>();
 
-    public MyGovLoginResponse()throws Exception{
+    public MyGovLoginResponse() throws Exception{
         gson = new Gson();
         ssoPropertyReader = SSOPropertyReader.getInstance();
         this.sessionNonce = "";
@@ -38,11 +38,11 @@ public class MyGovLoginResponse {
         mygovToGRSgenderMAp.put("other", "OTHER");
     }
 
-    private String getSharedSecret()throws Exception{
+    private String getSharedSecret() throws Exception{
         return ssoPropertyReader.getSecret();
     }
 
-    private void validateResponse(String response)throws Exception{
+    private void validateResponse(String response) throws Exception{
         if(response == null || response.equals("")){
             throw new Exception("Response null or empty");
         }
