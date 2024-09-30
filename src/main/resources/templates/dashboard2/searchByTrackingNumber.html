@@ -2,17 +2,39 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
+<!--<div th:fragment="searchByTrx" th:remove="tag">-->
+<!--    <div class="d-flex justify-content-center align-items-center vh-100">-->
+<!--        <form id="searchForm" class="text-center p-5 border rounded shadow-lg" style="background-color: #f8f9fa; width: 100%; max-width: 500px;">-->
+<!--            <div class="form-group">-->
+<!--                <label for="search_trx" class="form-label h4">Tracking Number</label>-->
+<!--                <input type="text" id="search_trx" name="search_trx" class="form-control form-control-lg" placeholder="Enter tracking number">-->
+<!--            </div>-->
+<!--            <div class="mt-4">-->
+<!--                <input type="button" value="সার্চ" class="btn btn-primary btn-lg" id="searchButton">-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
 <div th:fragment="searchByTrx" th:remove="tag">
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <form id="searchForm" class="text-center p-5 border rounded shadow-lg" style="background-color: #f8f9fa; width: 100%; max-width: 500px;">
-            <div class="form-group">
-                <label for="search_trx" class="form-label h4">Tracking Number</label>
-                <input type="text" id="search_trx" name="search_trx" class="form-control form-control-lg" placeholder="Enter tracking number">
+    <div class="panel panel-default" style="background: white;">
+        <div class="panel-body" id="searchByTrxPanel" style="margin-left: 50px; margin-right: 50px">
+            <div class="font-lg bold text-center margin-20" style="margin-bottom: 20px">ট্র্যাকিং নম্বর অনুসন্ধান</div>
+            <div class="font-lg text-center margin-20" style="margin-bottom: 20px">ট্র্যাকিং নম্বর লিখুন</div>
+
+            <!-- Input Section -->
+            <div class="row margin-bottom-20 trx-search" style="margin-bottom: 30px;">
+                <form id="searchForm" class="form-inline" style="width: 100%;">
+                    <div class="form-group" style="width: 100%; max-width: 800px; margin: 0 auto;">
+                        <input type="text" id="search_trx" name="search_trx" class="form-control form-control-lg" placeholder="ট্র্যাকিং নম্বর প্রদান করুন" style="width: 100%;font-size: 14px;">
+                    </div>
+                </form>
             </div>
-            <div class="mt-4">
-                <input type="button" value="সার্চ" class="btn btn-primary btn-lg" id="searchButton">
+
+            <!-- Button to Trigger Search -->
+            <div class="text-center margin-top-20">
+                <button id="searchButton" class="btn btn-primary" style="cursor: pointer; height: 35px; width: 140px; font-size: 16px;">সার্চ</button>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
