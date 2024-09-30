@@ -43,11 +43,12 @@
 
     document.getElementById("searchButton").addEventListener("click", function() {
         currentTrackingNumber = document.getElementById("search_trx").value.trim();
+        currentTrackingNumber = convertBanglaToEnglishNumerals(currentTrackingNumber);
 
         if (currentTrackingNumber !== "") {
             searchByTrackingNumber();
         } else {
-            alert("Please enter a tracking number.");
+            alert("ট্র্যাকিং নম্বর প্রদান করুন");
         }
     });
 
@@ -59,16 +60,15 @@
     });
 
     function searchByTrackingNumber() {
-
         $.ajax({
             url: `/api/search/${currentTrackingNumber}`,
             type: "GET",
             success: function(response) {
                 if (response) {
-                    console.log(response)
+                    console.log(response);
                     handleSearchSuccess(response);
                 } else {
-                    alert("No grievances found for the given tracking number.");
+                    alert("প্রদত্ত ট্র্যাকিং নম্বরের জন্য কোনো অভিযোগ পাওয়া যায়নি।");
                 }
             },
             error: function(xhr, status, error) {
@@ -81,8 +81,18 @@
         if (id) {
             window.location.href = `/searchGrievances.do?id=${id}`;
         } else {
-            alert("No valid grievance found.");
+            alert("প্রদত্ত ট্র্যাকিং নম্বরের জন্য কোনো অভিযোগ পাওয়া যায়নি।");
         }
+    }
+
+    function convertBanglaToEnglishNumerals(input) {
+        const banglaToEnglishMap = {
+            '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+            '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
+        };
+        return input.replace(/[০-৯]/g, function(match) {
+            return banglaToEnglishMap[match];
+        });
     }
 </script>
 
