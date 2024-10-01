@@ -1,5 +1,6 @@
 package com.grs.core.domain.grs;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grs.core.domain.BaseEntity;
 import com.grs.core.domain.GrievanceCurrentStatus;
 import com.grs.core.domain.ServiceType;
@@ -63,6 +64,7 @@ public class Grievance extends BaseEntity {
     private ServiceOrigin serviceOriginBeforeForward;
 
     @OneToMany(mappedBy = "grievance", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<AttachedFile> attachedFiles;
 
     @Column(name = "complainant_id")

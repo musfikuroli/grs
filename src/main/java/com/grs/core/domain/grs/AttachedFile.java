@@ -1,5 +1,6 @@
 package com.grs.core.domain.grs;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.grs.core.domain.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
@@ -26,6 +27,7 @@ public class AttachedFile extends BaseEntity {
     @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "complaint_id", referencedColumnName = "id")
+    @JsonBackReference
     private Grievance grievance;
 
     @Column(name = "file_path")
