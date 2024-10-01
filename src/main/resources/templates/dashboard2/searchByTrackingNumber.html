@@ -2,26 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!--<div th:fragment="searchByTrx" th:remove="tag">-->
-<!--    <div class="d-flex justify-content-center align-items-center vh-100">-->
-<!--        <form id="searchForm" class="text-center p-5 border rounded shadow-lg" style="background-color: #f8f9fa; width: 100%; max-width: 500px;">-->
-<!--            <div class="form-group">-->
-<!--                <label for="search_trx" class="form-label h4">Tracking Number</label>-->
-<!--                <input type="text" id="search_trx" name="search_trx" class="form-control form-control-lg" placeholder="Enter tracking number">-->
-<!--            </div>-->
-<!--            <div class="mt-4">-->
-<!--                <input type="button" value="সার্চ" class="btn btn-primary btn-lg" id="searchButton">-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--</div>-->
 <div th:fragment="searchByTrx" th:remove="tag">
     <div class="panel panel-default" style="background: white;">
         <div class="panel-body" id="searchByTrxPanel" style="margin-left: 50px; margin-right: 50px">
             <div class="font-lg bold text-center margin-20" style="margin-bottom: 20px">ট্র্যাকিং নম্বর অনুসন্ধান</div>
             <div class="font-lg text-center margin-20" style="margin-bottom: 20px">ট্র্যাকিং নম্বর লিখুন</div>
 
-            <!-- Input Section -->
             <div class="row margin-bottom-20 trx-search" style="margin-bottom: 30px;">
                 <form id="searchForm" class="form-inline" style="width: 100%;">
                     <div class="form-group" style="width: 100%; max-width: 800px; margin: 0 auto;">
@@ -30,9 +16,25 @@
                 </form>
             </div>
 
-            <!-- Button to Trigger Search -->
             <div class="text-center margin-top-20">
                 <button id="searchButton" class="btn btn-primary" style="cursor: pointer; height: 35px; width: 140px; font-size: 16px;">সার্চ</button>
+            </div>
+
+            <div class="margin-top-20" id="grievanceTableContainer" style="display: none;">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>ট্র্যাকিং নম্বর</th>
+                        <th>জমাদানের তারিখ</th>
+                        <th>অভিযোগের ধরন</th>
+                        <th>অবস্থা</th>
+                        <th>বিষয়</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                    </thead>
+                    <tbody id="grievanceTableBody">
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -61,30 +63,75 @@
 
     function searchByTrackingNumber() {
         $.ajax({
-            url: `/api/search/${currentTrackingNumber}`,
+            url: `/api/search/trx/${currentTrackingNumber}`,
             type: "GET",
             success: function(response) {
-                if (response) {
-                    console.log(response);
-                    handleSearchSuccess(response);
+                if (response.single) {
+                    window.location.href = `/searchGrievances.do?id=${response.id}`;
                 } else {
-                    alert("প্রদত্ত ট্র্যাকিং নম্বরের জন্য কোনো অভিযোগ পাওয়া যায়নি।");
+                    displayGrievanceTable(response.grievances);
                 }
             },
             error: function(xhr, status, error) {
-                alert("Error fetching grievance data: " + xhr.responseText);
+                console.log("Error fetching grievance data: " + xhr.responseText);
+                alert("প্রদত্ত ট্র্যাকিং নম্বরের জন্য কোনো অভিযোগ পাওয়া যায়নি।");
             }
         });
     }
 
-    function handleSearchSuccess(id) {
-        if (id) {
-            window.location.href = `/searchGrievances.do?id=${id}`;
-        } else {
-            alert("প্রদত্ত ট্র্যাকিং নম্বরের জন্য কোনো অভিযোগ পাওয়া যায়নি।");
-        }
+    function displayGrievanceTable(grievances) {
+        console.log(grievances)
+        var tableBody = document.getElementById("grievanceTableBody");
+        tableBody.innerHTML = '';
+
+        grievances.forEach(function(grievance) {
+            var row = document.createElement("tr");
+
+            var trackingNumberCell = document.createElement("td");
+            trackingNumberCell.textContent = grievance.trackingNumber.toBanglaNumber();
+            row.appendChild(trackingNumberCell);
+
+            var submissionDateCell = document.createElement("td");
+            let date = new Date(grievance.submissionDate);
+            let year = date.getFullYear().toString().toBanglaNumber();
+            let month = (date.getMonth() + 1).toString().toBanglaNumber();
+            if (month.length === 1) {
+                month = "০"+month;
+            }
+            let day = date.getDate().toString().toBanglaNumber();
+            submissionDateCell.textContent = `${day}-${month}-${year}`;
+            row.appendChild(submissionDateCell);
+
+            var complaintTypeCell = document.createElement("td");
+            complaintTypeCell.textContent = convertServiceTypeToBangla(grievance.grievanceType);
+            row.appendChild(complaintTypeCell);
+
+            var statusCell = document.createElement("td");
+            statusCell.textContent = convertGrievanceStatusToBangla(grievance.grievanceCurrentStatus);
+            row.appendChild(statusCell);
+
+            var subjectCell = document.createElement("td");
+            subjectCell.textContent = grievance.subject;
+            row.appendChild(subjectCell);
+
+            var actionCell = document.createElement("td");
+            var viewButton = document.createElement("button");
+            viewButton.textContent = "দেখুন";
+            viewButton.className = "btn btn-primary";
+            viewButton.style.cursor = "pointer";
+            viewButton.addEventListener("click", function() {
+                window.location.href = `/searchGrievances.do?id=${grievance.id}`;
+            });
+            actionCell.appendChild(viewButton);
+            row.appendChild(actionCell);
+
+            tableBody.appendChild(row);
+        });
+
+        document.getElementById("grievanceTableContainer").style.display = "block";
     }
 
+    // Helper functions, possibly move out into a separate utility module? but only if asked later on
     function convertBanglaToEnglishNumerals(input) {
         const banglaToEnglishMap = {
             '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
@@ -93,6 +140,134 @@
         return input.replace(/[০-৯]/g, function(match) {
             return banglaToEnglishMap[match];
         });
+    }
+    function convertGrievanceStatusToBangla(currentStatus) {
+        let banglaText = "";
+        switch (currentStatus) {
+            case "NEW":
+            case "CELL_NEW":
+                banglaText = "নতুন";
+                break;
+            case "FORWARDED_OUT":
+                banglaText = "অন্য দপ্তরে প্রেরিত";
+                break;
+            case "FORWARDED_IN":
+                banglaText = "আওতাধীন দপ্তরে প্রেরণ";
+                break;
+            case "ACCEPTED":
+                banglaText = "গৃহীত";
+                break;
+            case "REJECTED":
+                banglaText = "নথিজাত";
+                break;
+            case "IN_REVIEW":
+            case "APPEAL_IN_REVIEW":
+                banglaText = "পর্যালোচনা";
+                break;
+            case "CLOSED_ANSWER_OK":
+            case "CLOSED_SERVICE_GIVEN":
+            case "CLOSED_ACCUSATION_PROVED":
+            case "CLOSED_ACCUSATION_INCORRECT":
+            case "CLOSED_OTHERS":
+            case "CLOSED_INSTRUCTION_EXECUTED":
+                banglaText = "নিষ্পত্তি";
+                break;
+            case "APPEAL":
+                banglaText = "আপিলকৃত";
+                break;
+            case "INVESTIGATION":
+            case "INVESTIGATION_APPEAL":
+                banglaText = "তদন্ত";
+                break;
+            case "INV_NOTICE_FILE":
+            case "INV_NOTICE_FILE_APPEAL":
+                banglaText = "অতিরিক্ত সংযুক্তি";
+                break;
+            case "INV_NOTICE_HEARING":
+            case "INV_NOTICE_HEARING_APPEAL":
+                banglaText = "তদন্ত শুনানি নোটিশ";
+                break;
+            case "INV_HEARING":
+            case "INV_HEARING_APPEAL":
+                banglaText = "তদন্ত শুনানি গৃহীত";
+                break;
+            case "INV_REPORT":
+            case "INV_REPORT_APPEAL":
+                banglaText = "তদন্ত প্রতিবেদন";
+                break;
+            case "APPEAL_CLOSED_ACCUSATION_INCORRECT":
+            case "APPEAL_CLOSED_OTHERS":
+            case "APPEAL_CLOSED_ACCUSATION_PROVED":
+            case "APPEAL_CLOSED_ANSWER_OK":
+            case "APPEAL_CLOSED_INSTRUCTION_EXECUTED":
+            case "APPEAL_CLOSED_SERVICE_GIVEN":
+                banglaText = "নিষ্পত্তি";
+                break;
+            case "APPEAL_REJECTED":
+                banglaText = "নথিজাত";
+                break;
+            case "APPEAL_STATEMENT_ANSWERED":
+            case "APPEAL_STATEMENT_ASKED":
+                banglaText = "আপিলকৃত";
+                break;
+            case "STATEMENT_ASKED":
+                banglaText = "মতামতের জন্য প্রেরিত";
+                break;
+            case "APPEAL_GIVE_GUIDANCE":
+            case "GIVE_GUIDANCE":
+                banglaText = "সেবা প্রদানের জন্য নির্দেশিত";
+                break;
+            case "PERMISSION_ASKED":
+                banglaText = "অনুমতির জন্য প্রেরিত";
+                break;
+            case "PERMISSION_REPLIED":
+                banglaText = "অনুমতি উত্তর প্রাপ্ত";
+                break;
+            case "STATEMENT_ANSWERED":
+                banglaText = "মতামত প্রাপ্ত";
+                break;
+            case "FORWARDED_TO_AO":
+                banglaText = "আপিল অফিসারের কাছে প্রেরিত";
+                break;
+            case "APPEAL_RECOMMEND_DEPARTMENTAL_ACTION":
+            case "RECOMMEND_DEPARTMENTAL_ACTION":
+                banglaText = "বিভাগীয় ব্যবস্থা গ্রহণের সুপারিশকৃত";
+                break;
+            case "TESTIMONY_GIVEN":
+                banglaText = "সাক্ষ্য-প্রমাণ প্রেরিত";
+                break;
+            case "APPEAL_REQUEST_TESTIMONY":
+            case "REQUEST_TESTIMONY":
+                banglaText = "সাক্ষ্য-প্রমাণের নির্দেশ";
+                break;
+            case "CELL_MEETING_ACCEPTED":
+                banglaText = "সেল সভায় গৃহীত";
+                break;
+            case "CELL_MEETING_PRESENTED":
+                banglaText = "সেল মিটিং এ উপস্থাপিত";
+                break;
+            case "GIVE_GUIDANCE_POST_INVESTIGATION":
+                banglaText = "তদন্তের জন্য নির্দেশিকা";
+                break;
+            case "APPEAL_GIVE_GUIDANCE_POST_INVESTIGATION":
+                banglaText = "আপীল তদন্তের জন্য নির্দেশিকা";
+                break;
+            default:
+                banglaText = currentStatus;
+        }
+        return banglaText;
+    }
+    function convertServiceTypeToBangla(serviceType) {
+        switch (serviceType) {
+            case "NAGORIK":
+                return "নাগরিক";
+            case "DAPTORIK":
+                return "দাপ্তরিক";
+            case "STAFF":
+                return "কর্মকর্তা-কর্মচারী";
+            default:
+                return serviceType;
+        }
     }
 </script>
 

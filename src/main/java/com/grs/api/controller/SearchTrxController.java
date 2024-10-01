@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/search")
@@ -22,20 +24,28 @@ import java.util.List;
 public class SearchTrxController {
 
     private final GrievanceRepo grievanceRepo;
-    private final ModelViewService modelViewService;
-
-
-    @GetMapping("/{trx_id}")
+    @GetMapping("/trx/{trx_id}")
     public ResponseEntity<?> findByTrxId(@PathVariable("trx_id") String trx_id) {
-        Long grievance_id = grievanceRepo.findGrievancesByTrackingNumber(trx_id).get(0).getId();
+        List<Grievance> grievances = grievanceRepo.findGrievancesByTrackingNumber(trx_id);
 
-        if (grievance_id == null) {
+        if (grievances.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Grievance with tracking number " + trx_id + " not found.");
         }
 
-        return ResponseEntity.ok(grievance_id);
-    }
+        if (grievances.size() == 1) {
+            Long grievance_id = grievances.get(0).getId();
+            Map<String, Object> response = new HashMap<>();
+            response.put("single", true);
+            response.put("id", grievance_id);
+            return ResponseEntity.ok(response);
+        }
 
+        // If there are multiple grievances, return the list to be displayed
+        Map<String, Object> response = new HashMap<>();
+        response.put("single", false);
+        response.put("grievances", grievances);
+        return ResponseEntity.ok(response);
+    }
 
 }
