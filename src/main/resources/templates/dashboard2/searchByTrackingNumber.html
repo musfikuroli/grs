@@ -99,6 +99,9 @@
                 month = "০"+month;
             }
             let day = date.getDate().toString().toBanglaNumber();
+            if (day.length === 1) {
+                day = "০"+day;
+            }
             submissionDateCell.textContent = `${day}-${month}-${year}`;
             row.appendChild(submissionDateCell);
 
@@ -132,6 +135,17 @@
     }
 
     // Helper functions, possibly move out into a separate utility module? but only if asked later on
+    document.getElementById('search_trx').addEventListener('input', function(event) {
+        var inputField = event.target;
+        var inputValue = inputField.value;
+
+        inputField.value = inputValue.toBanglaNumber();
+    });
+    document.getElementById('search_trx').addEventListener('keypress', function(event) {
+        if (event.charCode < 48 || event.charCode > 57) {
+            event.preventDefault();
+        }
+    });
     function convertBanglaToEnglishNumerals(input) {
         const banglaToEnglishMap = {
             '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
