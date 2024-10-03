@@ -21,20 +21,21 @@
             </div>
 
             <div class="margin-top-20" id="grievanceTableContainer" style="display: none;">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th>ট্র্যাকিং নম্বর</th>
-                        <th>জমাদানের তারিখ</th>
-                        <th>অভিযোগের ধরন</th>
-                        <th>অবস্থা</th>
-                        <th>বিষয়</th>
-                        <th>অ্যাকশন</th>
-                    </tr>
-                    </thead>
-                    <tbody id="grievanceTableBody">
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ট্র্যাকিং নম্বর</th>
+                            <th>জমাদানের তারিখ</th>
+                            <th>অভিযোগের ধরন</th>
+                            <th>অবস্থা</th>
+                            <th>বিষয়</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                        </thead>
+                        <tbody id="grievanceTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -135,12 +136,12 @@
     }
 
     // Helper functions, possibly move out into a separate utility module? but only if asked later on
-    document.getElementById('search_trx').addEventListener('input', function(event) {
-        var inputField = event.target;
-        var inputValue = inputField.value;
-
-        inputField.value = inputValue.toBanglaNumber();
-    });
+    // document.getElementById('search_trx').addEventListener('input', function(event) {
+    //     var inputField = event.target;
+    //     var inputValue = inputField.value;
+    //
+    //     inputField.value = inputValue.toBanglaNumber();
+    // });
     document.getElementById('search_trx').addEventListener('keypress', function(event) {
         if (event.charCode < 48 || event.charCode > 57) {
             event.preventDefault();
